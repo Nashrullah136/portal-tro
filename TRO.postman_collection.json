@@ -1,0 +1,802 @@
+{
+	"info": {
+		"_postman_id": "4e426506-f5ad-4274-b986-5b29516f96d7",
+		"name": "TRO",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27693398"
+	},
+	"item": [
+		{
+			"name": "Actor",
+			"item": [
+				{
+					"name": "Create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"{{$randomFullName}}\",\r\n    \"username\": \"{{$randomUserName}}\",\r\n    \"password\": \"{{$randomPassword}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/users",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Create",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\":\"{{$randomFullName}}\",\r\n    \"username\": \"{{$randomUserName}}\",\r\n    \"password\": \"{{$randomPassword}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/users",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"users"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 15 Jun 2023 00:11:22 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "241"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 201,\n    \"message\": \"Success create actor\",\n    \"data\": {\n        \"name\": \"Eduardo Boehm\",\n        \"username\": \"Kelton39\",\n        \"role\": \"\",\n        \"created_at\": \"2023-06-15T07:11:22.704+07:00\",\n        \"created_by\": \"admin\",\n        \"updated_at\": \"2023-06-15T07:11:22.704+07:00\",\n        \"updated_by\": \"admin\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Get By Username",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/users/Abigayle62",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users",
+								"Abigayle62"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Get By Username",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/users/Janae14",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"users",
+										"Janae14"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 15 Jun 2023 02:25:52 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "230"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 200,\n    \"message\": \"Success retrieve data\",\n    \"data\": {\n        \"name\": \"Lorenzo Shanahan\",\n        \"username\": \"Janae14\",\n        \"role\": \"user\",\n        \"created_at\": \"2023-06-15T02:25:45Z\",\n        \"created_by\": \"admin\",\n        \"updated_at\": \"2023-06-15T02:25:45Z\",\n        \"updated_by\": \"admin\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Update",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"{{$randomFullName}}\",\r\n    \"password\": \"admin\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/users/Janae14",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users",
+								"Janae14"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Update",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"{{$randomFullName}}\",\r\n    \"password\": \"admin\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/users/Janae14",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"users",
+										"Janae14"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 15 Jun 2023 02:26:04 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "222"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 200,\n    \"message\": \"Success update actor\",\n    \"data\": {\n        \"name\": \"Rudy Hauck\",\n        \"username\": \"Janae14\",\n        \"role\": \"\",\n        \"created_at\": \"0001-01-01T00:00:00Z\",\n        \"created_by\": \"\",\n        \"updated_at\": \"2023-06-15T09:26:04.95+07:00\",\n        \"updated_by\": \"admin\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{url}}/users/Janae14",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users",
+								"Janae14"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Delete",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{url}}/users/Janae14",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"users",
+										"Janae14"
+									]
+								}
+							},
+							"status": "No Content",
+							"code": 204,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 15 Jun 2023 02:26:30 GMT"
+								}
+							],
+							"cookie": [],
+							"body": null
+						}
+					]
+				},
+				{
+					"name": "Get All",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/users?perpage=0&page=1&username=ad&role=admin",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users"
+							],
+							"query": [
+								{
+									"key": "perpage",
+									"value": "0"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "username",
+									"value": "ad"
+								},
+								{
+									"key": "role",
+									"value": "admin"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Get All",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/users?perpage=10&page=1&username=ad&role=admin",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"users"
+									],
+									"query": [
+										{
+											"key": "perpage",
+											"value": "10"
+										},
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "username",
+											"value": "ad"
+										},
+										{
+											"key": "role",
+											"value": "admin"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 15 Jun 2023 02:26:43 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "221"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 200,\n    \"message\": \"Success retrieve actor\",\n    \"data\": [\n        {\n            \"name\": \"ADMIN\",\n            \"username\": \"admin\",\n            \"role\": \"admin\",\n            \"created_at\": \"2023-06-14T13:46:02Z\",\n            \"created_by\": \"admin\",\n            \"updated_at\": \"2023-06-15T00:14:07Z\",\n            \"updated_by\": \"admin\"\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Update password",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"old_password\" : \"ADMIN\",\r\n    \"password\": \"admin\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/me",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"me"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Update password",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"old_password\" : \"asdadad\",\r\n    \"password\": \"ADMIN\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/me",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"me"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 15 Jun 2023 02:31:05 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "39"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 400,\n    \"message\": \"wrong password\"\n}"
+						},
+						{
+							"name": "Success update password",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"old_password\" : \"ADMIN\",\r\n    \"password\": \"admin\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/me",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"me"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 15 Jun 2023 02:31:40 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "48"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 200,\n    \"message\": \"Success update password\"\n}"
+						}
+					]
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"admin\",\r\n    \"password\": \"admin\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/login",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success Login",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"username\": \"su_admin\",\r\n    \"password\": \"su_admin\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/login",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 06 Jun 2023 04:55:10 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "334"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 200,\n    \"message\": \"Authenticated success\",\n    \"data\": {\n        \"token\": \"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6MSwiUm9sZSI6InN1cGVyX2FkbWluIiwiaXNzIjoibG9jYWxob3N0Iiwic3ViIjoic3VfYWRtaW4iLCJhdWQiOlsibG9jYWxob3N0Il0sImV4cCI6MTY4NjAzMDkxMCwibmJmIjoxNjg2MDI3MzEwLCJpYXQiOjE2ODYwMjczMTB9.YMy_CtXIVrizev0sWauWNxcMwCB1htou5DmHWdcWJ5A\"\n    }\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Audit",
+			"item": [
+				{
+					"name": "Get All",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/audits?page=1&perpage=10",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"audits"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "perpage",
+									"value": "10"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"disabled": true
+								},
+								{
+									"key": "object",
+									"value": "rdn",
+									"disabled": true
+								},
+								{
+									"key": "object_id",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "after_date",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "before_date",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Get All",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/audits?page=1&perpage=10",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"audits"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "perpage",
+											"value": "10"
+										},
+										{
+											"key": "username",
+											"value": "admin",
+											"disabled": true
+										},
+										{
+											"key": "object",
+											"value": "rdn",
+											"disabled": true
+										},
+										{
+											"key": "object_id",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "after_date",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "before_date",
+											"value": null,
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 15 Jun 2023 02:23:54 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "1043"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 200,\n    \"message\": \"Success retrieve audit\",\n    \"data\": [\n        {\n            \"id\": 27,\n            \"date_time\": \"2023-06-15T02:22:59Z\",\n            \"username\": \"admin\",\n            \"action\": \"Open Menu User Management\"\n        },\n        {\n            \"id\": 25,\n            \"date_time\": \"2023-06-15T00:14:07Z\",\n            \"username\": \"admin\",\n            \"action\": \"UPDATE\",\n            \"entity\": \"USER\",\n            \"entity_id\": \"admin\",\n            \"data_before\": \"{\\\"password\\\":\\\"-\\\"}\",\n            \"data_after\": \"{\\\"password\\\":\\\"-\\\"}\"\n        },\n        {\n            \"id\": 24,\n            \"date_time\": \"2023-06-15T00:13:49Z\",\n            \"username\": \"admin\",\n            \"action\": \"DELETE\",\n            \"entity\": \"USER\",\n            \"entity_id\": \"Kelton39\",\n            \"data_before\": \"{\\\"name\\\":\\\"Kurt Windler\\\",\\\"username\\\":\\\"Kelton39\\\",\\\"password\\\":\\\"-\\\",\\\"role_id\\\":2}\"\n        },\n        {\n            \"id\": 23,\n            \"date_time\": \"2023-06-15T00:13:30Z\",\n            \"username\": \"admin\",\n            \"action\": \"UPDATE\",\n            \"entity\": \"USER\",\n            \"entity_id\": \"Kelton39\",\n            \"data_before\": \"{\\\"name\\\":\\\"Eduardo Boehm\\\",\\\"password\\\":\\\"-\\\"}\",\n            \"data_after\": \"{\\\"name\\\":\\\"Kurt Windler\\\",\\\"password\\\":\\\"-\\\"}\"\n        },\n        {\n            \"id\": 22,\n            \"date_time\": \"2023-06-15T00:11:23Z\",\n            \"username\": \"admin\",\n            \"action\": \"CREATE\",\n            \"entity\": \"USER\",\n            \"entity_id\": \"Kelton39\",\n            \"data_after\": \"{\\\"name\\\":\\\"Eduardo Boehm\\\",\\\"username\\\":\\\"Kelton39\\\",\\\"password\\\":\\\"-\\\",\\\"role_id\\\":2}\"\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Create Audit",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"action\": \"Open Menu User Management\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/audits",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"audits"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Create Audit",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"action\": \"Open Menu User Management\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/audits",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"audits"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 15 Jun 2023 02:22:58 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "45"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 200,\n    \"message\": \"Success create audit\"\n}"
+						}
+					]
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6OCwiUm9sZSI6ImFkbWluIiwiaXNzIjoibG9jYWxob3N0Iiwic3ViIjoiYWRtaW4iLCJhdWQiOlsibG9jYWxob3N0Il0sImV4cCI6MTY4Njc5ODg3NiwibmJmIjoxNjg2Nzk1Mjc2LCJpYXQiOjE2ODY3OTUyNzZ9.0TtJnszaOSINaYU6gJD78BxKEUAZ0AwOVANHQlXu-Zk",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
