@@ -30,7 +30,7 @@ func (r requestHandler) GetAll(c *gin.Context) {
 		request.PerPage = 10
 	}
 	if request.Page <= 0 {
-		request.PerPage = 1
+		request.Page = 1
 	}
 	response, err := r.auditController.GetAll(ctx, request)
 	if err != nil {
