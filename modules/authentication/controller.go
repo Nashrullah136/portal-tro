@@ -1,9 +1,12 @@
 package authentication
 
 import (
+	"context"
 	"fmt"
+	"log"
 	"nashrul-be/crm/dto"
 	"nashrul-be/crm/modules/actor"
+	"nashrul-be/crm/modules/audit"
 	"nashrul-be/crm/utils/hash"
 	jwtUtil "nashrul-be/crm/utils/jwt"
 )
@@ -12,12 +15,16 @@ type ControllerInterface interface {
 	Login(request LoginRequest) (dto.BaseResponse, error)
 }
 
-func NewAuthController(actorUseCase actor.UseCaseInterface) ControllerInterface {
-	return controller{actorUseCase: actorUseCase}
+func NewAuthController(actorUseCase actor.UseCaseInterface, auditUseCase audit.UseCaseInterface) ControllerInterface {
+	return controller{
+		actorUseCase: actorUseCase,
+		auditUseCase: auditUseCase,
+	}
 }
 
 type controller struct {
 	actorUseCase actor.UseCaseInterface
+	auditUseCase audit.UseCaseInterface
 }
 
 func (c controller) Login(request LoginRequest) (dto.BaseResponse, error) {
@@ -31,6 +38,12 @@ func (c controller) Login(request LoginRequest) (dto.BaseResponse, error) {
 	}
 	token, err := jwtUtil.GenerateJWT(account)
 	if err != nil {
+		return dto.ErrorInternalServerError(), err
+	}
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, "actor", account)
+	if err := c.auditUseCase.CreateAudit(ctx, "Login"); err != nil {
+		log.Println(err)
 		return dto.ErrorInternalServerError(), err
 	}
 	result := LoginResponse{Token: fmt.Sprintf("Bearer %s", token)}

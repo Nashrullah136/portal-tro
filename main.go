@@ -69,7 +69,8 @@ func main() {
 	auditRoute.Handle(engine)
 
 	actorUseCase := actor.NewUseCase(actorRepo, roleRepo)
-	authRoute := authentication.NewRoute(actorUseCase)
+	auditUseCase := audit.NewUseCase(auditRepo)
+	authRoute := authentication.NewRoute(actorUseCase, auditUseCase)
 	authRoute.Handle(engine)
 
 	if err := engine.Run(); err != nil {
