@@ -9,6 +9,7 @@ import (
 type UseCaseInterface interface {
 	GetAll(ctx context.Context, query repositories.AuditQuery, limit, offset int) ([]entities.Audit, error)
 	CreateAudit(ctx context.Context, action string) error
+	CountAll(ctx context.Context, query repositories.AuditQuery) (int, error)
 }
 
 func NewUseCase(auditRepo repositories.AuditRepositoryInterface) UseCaseInterface {
@@ -20,11 +21,11 @@ type useCase struct {
 }
 
 func (uc useCase) GetAll(ctx context.Context, query repositories.AuditQuery, limit, offset int) ([]entities.Audit, error) {
-	result, err := uc.auditRepo.GetAll(ctx, query, limit, offset)
-	if err != nil {
-		return nil, err
-	}
-	return result, nil
+	return uc.auditRepo.GetAll(ctx, query, limit, offset)
+}
+
+func (uc useCase) CountAll(ctx context.Context, query repositories.AuditQuery) (int, error) {
+	return uc.auditRepo.CountGetAll(ctx, query)
 }
 
 func (uc useCase) CreateAudit(ctx context.Context, action string) error {

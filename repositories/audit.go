@@ -9,6 +9,7 @@ import (
 
 type AuditRepositoryInterface interface {
 	CreateAudit(ctx context.Context, action string) (err error)
+	CountGetAll(ctx context.Context, query AuditQuery) (int, error)
 	GetAll(ctx context.Context, query AuditQuery, limit, offset int) (result []entities.Audit, err error)
 }
 
@@ -20,7 +21,7 @@ type auditRepository struct {
 	db *gorm.DB
 }
 
-func (r auditRepository) GetAll(ctx context.Context, query AuditQuery, limit, offset int) (result []entities.Audit, err error) {
+func (r auditRepository) buildGetAllQuery(ctx context.Context, query AuditQuery) *gorm.DB {
 	sql := r.db.WithContext(ctx).Model(&entities.Audit{})
 	if query.Username != "" {
 		sql.Where("username = ?", query.Username)
@@ -37,7 +38,17 @@ func (r auditRepository) GetAll(ctx context.Context, query AuditQuery, limit, of
 	if !query.BeforeDate.IsZero() {
 		sql.Where("date_time <= ?", query.BeforeDate)
 	}
-	err = sql.Limit(limit).Offset(offset).Order("date_time desc").Find(&result).Error
+	return sql
+}
+
+func (r auditRepository) CountGetAll(ctx context.Context, query AuditQuery) (int, error) {
+	var result int64
+	err := r.buildGetAllQuery(ctx, query).Count(&result).Error
+	return int(result), err
+}
+
+func (r auditRepository) GetAll(ctx context.Context, query AuditQuery, limit, offset int) (result []entities.Audit, err error) {
+	err = r.buildGetAllQuery(ctx, query).Limit(limit).Offset(offset).Order("date_time desc").Find(&result).Error
 	return
 }
 

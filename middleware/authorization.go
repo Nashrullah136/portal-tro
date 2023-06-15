@@ -8,7 +8,7 @@ import (
 
 func AuthorizationWithRole(roles []string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		actor, ok := c.MustGet("actor").(entities.User)
+		actor, ok := c.MustGet("user").(entities.User)
 		if !ok {
 			c.AbortWithStatus(http.StatusInternalServerError)
 		}

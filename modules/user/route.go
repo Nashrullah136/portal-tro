@@ -1,4 +1,4 @@
-package actor
+package user
 
 import (
 	"github.com/gin-gonic/gin"
@@ -22,9 +22,9 @@ func NewRoute(actorRepository repositories.ActorRepositoryInterface,
 func (r Route) Handle(router *gin.Engine) {
 	router.PATCH("/me", middleware.Authenticate(), r.actorRequestHandler.UpdatePasswordUser)
 	actor := router.Group("/users", middleware.Authenticate())
-	actor.GET("/:username", r.actorRequestHandler.GetByUsername) //TODO: set page and perpage default when only page and perpage is wrong
-	actor.GET("", r.actorRequestHandler.GetAll)
-	actor.POST("", middleware.AuthorizationAdminOnly(), r.actorRequestHandler.CreateUser)            //TODO: role not included in response
-	actor.PATCH("/:username", middleware.AuthorizationAdminOnly(), r.actorRequestHandler.UpdateUser) //TODO: role not included in response
+	actor.GET("/:username", r.actorRequestHandler.GetByUsername)
+	actor.GET("", r.actorRequestHandler.GetAll) //TODO: set page and perpage default when only page and perpage is wrong, total page and current page
+	actor.POST("", middleware.AuthorizationAdminOnly(), r.actorRequestHandler.CreateUser)
+	actor.PATCH("/:username", middleware.AuthorizationAdminOnly(), r.actorRequestHandler.UpdateUser)
 	actor.DELETE("/:username", middleware.AuthorizationAdminOnly(), r.actorRequestHandler.DeleteUser)
 }

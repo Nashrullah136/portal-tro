@@ -1,4 +1,4 @@
-package actor
+package user
 
 import (
 	"context"
@@ -10,6 +10,7 @@ import (
 
 type UseCaseInterface interface {
 	validateActor(actor entities.User, validations ...validateFunc) (error, error)
+	CountAll(ctx context.Context, username, role string) (int, error)
 	GetAll(ctx context.Context, username, role string, limit, offset uint) ([]entities.User, error)
 	GetByUsername(ctx context.Context, username string) (actor entities.User, err error)
 	CreateUser(ctx context.Context, actor entities.User) (result entities.User, err error)
@@ -46,19 +47,16 @@ func (uc useCase) validateActor(actor entities.User, validations ...validateFunc
 	return nil, nil
 }
 
-func (uc useCase) GetByUsername(ctx context.Context, username string) (actor entities.User, err error) {
-	actor, err = uc.actorRepository.GetByUsername(ctx, username)
-	if err != nil {
-		return
-	}
-	role, err := uc.roleRepository.GetByID(actor.RoleID)
-	actor.Role = role
-	return
+func (uc useCase) CountAll(ctx context.Context, username, role string) (int, error) {
+	return uc.actorRepository.CountAll(ctx, username, role)
 }
 
 func (uc useCase) GetAll(ctx context.Context, username, role string, limit, offset uint) ([]entities.User, error) {
-	actors, err := uc.actorRepository.GetAll(ctx, username, role, limit, offset)
-	return actors, err
+	return uc.actorRepository.GetAll(ctx, username, role, limit, offset)
+}
+
+func (uc useCase) GetByUsername(ctx context.Context, username string) (actor entities.User, err error) {
+	return uc.actorRepository.GetByUsername(ctx, username)
 }
 
 func (uc useCase) CreateUser(ctx context.Context, actor entities.User) (result entities.User, err error) {
@@ -70,6 +68,10 @@ func (uc useCase) CreateUser(ctx context.Context, actor entities.User) (result e
 	if err != nil {
 		return
 	}
+	role, err := uc.roleRepository.GetByID(result.RoleID)
+	if err == nil {
+		result.Role = role
+	}
 	return
 }
 
@@ -80,7 +82,14 @@ func (uc useCase) UpdateUser(ctx context.Context, actor entities.User) (result e
 			return
 		}
 	}
-	result, err = uc.actorRepository.Update(ctx, actor)
+	err = uc.actorRepository.Update(ctx, actor)
+	if err != nil {
+		return
+	}
+	result, err = uc.actorRepository.GetByUsername(ctx, actor.Username)
+	if err != nil {
+		return actor, nil
+	}
 	return
 }
 

@@ -1,4 +1,4 @@
-package actor
+package user
 
 import (
 	"github.com/gin-gonic/gin"
@@ -86,7 +86,7 @@ func (h requestHandler) UpdateUser(c *gin.Context) {
 func (h requestHandler) UpdatePasswordUser(c *gin.Context) {
 	var request ChangePasswordRequest
 	ctx := c.Copy()
-	actor, exist := c.Get("actor")
+	actor, exist := c.Get("user")
 	if !exist {
 		c.JSON(http.StatusInternalServerError, dto.ErrorInternalServerError())
 		return

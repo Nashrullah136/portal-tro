@@ -7,9 +7,9 @@ import (
 	"github.com/go-playground/validator/v10/translations/en"
 	"github.com/joho/godotenv"
 	"gorm.io/gorm"
-	"nashrul-be/crm/modules/actor"
 	"nashrul-be/crm/modules/audit"
 	"nashrul-be/crm/modules/authentication"
+	"nashrul-be/crm/modules/user"
 	"nashrul-be/crm/repositories"
 	"nashrul-be/crm/utils/db"
 	"nashrul-be/crm/utils/translate"
@@ -62,13 +62,13 @@ func main() {
 	roleRepo := repositories.NewRoleRepository(dbConn)
 	auditRepo := repositories.NewAuditRepository(dbConn)
 
-	actorRoute := actor.NewRoute(actorRepo, roleRepo)
+	actorRoute := user.NewRoute(actorRepo, roleRepo)
 	actorRoute.Handle(engine)
 
 	auditRoute := audit.NewRoute(auditRepo)
 	auditRoute.Handle(engine)
 
-	actorUseCase := actor.NewUseCase(actorRepo, roleRepo)
+	actorUseCase := user.NewUseCase(actorRepo, roleRepo)
 	auditUseCase := audit.NewUseCase(auditRepo)
 	authRoute := authentication.NewRoute(actorUseCase, auditUseCase)
 	authRoute.Handle(engine)

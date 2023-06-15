@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 	"nashrul-be/crm/dto"
-	"nashrul-be/crm/modules/actor"
 	"nashrul-be/crm/modules/audit"
+	"nashrul-be/crm/modules/user"
 	"nashrul-be/crm/utils/hash"
 	jwtUtil "nashrul-be/crm/utils/jwt"
 )
@@ -15,7 +15,7 @@ type ControllerInterface interface {
 	Login(request LoginRequest) (dto.BaseResponse, error)
 }
 
-func NewAuthController(actorUseCase actor.UseCaseInterface, auditUseCase audit.UseCaseInterface) ControllerInterface {
+func NewAuthController(actorUseCase user.UseCaseInterface, auditUseCase audit.UseCaseInterface) ControllerInterface {
 	return controller{
 		actorUseCase: actorUseCase,
 		auditUseCase: auditUseCase,
@@ -23,7 +23,7 @@ func NewAuthController(actorUseCase actor.UseCaseInterface, auditUseCase audit.U
 }
 
 type controller struct {
-	actorUseCase actor.UseCaseInterface
+	actorUseCase user.UseCaseInterface
 	auditUseCase audit.UseCaseInterface
 }
 
@@ -41,7 +41,7 @@ func (c controller) Login(request LoginRequest) (dto.BaseResponse, error) {
 		return dto.ErrorInternalServerError(), err
 	}
 	ctx := context.Background()
-	ctx = context.WithValue(ctx, "actor", account)
+	ctx = context.WithValue(ctx, "user", account)
 	if err := c.auditUseCase.CreateAudit(ctx, "Login"); err != nil {
 		log.Println(err)
 		return dto.ErrorInternalServerError(), err

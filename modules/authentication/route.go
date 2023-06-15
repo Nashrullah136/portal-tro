@@ -2,15 +2,15 @@ package authentication
 
 import (
 	"github.com/gin-gonic/gin"
-	"nashrul-be/crm/modules/actor"
 	"nashrul-be/crm/modules/audit"
+	"nashrul-be/crm/modules/user"
 )
 
 type Route struct {
 	authRequestHandler RequestHandlerInterface
 }
 
-func NewRoute(actorUseCase actor.UseCaseInterface, auditUseCase audit.UseCaseInterface) Route {
+func NewRoute(actorUseCase user.UseCaseInterface, auditUseCase audit.UseCaseInterface) Route {
 	controller := NewAuthController(actorUseCase, auditUseCase)
 	requestHandler := NewRequestHandler(controller)
 	return Route{

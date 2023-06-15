@@ -1,4 +1,4 @@
-package actor
+package user
 
 import (
 	"errors"
@@ -25,7 +25,7 @@ func validateExist(actor entities.User, actorRepo repositories.ActorRepositoryIn
 		return nil, err
 	}
 	if !exist {
-		return errors.New("actor doesn't exist"), nil
+		return errors.New("user doesn't exist"), nil
 	}
 	return nil, nil
 }

@@ -28,7 +28,7 @@ func Authenticate() gin.HandlerFunc {
 			c.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
-		c.Set("actor", entities.User{
+		c.Set("user", entities.User{
 			ID:       claims.ID,
 			Username: claims.Subject,
 			Role:     entities.Role{RoleName: claims.Role},

@@ -1,4 +1,4 @@
-package actor
+package user
 
 import (
 	"context"
@@ -36,9 +36,6 @@ func (c controller) GetByUsername(ctx context.Context, username string) (dto.Bas
 
 func (c controller) GetAll(ctx context.Context, req PaginationRequest) (dto.BaseResponse, error) {
 	offset := (req.Page - 1) * req.PerPage
-	if req.Role != "admin" && req.Role != "user" {
-		return dto.ErrorBadRequest("Invalid role"), nil
-	}
 	actors, err := c.actorUseCase.GetAll(ctx, req.Username+"%", req.Role, req.PerPage, offset)
 	if err != nil {
 		return dto.ErrorInternalServerError(), err
@@ -47,7 +44,11 @@ func (c controller) GetAll(ctx context.Context, req PaginationRequest) (dto.Base
 	for _, actor := range actors {
 		actorResponse = append(actorResponse, mapActorToResponse(actor))
 	}
-	return dto.Success("Success retrieve actor", actorResponse), err
+	totalRow, err := c.actorUseCase.CountAll(ctx, req.Username+"%", req.Role)
+	if err != nil {
+		return dto.ErrorInternalServerError(), err
+	}
+	return dto.SuccessPagination("Success retrieve user", int(req.Page), totalRow/int(req.PerPage)+1, actorResponse), err
 }
 
 func (c controller) CreateActor(ctx context.Context, req CreateRequest) (dto.BaseResponse, error) {
@@ -64,7 +65,7 @@ func (c controller) CreateActor(ctx context.Context, req CreateRequest) (dto.Bas
 		return dto.ErrorInternalServerError(), err
 	}
 	response := mapActorToResponse(createdActor)
-	return dto.Created("Success create actor", response), nil
+	return dto.Created("Success create user", response), nil
 }
 
 func (c controller) UpdateActor(ctx context.Context, req UpdateRequest) (dto.BaseResponse, error) {
@@ -81,7 +82,7 @@ func (c controller) UpdateActor(ctx context.Context, req UpdateRequest) (dto.Bas
 		return dto.ErrorInternalServerError(), err
 	}
 	response := mapActorToResponse(updatedActor)
-	return dto.Success("Success update actor", response), nil
+	return dto.Success("Success update user", response), nil
 }
 
 func (c controller) ChangePassword(ctx context.Context, req ChangePasswordRequest) (dto.BaseResponse, error) {

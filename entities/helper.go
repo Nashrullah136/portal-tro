@@ -14,18 +14,18 @@ func SystemContext() context.Context {
 	user := User{
 		Username: "SYSTEM",
 	}
-	ctx = context.WithValue(ctx, "actor", user)
+	ctx = context.WithValue(ctx, "user", user)
 	return ctx
 }
 
 func ExtractActorFromContext(ctx context.Context) (User, error) {
-	actorCtx := ctx.Value("actor")
+	actorCtx := ctx.Value("user")
 	if actorCtx == nil {
-		return User{}, errors.New("actor doesn't exist")
+		return User{}, errors.New("user doesn't exist")
 	}
 	actor, ok := actorCtx.(User)
 	if !ok {
-		return User{}, errors.New("actor is not valid")
+		return User{}, errors.New("user is not valid")
 	}
 	return actor, nil
 }

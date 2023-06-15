@@ -25,7 +25,11 @@ func (uc controller) GetAll(ctx context.Context, request GetAllRequest) (dto.Bas
 	if err != nil {
 		return dto.ErrorInternalServerError(), err
 	}
-	return dto.Success("Success retrieve audit", result), nil
+	totalRow, err := uc.auditUseCase.CountAll(ctx, auditQuery)
+	if err != nil {
+		return dto.ErrorInternalServerError(), err
+	}
+	return dto.SuccessPagination("Success retrieve audit", request.Page, totalRow/request.PerPage+1, result), nil
 }
 
 func (uc controller) CreateAudit(ctx context.Context, action string) (dto.BaseResponse, error) {

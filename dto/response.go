@@ -57,6 +57,18 @@ func Success(msg string, data any) BaseResponse {
 	}
 }
 
+func SuccessPagination(msg string, currentPage, totalPage int, data any) BaseResponse {
+	return BaseResponse{
+		Code:    http.StatusOK,
+		Message: msg,
+		Data: map[string]any{
+			"page":       currentPage,
+			"total_page": totalPage,
+			"data":       data,
+		},
+	}
+}
+
 func Created(msg string, data any) BaseResponse {
 	return BaseResponse{
 		Code:    http.StatusCreated,
