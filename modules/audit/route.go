@@ -19,6 +19,6 @@ type Route struct {
 
 func (r Route) Handle(router *gin.Engine) {
 	auditRoute := router.Group("/audits", middleware.Authenticate())
-	auditRoute.GET("", r.auditRequestHandler.GetAll) //TODO: Add page, total page,
+	auditRoute.GET("", r.auditRequestHandler.GetAll)
 	auditRoute.POST("", r.auditRequestHandler.CreateAudit)
 }

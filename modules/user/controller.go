@@ -36,7 +36,7 @@ func (c controller) GetByUsername(ctx context.Context, username string) (dto.Bas
 
 func (c controller) GetAll(ctx context.Context, req PaginationRequest) (dto.BaseResponse, error) {
 	offset := (req.Page - 1) * req.PerPage
-	actors, err := c.actorUseCase.GetAll(ctx, req.Username+"%", req.Role, req.PerPage, offset)
+	actors, err := c.actorUseCase.GetAll(ctx, req.Username+"%", req.Role, uint(req.PerPage), uint(offset))
 	if err != nil {
 		return dto.ErrorInternalServerError(), err
 	}
@@ -48,7 +48,7 @@ func (c controller) GetAll(ctx context.Context, req PaginationRequest) (dto.Base
 	if err != nil {
 		return dto.ErrorInternalServerError(), err
 	}
-	return dto.SuccessPagination("Success retrieve user", int(req.Page), totalRow/int(req.PerPage)+1, actorResponse), err
+	return dto.SuccessPagination("Success retrieve user", req.Page, totalRow/req.PerPage+1, actorResponse), err
 }
 
 func (c controller) CreateActor(ctx context.Context, req CreateRequest) (dto.BaseResponse, error) {

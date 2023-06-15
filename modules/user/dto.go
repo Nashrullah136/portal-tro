@@ -45,8 +45,8 @@ type Representation struct {
 }
 
 type PaginationRequest struct {
-	PerPage  uint   `form:"perpage" binding:"numeric,gt=0"`
-	Page     uint   `form:"page" binding:"numeric,gt=0"`
+	PerPage  int    `form:"perpage"`
+	Page     int    `form:"page"`
 	Username string `form:"username" binding:"omitempty,printascii"`
 	Role     string `form:"role" binding:"omitempty,printascii"`
 }

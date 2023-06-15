@@ -39,7 +39,13 @@ func (h requestHandler) GetAll(c *gin.Context) {
 	ctx := c.Copy()
 	var request PaginationRequest
 	if err := c.ShouldBindQuery(&request); err != nil {
-		request = PaginationRequest{Page: 1, PerPage: 10}
+		c.JSON(http.StatusBadRequest, dto.ErrorValidation(err))
+	}
+	if request.PerPage < 1 {
+		request.PerPage = 10
+	}
+	if request.Page < 1 {
+		request.Page = 1
 	}
 	response, err := h.actorController.GetAll(ctx, request)
 	if err != nil {
