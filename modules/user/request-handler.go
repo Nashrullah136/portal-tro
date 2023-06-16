@@ -40,6 +40,7 @@ func (h requestHandler) GetAll(c *gin.Context) {
 	var request PaginationRequest
 	if err := c.ShouldBindQuery(&request); err != nil {
 		c.JSON(http.StatusBadRequest, dto.ErrorValidation(err))
+		return
 	}
 	if request.PerPage < 1 {
 		request.PerPage = 10
@@ -115,6 +116,7 @@ func (h requestHandler) DeleteUser(c *gin.Context) {
 	username := c.Param("username")
 	if err := h.actorController.DeleteActor(ctx, username); err != nil {
 		c.JSON(http.StatusInternalServerError, dto.ErrorInternalServerError())
+		return
 	}
 	c.JSON(http.StatusNoContent, nil)
 }
