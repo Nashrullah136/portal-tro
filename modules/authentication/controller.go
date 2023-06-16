@@ -46,6 +46,10 @@ func (c controller) Login(request LoginRequest) (dto.BaseResponse, error) {
 		log.Println(err)
 		return dto.ErrorInternalServerError(), err
 	}
-	result := LoginResponse{Token: fmt.Sprintf("Bearer %s", token)}
+	result := LoginResponse{
+		Username: account.Username,
+		Role:     account.Role.RoleName,
+		Token:    fmt.Sprintf("Bearer %s", token),
+	}
 	return dto.Success("Authenticated success", result), nil
 }
