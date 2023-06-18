@@ -1,0 +1,29 @@
+- name: Delete user as admin
+  data:
+    username: Minnie_12
+  expect:
+    code: 204
+  control:
+    case: success
+    loginAs: admin
+    create:
+      name: random Thing
+      username: Minnie_12
+      password: random_231
+
+- name: Delete user as user
+  data:
+    username: Minnie_12
+  expect:
+    code: 403
+  control:
+    case: fail
+    loginAs: user
+
+- name: Delete user without login
+  data:
+    username: Minnie_12
+  expect:
+    code: 401
+  control:
+    case: fail
