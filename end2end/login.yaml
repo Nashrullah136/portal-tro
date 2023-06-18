@@ -1,0 +1,17 @@
+- name: Login as admin
+  data:
+    username: admin
+    password: admin
+  expect:
+    code: 200
+    username: admin
+    role: admin
+
+- name: Login as user
+  data:
+    username: user
+    password: user
+  expect:
+    code: 200
+    username: user
+    role: user
