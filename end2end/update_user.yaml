@@ -1,0 +1,93 @@
+- name: Update user
+  data:
+    username: Minnie_12
+    update:
+      name: randomness
+      password: poliklinik23
+  expect:
+    code: 200
+    name: randomness
+    username: Minnie_12
+    role: user
+    login:
+      username: Minnie_12
+      password: poliklinik23
+  control:
+    loginAs: admin
+    case: success
+    create:
+      name: random Thing
+      username: Minnie_12
+      password: random_231
+
+- name: Update user, name only
+  data:
+    username: Minnie_12
+    update:
+      name: randomness
+  expect:
+    code: 200
+    name: randomness
+    username: Minnie_12
+    role: user
+    login:
+      username: Minnie_12
+      password: random_231
+  control:
+    case: success
+    loginAs: admin
+    create:
+      name: random Thing
+      username: Minnie_12
+      password: random_231
+
+- name: Update user, password only
+  data:
+    username: Minnie_12
+    update:
+      password: poliklinik23
+  expect:
+    code: 200
+    name: random Thing
+    username: Minnie_12
+    role: user
+    login:
+      username: Minnie_12
+      password: poliklinik23
+  control:
+    case: success
+    loginAs: admin
+    create:
+      name: random Thing
+      username: Minnie_12
+      password: random_231
+
+- name: Update user as user
+  data:
+    username: Minnie_12
+    update:
+      password: poliklinik23
+  expect:
+    code: 403
+  control:
+    case: fail
+    loginAs: user
+    create:
+      name: random Thing
+      username: Minnie_12
+      password: random_231
+
+- name: Update user without login
+  data:
+    username: Minnie_12
+    update:
+      password: poliklinik23
+  expect:
+    code: 401
+  control:
+    case: fail
+    create:
+      name: random Thing
+      username: Minnie_12
+      password: random_231
+
