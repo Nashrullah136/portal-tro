@@ -42,10 +42,21 @@ func ErrorInternalServerError() BaseResponse {
 	}
 }
 
+func ErrorUnauthorizedDefault() BaseResponse {
+	return ErrorUnauthorized("Unauthorized")
+}
+
 func ErrorUnauthorized(msg string) BaseResponse {
 	return BaseResponse{
 		Code:    http.StatusUnauthorized,
 		Message: msg,
+	}
+}
+
+func ErrorForbidden() BaseResponse {
+	return BaseResponse{
+		Code:    http.StatusForbidden,
+		Message: "Forbidden",
 	}
 }
 

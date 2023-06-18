@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
+	"nashrul-be/crm/dto"
 	"nashrul-be/crm/entities"
 	"net/http"
 )
@@ -20,7 +21,7 @@ func AuthorizationWithRole(roles []string) gin.HandlerFunc {
 			}
 		}
 		if !found {
-			c.AbortWithStatus(http.StatusForbidden)
+			c.AbortWithStatusJSON(http.StatusForbidden, dto.ErrorForbidden())
 		}
 	}
 }
