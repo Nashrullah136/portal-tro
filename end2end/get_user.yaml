@@ -1,0 +1,48 @@
+- name: Get user as admin
+  data:
+    username: Minnie_12
+  expect:
+    code: 200
+    name: random Thing
+    username: Minnie_12
+    role: user
+  control:
+    case: success
+    loginAs: admin
+    create:
+      name: random Thing
+      username: Minnie_12
+      password: random_231
+
+- name: Get user as user
+  data:
+    username: Minnie_12
+  expect:
+    code: 200
+    name: random Thing
+    username: Minnie_12
+    role: user
+  control:
+    case: success
+    loginAs: user
+    create:
+      name: random Thing
+      username: Minnie_12
+      password: random_231
+
+- name: Get user not found
+  data:
+    username: Minnie_12
+  expect:
+    code: 404
+  control:
+    loginAs: user
+    case: fail
+
+- name: Get user without login
+  data:
+    username: Minnie_12
+  expect:
+    code: 401
+  control:
+    case: fail
