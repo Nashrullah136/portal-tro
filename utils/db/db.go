@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"log"
 	"os"
+	"time"
 )
 
 type Config struct {
@@ -16,22 +16,29 @@ type Config struct {
 	DBName   string
 }
 
-func Connect(config Config) (*gorm.DB, error) {
+func DsnWithConfig(config Config) string {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", config.User, config.Password,
 		config.Host, config.Port, config.DBName)
-	return ConnectWithDSN(dsn)
+	return dsn
 }
 
-func DefaultConnection() (*gorm.DB, error) {
+func DsnWithEnv() string {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true",
 		os.Getenv("DB_USERNAME"), os.Getenv("DB_PASSWORD"),
 		os.Getenv("DB_HOST"), os.Getenv("DB_PORT"), os.Getenv("DB_NAME"))
-	return ConnectWithDSN(dsn)
+	return dsn
 }
 
-func ConnectWithDSN(dsn string) (*gorm.DB, error) {
-	log.Println(dsn)
-	dbConn, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+func Connect(dsn string) (*gorm.DB, error) {
+	var dbConn *gorm.DB
+	var err error
+	for i := 0; i < 10; i++ {
+		dbConn, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+		if err == nil {
+			break
+		}
+		time.Sleep(2 * time.Second)
+	}
 	if err != nil {
 		return nil, err
 	}
