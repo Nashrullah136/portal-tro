@@ -1,0 +1,68 @@
+- name: Create user
+  data:
+    name: random Thing
+    username: rando_123
+    password: random_231
+  expect:
+    code: 201
+    name: random Thing
+    username: rando_123
+    role: user
+  control:
+    case: success
+    loginAs: admin
+
+- name: Create user without name
+  data:
+    name: ""
+    username: rando_123
+    password: random_231
+  expect:
+    code: 201
+    name: ""
+    username: rando_123
+    role: user
+  control:
+    case: success
+    loginAs: admin
+
+- name: Create user without password
+  data:
+    name: random Thing
+    username: rando_123
+  expect:
+    code: 400
+  control:
+    case: fail
+    loginAs: admin
+
+- name: Create user without username
+  data:
+    name: random Thing
+    password: rando_123
+  expect:
+    code: 400
+  control:
+    case: fail
+    loginAs: admin
+
+- name: Create user as user
+  data:
+    name: random Thing
+    password: rando_123
+  expect:
+    code: 403
+  control:
+    case: fail
+    loginAs: user
+
+- name: Create user without login
+  data:
+    name: random Thing
+    password: rando_123
+  expect:
+    code: 401
+  control:
+    case: fail
+
+
