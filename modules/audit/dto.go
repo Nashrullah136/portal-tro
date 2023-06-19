@@ -12,6 +12,14 @@ type GetAllRequest struct {
 	PerPage    int       `form:"perpage"`
 }
 
+type ExportRequest struct {
+	Username   string    `form:"username"`
+	Object     string    `form:"object"`
+	ObjectId   string    `form:"object_id"`
+	AfterDate  time.Time `form:"after_date"`
+	BeforeDate time.Time `form:"before_date"`
+}
+
 type CreateAuditRequest struct {
 	Action string `json:"action" binding:"required,printascii"`
 }

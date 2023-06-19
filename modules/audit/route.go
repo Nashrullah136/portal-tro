@@ -21,4 +21,5 @@ func (r Route) Handle(router *gin.Engine) {
 	auditRoute := router.Group("/audits", middleware.Authenticate())
 	auditRoute.GET("", r.auditRequestHandler.GetAll)
 	auditRoute.POST("", r.auditRequestHandler.CreateAudit)
+	auditRoute.GET("/export", r.auditRequestHandler.ExportCSV)
 }

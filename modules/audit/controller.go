@@ -3,11 +3,13 @@ package audit
 import (
 	"context"
 	"nashrul-be/crm/dto"
+	"nashrul-be/crm/utils/csv"
 )
 
 type ControllerInterface interface {
 	GetAll(ctx context.Context, request GetAllRequest) (dto.BaseResponse, error)
 	CreateAudit(ctx context.Context, action string) (dto.BaseResponse, error)
+	ExportCSV(ctx context.Context, request ExportRequest) (*csv.FileCsv, error)
 }
 
 func NewController(auditUseCase UseCaseInterface) ControllerInterface {
@@ -18,24 +20,33 @@ type controller struct {
 	auditUseCase UseCaseInterface
 }
 
-func (uc controller) GetAll(ctx context.Context, request GetAllRequest) (dto.BaseResponse, error) {
+func (c controller) GetAll(ctx context.Context, request GetAllRequest) (dto.BaseResponse, error) {
 	auditQuery := mapGetAllRequestToAuditQuery(request)
 	offset := (request.Page - 1) * request.PerPage
-	result, err := uc.auditUseCase.GetAll(ctx, auditQuery, request.PerPage, offset)
+	result, err := c.auditUseCase.GetAll(ctx, auditQuery, request.PerPage, offset)
 	if err != nil {
 		return dto.ErrorInternalServerError(), err
 	}
-	totalRow, err := uc.auditUseCase.CountAll(ctx, auditQuery)
+	totalRow, err := c.auditUseCase.CountAll(ctx, auditQuery)
 	if err != nil {
 		return dto.ErrorInternalServerError(), err
 	}
 	return dto.SuccessPagination("Success retrieve audit", request.Page, totalRow/request.PerPage+1, totalRow, result), nil
 }
 
-func (uc controller) CreateAudit(ctx context.Context, action string) (dto.BaseResponse, error) {
-	err := uc.auditUseCase.CreateAudit(ctx, action)
+func (c controller) CreateAudit(ctx context.Context, action string) (dto.BaseResponse, error) {
+	err := c.auditUseCase.CreateAudit(ctx, action)
 	if err != nil {
 		return dto.ErrorInternalServerError(), err
 	}
 	return dto.Success("Success create audit", nil), nil
+}
+
+func (c controller) ExportCSV(ctx context.Context, request ExportRequest) (*csv.FileCsv, error) {
+	auditQuery := mapExportRequestToAuditQuery(request)
+	fileName, err := c.auditUseCase.ExportCSV(ctx, auditQuery)
+	if err != nil {
+		return nil, err
+	}
+	return fileName, nil
 }

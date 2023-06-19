@@ -9,6 +9,7 @@ import (
 type RequestHandlerInterface interface {
 	GetAll(c *gin.Context)
 	CreateAudit(c *gin.Context)
+	ExportCSV(c *gin.Context)
 }
 
 func NewRequestHandler(auditController ControllerInterface) RequestHandlerInterface {
@@ -53,4 +54,19 @@ func (r requestHandler) CreateAudit(c *gin.Context) {
 		return
 	}
 	c.JSON(response.Code, response)
+}
+
+func (r requestHandler) ExportCSV(c *gin.Context) {
+	var request ExportRequest
+	ctx := c.Copy()
+	if err := c.ShouldBindQuery(&request); err != nil {
+		c.JSON(http.StatusBadRequest, dto.ErrorValidation(err))
+		return
+	}
+	csvFile, err := r.auditController.ExportCSV(ctx, request)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, dto.ErrorInternalServerError())
+		return
+	}
+	c.FileAttachment(csvFile.Path, csvFile.Filename)
 }

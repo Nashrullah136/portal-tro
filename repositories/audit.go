@@ -48,7 +48,14 @@ func (r auditRepository) CountGetAll(ctx context.Context, query AuditQuery) (int
 }
 
 func (r auditRepository) GetAll(ctx context.Context, query AuditQuery, limit, offset int) (result []entities.Audit, err error) {
-	err = r.buildGetAllQuery(ctx, query).Limit(limit).Offset(offset).Order("date_time desc").Find(&result).Error
+	sql := r.buildGetAllQuery(ctx, query)
+	if limit > 0 {
+		sql = sql.Limit(limit)
+	}
+	if offset > 0 {
+		sql = sql.Offset(offset)
+	}
+	err = sql.Order("date_time desc").Find(&result).Error
 	return
 }
 

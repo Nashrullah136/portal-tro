@@ -12,3 +12,27 @@ type Audit struct {
 	DataBefore string    `json:"data_before,omitempty"`
 	DataAfter  string    `json:"data_after,omitempty"`
 }
+
+func (a Audit) HeaderCSV() []string {
+	return []string{
+		"username",
+		"date and time",
+		"activity",
+		"object",
+		"object id",
+		"data before",
+		"data after",
+	}
+}
+
+func (a Audit) CsvRepresentation() []string {
+	return []string{
+		a.Username,
+		a.DateTime.String(),
+		a.Action,
+		a.Entity,
+		a.EntityID,
+		a.DataBefore,
+		a.DataAfter,
+	}
+}
