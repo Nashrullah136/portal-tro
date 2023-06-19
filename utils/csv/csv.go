@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 )
 
-const EXPORT_FOLDER = "reports"
+const ExportFolder = "reports"
 
 type FileCsv struct {
 	File     *os.File
@@ -18,7 +18,7 @@ type FileCsv struct {
 
 func NewCSV() (*FileCsv, error) {
 	filename := uuid.NewString() + ".csv"
-	path := filepath.Join(EXPORT_FOLDER, filename)
+	path := filepath.Join(ExportFolder, filename)
 	file, err := os.Create(path)
 	writer := csv.NewWriter(file)
 	if err != nil {
