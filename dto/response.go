@@ -68,11 +68,12 @@ func Success(msg string, data any) BaseResponse {
 	}
 }
 
-func SuccessPagination(msg string, currentPage, totalPage int, data any) BaseResponse {
+func SuccessPagination(msg string, currentPage, totalPage, total int, data any) BaseResponse {
 	return BaseResponse{
 		Code:    http.StatusOK,
 		Message: msg,
 		Data: map[string]any{
+			"total":      total,
 			"page":       currentPage,
 			"total_page": totalPage,
 			"data":       data,

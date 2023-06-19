@@ -48,7 +48,7 @@ func (c controller) GetAll(ctx context.Context, req PaginationRequest) (dto.Base
 	if err != nil {
 		return dto.ErrorInternalServerError(), err
 	}
-	return dto.SuccessPagination("Success retrieve user", req.Page, totalRow/req.PerPage+1, actorResponse), err
+	return dto.SuccessPagination("Success retrieve user", req.Page, totalRow/req.PerPage+1, totalRow, actorResponse), err
 }
 
 func (c controller) CreateActor(ctx context.Context, req CreateRequest) (dto.BaseResponse, error) {
