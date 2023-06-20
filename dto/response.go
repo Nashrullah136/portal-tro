@@ -60,6 +60,17 @@ func ErrorForbidden() BaseResponse {
 	}
 }
 
+func Authenticated(username, role string) BaseResponse {
+	return BaseResponse{
+		Code:    http.StatusOK,
+		Message: "Authenticated",
+		Data: map[string]any{
+			"username": username,
+			"role":     role,
+		},
+	}
+}
+
 func Success(msg string, data any) BaseResponse {
 	return BaseResponse{
 		Code:    http.StatusOK,
