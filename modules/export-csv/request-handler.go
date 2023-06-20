@@ -1,6 +1,7 @@
 package export_csv
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
 	"nashrul-be/crm/dto"
@@ -43,7 +44,7 @@ func (h requestHandler) DownloadCsv(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil || id < 1 {
-		c.JSON(http.StatusBadRequest, dto.ErrorBadRequest("Invalid id"))
+		c.JSON(http.StatusNotFound, dto.ErrorNotFound(fmt.Sprintf("CSV with id %s not found", idParam)))
 		return
 	}
 	filename, err := h.exportCsvController.DownloadCsv(ctx, uint(id))
