@@ -14,9 +14,9 @@ type User struct {
 	ID        uint      `mapstructure:"-" json:"-"`
 	Name      string    `mapstructure:"name,omitempty" json:"name,omitempty"`
 	Username  string    `gorm:"primaryKey" mapstructure:"username" json:"username,omitempty"`
-	Password  string    `mapstructure:"password,omitempty" json:"password,omitempty"`
+	Password  string    `mapstructure:"password,omitempty" json:"-"`
 	RoleID    uint      `mapstructure:"role_id,omitempty" json:"role_id,omitempty"`
-	Role      Role      `mapstructure:"-" json:"-"`
+	Role      Role      `mapstructure:"-" json:"role,omitempty"`
 	CreatedAt time.Time `mapstructure:"-" json:"-"`
 	CreatedBy string    `mapstructure:"-" json:"-"`
 	UpdatedAt time.Time `mapstructure:"-" json:"-"`
