@@ -18,7 +18,7 @@ type FileCsv struct {
 
 func NewCSV() (*FileCsv, error) {
 	filename := uuid.NewString() + ".csv"
-	path := filepath.Join(ExportFolder, filename)
+	path := Path(filename)
 	file, err := os.Create(path)
 	writer := csv.NewWriter(file)
 	if err != nil {
@@ -39,4 +39,8 @@ func (c *FileCsv) Write(data []string) error {
 func (c *FileCsv) Finish() {
 	c.Writer.Flush()
 	c.File.Close()
+}
+
+func Path(filename string) string {
+	return filepath.Join(ExportFolder, filename)
 }

@@ -6,6 +6,7 @@ import (
 	"gorm.io/gorm"
 	"nashrul-be/crm/modules/audit"
 	"nashrul-be/crm/modules/authentication"
+	export_csv "nashrul-be/crm/modules/export-csv"
 	"nashrul-be/crm/modules/user"
 	"nashrul-be/crm/modules/worker"
 	"nashrul-be/crm/repositories"
@@ -34,5 +35,8 @@ func Handle(dbConn *gorm.DB, engine *gin.Engine, sessionManager session.Manager,
 	auditUseCase := audit.NewUseCase(auditRepo, exportCsvRepo, queue)
 	authRoute := authentication.NewRoute(actorUseCase, auditUseCase, sessionManager)
 	authRoute.Handle(engine)
+
+	exportCsvRoute := export_csv.NewRoute(exportCsvRepo, auditRepo)
+	exportCsvRoute.Handle(engine, sessionManager)
 	return nil
 }

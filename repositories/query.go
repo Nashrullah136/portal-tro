@@ -9,3 +9,9 @@ type AuditQuery struct {
 	AfterDate  time.Time
 	BeforeDate time.Time
 }
+
+type ExportCsvQuery struct {
+	Username   string
+	AfterDate  time.Time
+	BeforeDate time.Time
+}
