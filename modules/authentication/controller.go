@@ -2,17 +2,14 @@ package authentication
 
 import (
 	"context"
-	"fmt"
-	"log"
-	"nashrul-be/crm/dto"
+	"nashrul-be/crm/entities"
 	"nashrul-be/crm/modules/audit"
 	"nashrul-be/crm/modules/user"
 	"nashrul-be/crm/utils/hash"
-	jwtUtil "nashrul-be/crm/utils/jwt"
 )
 
 type ControllerInterface interface {
-	Login(request LoginRequest) (dto.BaseResponse, error)
+	Login(request LoginRequest) (*entities.User, error)
 }
 
 func NewAuthController(actorUseCase user.UseCaseInterface, auditUseCase audit.UseCaseInterface) ControllerInterface {
@@ -27,29 +24,18 @@ type controller struct {
 	auditUseCase audit.UseCaseInterface
 }
 
-func (c controller) Login(request LoginRequest) (dto.BaseResponse, error) {
+func (c controller) Login(request LoginRequest) (*entities.User, error) {
 	account, err := c.actorUseCase.GetByUsername(nil, request.Username)
-	defaultResponse := dto.ErrorUnauthorized("Wrong Username/Password")
 	if err != nil {
-		return defaultResponse, err
+		return nil, err
 	}
-	if err := hash.Compare(request.Password, account.Password); err != nil {
-		return defaultResponse, err
-	}
-	token, err := jwtUtil.GenerateJWT(account)
-	if err != nil {
-		return dto.ErrorInternalServerError(), err
+	if err = hash.Compare(request.Password, account.Password); err != nil {
+		return nil, err
 	}
 	ctx := context.Background()
 	ctx = context.WithValue(ctx, "user", account)
-	if err := c.auditUseCase.CreateAudit(ctx, "Login"); err != nil {
-		log.Println(err)
-		return dto.ErrorInternalServerError(), err
+	if err = c.auditUseCase.CreateAudit(ctx, "Login"); err != nil {
+		return nil, err
 	}
-	result := LoginResponse{
-		Username: account.Username,
-		Role:     account.Role.RoleName,
-		Token:    fmt.Sprintf("Bearer %s", token),
-	}
-	return dto.Success("Authenticated success", result), nil
+	return &account, nil
 }
