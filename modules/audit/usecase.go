@@ -2,24 +2,34 @@ package audit
 
 import (
 	"context"
+	"encoding/json"
+	"github.com/adjust/rmq/v5"
 	"nashrul-be/crm/entities"
 	"nashrul-be/crm/repositories"
-	csvutils "nashrul-be/crm/utils/csv"
 )
 
 type UseCaseInterface interface {
 	GetAll(ctx context.Context, query repositories.AuditQuery, limit, offset int) ([]entities.Audit, error)
 	CreateAudit(ctx context.Context, action string) error
 	CountAll(ctx context.Context, query repositories.AuditQuery) (int, error)
-	ExportCSV(ctx context.Context, query repositories.AuditQuery) (*csvutils.FileCsv, error)
+	ExportCSV(ctx context.Context, query repositories.AuditQuery) error
 }
 
-func NewUseCase(auditRepo repositories.AuditRepositoryInterface) UseCaseInterface {
-	return useCase{auditRepo: auditRepo}
+func NewUseCase(
+	auditRepo repositories.AuditRepositoryInterface,
+	exportCsvRepo repositories.ExportCsvRepositoryInterface,
+	queue rmq.Queue) UseCaseInterface {
+	return useCase{
+		auditRepo:     auditRepo,
+		exportCsvRepo: exportCsvRepo,
+		queue:         queue,
+	}
 }
 
 type useCase struct {
-	auditRepo repositories.AuditRepositoryInterface
+	auditRepo     repositories.AuditRepositoryInterface
+	exportCsvRepo repositories.ExportCsvRepositoryInterface
+	queue         rmq.Queue
 }
 
 func (uc useCase) GetAll(ctx context.Context, query repositories.AuditQuery, limit, offset int) ([]entities.Audit, error) {
@@ -34,23 +44,26 @@ func (uc useCase) CreateAudit(ctx context.Context, action string) error {
 	return uc.auditRepo.CreateAudit(ctx, action)
 }
 
-func (uc useCase) ExportCSV(ctx context.Context, query repositories.AuditQuery) (*csvutils.FileCsv, error) {
-	audits, err := uc.auditRepo.GetAll(ctx, query, 0, 0)
+func (uc useCase) ExportCSV(ctx context.Context, query repositories.AuditQuery) error {
+	user, err := entities.ExtractActorFromContext(ctx)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	csvFile, err := csvutils.NewCSV()
-	defer csvFile.Finish()
+	csvReq := entities.InitExportCsv(user.Username)
+	csvReq, err = uc.exportCsvRepo.Create(csvReq)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	if err := csvFile.Write(entities.Audit{}.HeaderCSV()); err != nil {
-		return nil, err
+	payload := PayloadQueue{
+		RequestID: csvReq.ID,
+		Query:     query,
 	}
-	for _, audit := range audits {
-		if err := csvFile.Write(audit.CsvRepresentation()); err != nil {
-			return nil, err
-		}
+	payloadJson, err := json.Marshal(payload)
+	if err != nil {
+		return err
 	}
-	return csvFile, nil
+	if err = uc.queue.Publish(string(payloadJson)); err != nil {
+		return err
+	}
+	return nil
 }

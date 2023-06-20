@@ -1,6 +1,9 @@
 package audit
 
-import "time"
+import (
+	"nashrul-be/crm/repositories"
+	"time"
+)
 
 type GetAllRequest struct {
 	Username   string    `form:"username"`
@@ -22,4 +25,9 @@ type ExportRequest struct {
 
 type CreateAuditRequest struct {
 	Action string `json:"action" binding:"required,printascii"`
+}
+
+type PayloadQueue struct {
+	RequestID uint
+	Query     repositories.AuditQuery
 }
