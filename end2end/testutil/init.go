@@ -11,11 +11,11 @@ func InitTest(t *testing.T) (*httpexpect.Expect, error) {
 	if err != nil {
 		return nil, err
 	}
-	redisConn, err := redisUtils.Connect()
-	if err != nil {
+	if err = LoadEnv(); err != nil {
 		return nil, err
 	}
-	if err = LoadEnv(); err != nil {
+	redisConn, err := redisUtils.Connect()
+	if err != nil {
 		return nil, err
 	}
 	engine, err := SetUpGin(db, redisConn)

@@ -8,6 +8,7 @@ import (
 	"log"
 	"nashrul-be/crm/app"
 	"nashrul-be/crm/utils/session"
+	"time"
 )
 
 func logErrors(errChan <-chan error) {
@@ -43,6 +44,9 @@ func SetUpGin(db *gorm.DB, redisConn *redis.Client) (*gin.Engine, error) {
 
 	queue, err := messageQueue.OpenQueue("export-csv")
 	if err != nil {
+		return nil, err
+	}
+	if err = queue.StartConsuming(10, 5*time.Second); err != nil {
 		return nil, err
 	}
 	if err = app.Handle(db, engine, sessionManager, queue); err != nil {

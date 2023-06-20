@@ -3,6 +3,7 @@ package testutil
 import (
 	"github.com/gavv/httpexpect/v2"
 	"net/http"
+	"strings"
 )
 
 func LoginAsAdmin(e *httpexpect.Expect) map[string]string {
@@ -22,9 +23,10 @@ func LoginAsUser(e *httpexpect.Expect) map[string]string {
 }
 
 func Login(e *httpexpect.Expect, credential any) map[string]string {
-	body := e.POST("/login").WithJSON(credential).Expect().Status(http.StatusOK).JSON().Object()
-	token := body.Value("data").Object().Value("token").String().Raw()
+	req := e.POST("/login").WithJSON(credential).Expect().Status(http.StatusOK)
+	setCookie := req.Header("Set-Cookie").Raw()
+	cookie := strings.SplitN(setCookie, ";", 2)[0]
 	return map[string]string{
-		"Authorization": token,
+		"Cookie": cookie,
 	}
 }
