@@ -1,14 +1,52 @@
 package testutil
 
 import (
+	"github.com/adjust/rmq/v5"
 	"github.com/gin-gonic/gin"
+	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
+	"log"
 	"nashrul-be/crm/app"
+	"nashrul-be/crm/utils/session"
 )
 
-func SetUpGin(db *gorm.DB) *gin.Engine {
+func logErrors(errChan <-chan error) {
+	for err := range errChan {
+		switch err := err.(type) {
+		case *rmq.HeartbeatError:
+			if err.Count == rmq.HeartbeatErrorLimit {
+				log.Print("heartbeat error (limit): ", err)
+			} else {
+				log.Print("heartbeat error: ", err)
+			}
+		case *rmq.ConsumeError:
+			log.Print("consume error: ", err)
+		case *rmq.DeliveryError:
+			log.Print("delivery error: ", err.Delivery, err)
+		default:
+			log.Print("other error: ", err)
+		}
+	}
+}
+
+func SetUpGin(db *gorm.DB, redisConn *redis.Client) (*gin.Engine, error) {
 	gin.SetMode(gin.ReleaseMode)
+	errChan := make(chan error, 10)
+	go logErrors(errChan)
 	engine := gin.New()
-	app.Handle(db, engine)
-	return engine
+	sessionManager := session.NewManager(redisConn)
+
+	messageQueue, err := rmq.OpenConnectionWithRedisClient("default-client", redisConn, errChan)
+	if err != nil {
+		return nil, err
+	}
+
+	queue, err := messageQueue.OpenQueue("export-csv")
+	if err != nil {
+		return nil, err
+	}
+	if err = app.Handle(db, engine, sessionManager, queue); err != nil {
+		return nil, err
+	}
+	return engine, nil
 }
