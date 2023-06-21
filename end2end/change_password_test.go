@@ -27,6 +27,11 @@ func Test_change_password(t *testing.T) {
 				WithJSON(data.Data).Expect().Status(data.Expect["code"].(int)).JSON().Object()
 			responseBody.Value("code").IsNumber().IsEqual(data.Expect["code"])
 			if data.Control["case"].(string) == "success" {
+				wantDataBefore := map[string]any{"password": "-"}
+				wantDataAfter := map[string]any{"password": "-"}
+				user := data.Expect["login"].(map[string]any)
+				testutil.AssertAudit(t, user["username"].(string), "UPDATE", "USER",
+					user["username"].(string), wantDataBefore, wantDataAfter)
 				testutil.Login(e, data.Expect["login"])
 			}
 			t.Cleanup(func() {
