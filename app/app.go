@@ -6,7 +6,8 @@ import (
 	"gorm.io/gorm"
 	"nashrul-be/crm/modules/audit"
 	"nashrul-be/crm/modules/authentication"
-	export_csv "nashrul-be/crm/modules/export-csv"
+	"nashrul-be/crm/modules/briva"
+	exportCsv "nashrul-be/crm/modules/export-csv"
 	"nashrul-be/crm/modules/user"
 	"nashrul-be/crm/modules/worker"
 	"nashrul-be/crm/repositories"
@@ -18,6 +19,7 @@ func Handle(dbConn *gorm.DB, engine *gin.Engine, sessionManager session.Manager,
 	roleRepo := repositories.NewRoleRepository(dbConn)
 	auditRepo := repositories.NewAuditRepository(dbConn)
 	exportCsvRepo := repositories.NewExportCsvRepository(dbConn)
+	brivaRepo := repositories.NewBrivaRepository(dbConn)
 
 	exportCsvWorker := worker.NewExportCSV(auditRepo, exportCsvRepo)
 
@@ -36,7 +38,10 @@ func Handle(dbConn *gorm.DB, engine *gin.Engine, sessionManager session.Manager,
 	authRoute := authentication.NewRoute(actorUseCase, auditUseCase, sessionManager)
 	authRoute.Handle(engine)
 
-	exportCsvRoute := export_csv.NewRoute(exportCsvRepo, auditRepo)
+	exportCsvRoute := exportCsv.NewRoute(exportCsvRepo, auditRepo)
 	exportCsvRoute.Handle(engine, sessionManager)
+
+	brivaRoute := briva.NewRoute(brivaRepo)
+	brivaRoute.Handle(engine, sessionManager)
 	return nil
 }
