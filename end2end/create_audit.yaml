@@ -1,0 +1,24 @@
+- name: Create action
+  data:
+    req:
+      action: Open menu SPAN
+    login:
+      username: Minnie_12
+      password: random_231
+  expect:
+    code: 200
+  control:
+    case: success
+    create:
+      name: random Thing
+      username: Minnie_12
+      password: random_231
+
+- name: Create action without login
+  data:
+    req:
+      action: Open menu SPAN
+  expect:
+    code: 401
+  control:
+    case: fail
