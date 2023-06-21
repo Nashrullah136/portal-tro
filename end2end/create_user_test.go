@@ -38,6 +38,14 @@ func Test_create_user(t *testing.T) {
 				responseData.Value("role").IsString().IsEqual(data.Expect["role"])
 				responseData.Value("created_by").IsString().IsEqual("admin")
 				responseData.Value("updated_by").IsString().IsEqual("admin")
+				wantDataAfter := map[string]any{
+					"password": "-",
+					"username": data.Expect["username"],
+					"name":     data.Expect["name"],
+					"role_id":  2,
+				}
+				testutil.AssertAudit(t, data.Control["loginAs"].(string), "CREATE", "USER",
+					data.Expect["username"].(string), nil, wantDataAfter)
 				credential := map[string]string{
 					"username": data.Data["username"].(string),
 					"password": data.Data["password"].(string),
