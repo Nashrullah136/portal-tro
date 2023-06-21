@@ -2,10 +2,12 @@ package end2end
 
 import (
 	"nashrul-be/crm/end2end/testutil"
+	"nashrul-be/crm/entities"
 	"testing"
 )
 
 func Test_update_user(t *testing.T) {
+	db, _ := testutil.GetConn()
 	testData, err := testutil.ReadYamlFile("update_user.yaml")
 	if err != nil {
 		t.Fatal(err)
@@ -29,6 +31,10 @@ func Test_update_user(t *testing.T) {
 					auth = testutil.LoginAsAdmin(e)
 				}
 			}
+			var createdUser entities.User
+			if err := db.Find(&createdUser).Error; err != nil {
+				t.Fatal(err)
+			}
 			responseBody := e.PATCH("/users/" + data.Data["username"].(string)).WithHeaders(auth).
 				WithJSON(data.Data["update"]).Expect().Status(data.Expect["code"].(int)).JSON().Object()
 			responseBody.Value("code").IsNumber().IsEqual(data.Expect["code"])
@@ -39,13 +45,25 @@ func Test_update_user(t *testing.T) {
 				responseData.Value("role").IsString().IsEqual(data.Expect["role"])
 				responseData.Value("created_by").IsString().IsEqual("admin")
 				responseData.Value("updated_by").IsString().IsEqual("admin")
+				update := data.Data["update"].(map[string]any)
+				wantDataBefore := make(map[string]any)
+				wantDataAfter := make(map[string]any)
+				if name, exist := update["name"]; exist {
+					wantDataBefore["name"] = createdUser.Name
+					wantDataAfter["name"] = name
+				}
+				if _, exist := update["password"]; exist {
+					wantDataBefore["password"] = "-"
+					wantDataAfter["password"] = "-"
+				}
+				testutil.AssertAudit(t, data.Control["loginAs"].(string), "UPDATE", "USER",
+					data.Expect["username"].(string), wantDataBefore, wantDataAfter)
 				testutil.Login(e, data.Expect["login"])
 			}
 			t.Cleanup(func() {
 				req, exist := data.Control["create"]
 				if exist {
 					username := req.(map[string]any)["username"].(string)
-					db, _ := testutil.GetConn()
 					db.Table("users").Where("username = ?", username).Delete(&map[string]any{})
 				}
 			})
