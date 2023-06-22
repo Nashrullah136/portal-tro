@@ -4,6 +4,7 @@ import (
 	"context"
 	"gorm.io/gorm"
 	"nashrul-be/crm/entities"
+	"nashrul-be/crm/utils/db"
 	"time"
 )
 
@@ -11,6 +12,9 @@ type AuditRepositoryInterface interface {
 	CreateAudit(ctx context.Context, action string) (err error)
 	CountGetAll(ctx context.Context, query AuditQuery) (int, error)
 	GetAll(ctx context.Context, query AuditQuery, limit, offset int) (result []entities.Audit, err error)
+	Create(audit entities.Audit) error
+	Begin() db.Transactor
+	New(transact db.Transactor) AuditRepositoryInterface
 }
 
 func NewAuditRepository(db *gorm.DB) AuditRepositoryInterface {
@@ -59,6 +63,10 @@ func (r auditRepository) GetAll(ctx context.Context, query AuditQuery, limit, of
 	return
 }
 
+func (r auditRepository) Create(audit entities.Audit) error {
+	return r.db.Create(&audit).Error
+}
+
 func (r auditRepository) CreateAudit(ctx context.Context, action string) (err error) {
 	user, err := entities.ExtractActorFromContext(ctx)
 	if err != nil {
@@ -71,4 +79,12 @@ func (r auditRepository) CreateAudit(ctx context.Context, action string) (err er
 	}
 	err = r.db.WithContext(ctx).Create(&audit).Error
 	return
+}
+
+func (r auditRepository) Begin() db.Transactor {
+	return db.NewTransactor(r.db.Begin())
+}
+
+func (r auditRepository) New(transact db.Transactor) AuditRepositoryInterface {
+	return auditRepository{db: transact.GetDB()}
 }

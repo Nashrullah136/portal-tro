@@ -2,13 +2,12 @@ package entities
 
 import (
 	"github.com/mitchellh/mapstructure"
-	"gorm.io/gorm"
 )
 
 type Briva struct {
-	Brivano  string `gorm:"primaryKey" mapstructure:"omitempty"`
-	CorpName string `mapstructure:"omitempty"`
-	IsActive string `gorm:"column:IsActive" mapstructure:"omitempty"`
+	Brivano  string `gorm:"primaryKey" mapstructure:",omitempty"`
+	CorpName string `mapstructure:",omitempty"`
+	IsActive string `gorm:"column:IsActive" mapstructure:",omitempty"`
 }
 
 func (b *Briva) Off() {
@@ -43,11 +42,4 @@ func (b *Briva) PrimaryFields() map[string]any {
 	return map[string]any{
 		"brivano": b.Brivano,
 	}
-}
-
-func (b *Briva) BeforeUpdate(tx *gorm.DB) error {
-	if err := AuditUpdate(tx, b); err != nil {
-		return err
-	}
-	return nil
 }

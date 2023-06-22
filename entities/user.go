@@ -62,11 +62,19 @@ func (u *User) BeforeCreate(tx *gorm.DB) error {
 }
 
 func (u *User) AfterCreate(tx *gorm.DB) error {
-	return AuditCreate(tx, u)
+	audit, err := AuditCreate(tx, u)
+	if err != nil {
+		return err
+	}
+	return tx.Create(&audit).Error
 }
 
 func (u *User) BeforeUpdate(tx *gorm.DB) error {
-	if err := AuditUpdate(tx, u); err != nil {
+	audit, err := AuditUpdate(tx, u)
+	if err != nil {
+		return err
+	}
+	if err := tx.Create(&audit).Error; err != nil {
 		return err
 	}
 	actor, err := ExtractActorFromContext(tx.Statement.Context)
@@ -79,5 +87,9 @@ func (u *User) BeforeUpdate(tx *gorm.DB) error {
 }
 
 func (u *User) BeforeDelete(tx *gorm.DB) error {
-	return AuditDelete(tx, u)
+	audit, err := AuditDelete(tx, u)
+	if err != nil {
+		return err
+	}
+	return tx.Create(&audit).Error
 }

@@ -56,10 +56,10 @@ func UpdatedColumns(oldData Auditor, newData Auditor) (result []string, err erro
 	return result, nil
 }
 
-func InsertAudit(tx *gorm.DB, action, entity, entityId string, dataBefore, dataAfter any) error {
+func NewAudit(tx *gorm.DB, action, entity, entityId string, dataBefore, dataAfter any) (Audit, error) {
 	actor, err := ExtractActorFromContext(tx.Statement.Context)
 	if err != nil {
-		return err
+		return Audit{}, err
 	}
 	audit := Audit{
 		DateTime: time.Now(),
@@ -71,61 +71,59 @@ func InsertAudit(tx *gorm.DB, action, entity, entityId string, dataBefore, dataA
 	if dataBefore != nil {
 		dataBeforeJson, err := json.Marshal(dataBefore)
 		if err != nil {
-			return err
+			return Audit{}, err
 		}
 		audit.DataBefore = string(dataBeforeJson)
 	}
 	if dataAfter != nil {
 		dataAfterJson, err := json.Marshal(dataAfter)
 		if err != nil {
-			return err
+			return Audit{}, err
 		}
 		audit.DataAfter = string(dataAfterJson)
 	}
-	if err := tx.Create(&audit).Error; err != nil {
-		return err
-	}
-	return nil
+	return audit, nil
 }
 
-func AuditCreate(tx *gorm.DB, data Auditor) error {
+func AuditCreate(tx *gorm.DB, data Auditor) (Audit, error) {
 	dataAfter, err := data.LogPresentation()
 	if err != nil {
-		return err
+		return Audit{}, err
 	}
-	return InsertAudit(tx, "CREATE", data.EntityName(), data.PrimaryKey(), nil, dataAfter)
+	return NewAudit(tx, "CREATE", data.EntityName(), data.PrimaryKey(), nil, dataAfter)
+
 }
 
-func AuditUpdate(tx *gorm.DB, data Auditor) error {
+func AuditUpdate(tx *gorm.DB, data Auditor) (Audit, error) {
 	dataCopy := data.Copy()
 	if err := tx.Where(data.PrimaryFields()).Find(&dataCopy).Error; err != nil {
-		return err
+		return Audit{}, err
 	}
 	updatedColumn, err := UpdatedColumns(dataCopy, data)
 	if err != nil {
-		return err
+		return Audit{}, err
 	}
 	dataAfter, err := data.LogPresentation()
 	if err != nil {
-		return err
+		return Audit{}, err
 	}
 	dataBefore, err := dataCopy.LogPresentation()
 	if err != nil {
-		return err
+		return Audit{}, err
 	}
 	dataAfter = ExtractColumns(dataAfter, updatedColumn)
 	dataBefore = ExtractColumns(dataBefore, updatedColumn)
-	return InsertAudit(tx, "UPDATE", data.EntityName(), data.PrimaryKey(), dataBefore, dataAfter)
+	return NewAudit(tx, "UPDATE", data.EntityName(), data.PrimaryKey(), dataBefore, dataAfter)
 }
 
-func AuditDelete(tx *gorm.DB, data Auditor) error {
+func AuditDelete(tx *gorm.DB, data Auditor) (Audit, error) {
 	dataCopy := data.Copy()
 	if err := tx.Where(data.PrimaryFields()).Find(&dataCopy).Error; err != nil {
-		return err
+		return Audit{}, err
 	}
 	dataBefore, err := dataCopy.LogPresentation()
 	if err != nil {
-		return err
+		return Audit{}, err
 	}
-	return InsertAudit(tx, "DELETE", data.EntityName(), data.PrimaryKey(), dataBefore, nil)
+	return NewAudit(tx, "DELETE", data.EntityName(), data.PrimaryKey(), dataBefore, nil)
 }

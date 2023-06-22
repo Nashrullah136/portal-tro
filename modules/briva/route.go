@@ -1,6 +1,7 @@
 package briva
 
 import (
+	"github.com/adjust/rmq/v5"
 	"github.com/gin-gonic/gin"
 	"nashrul-be/crm/middleware"
 	"nashrul-be/crm/repositories"
@@ -11,9 +12,12 @@ type Route struct {
 	brivaRequestHandler RequestHandlerInterface
 }
 
-func NewRoute(brivaRepo repositories.BrivaRepositoryInterface,
+func NewRoute(
+	brivaRepo repositories.BrivaRepositoryInterface,
+	auditRepo repositories.AuditRepositoryInterface,
+	queue rmq.Queue,
 ) Route {
-	brivaUseCase := NewUseCase(brivaRepo)
+	brivaUseCase := NewUseCase(brivaRepo, auditRepo, queue)
 	brivaController := NewController(brivaUseCase)
 	brivaRequestHandler := NewRequestHandler(brivaController)
 	return Route{
