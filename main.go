@@ -7,12 +7,12 @@ import (
 	"github.com/joho/godotenv"
 	"log"
 	"nashrul-be/crm/app"
+	"nashrul-be/crm/middleware"
 	"nashrul-be/crm/utils/db"
 	redisUtils "nashrul-be/crm/utils/redis"
 	"nashrul-be/crm/utils/session"
 	"nashrul-be/crm/utils/translate"
 	"os"
-	"time"
 )
 
 func logErrors(errChan <-chan error) {
@@ -45,10 +45,17 @@ func main() {
 	if err := translate.RegisterTranslator(); err != nil {
 		panic(err)
 	}
-
 	engine := gin.Default()
+	engine.Use(middleware.CORS())
 
-	dbConn, err := db.Connect(db.DsnWithEnv())
+	dsnMain := db.DsnMySQL()
+	dbMain, err := db.ConnectMySql(dsnMain)
+	if err != nil {
+		panic(err)
+	}
+
+	dsnBriva := db.DsnSqlServer("BRIVA")
+	dbBriva, err := db.ConnectSqlServer(dsnBriva)
 	if err != nil {
 		panic(err)
 	}
@@ -65,21 +72,12 @@ func main() {
 		panic(err)
 	}
 
-	queue, err := messageQueue.OpenQueue("export-csv")
-	if err != nil {
-		panic(err)
-	}
-
-	if err := queue.StartConsuming(10, 5*time.Second); err != nil {
-		panic(err)
-	}
-
-	if err = app.Handle(dbConn, engine, sessionManager, queue); err != nil {
+	if err = app.Handle(dbMain, dbBriva, engine, sessionManager, messageQueue); err != nil {
 		panic(err)
 	}
 
 	urlServe := fmt.Sprintf("%s:%s", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT"))
 	if err = engine.Run(urlServe); err != nil {
-		panic(err.Error())
+		panic(err)
 	}
 }
