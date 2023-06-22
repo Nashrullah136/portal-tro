@@ -18,7 +18,8 @@ type UseCaseInterface interface {
 func NewUseCase(
 	auditRepo repositories.AuditRepositoryInterface,
 	exportCsvRepo repositories.ExportCsvRepositoryInterface,
-	queue rmq.Queue) UseCaseInterface {
+	queue rmq.Queue,
+) UseCaseInterface {
 	return useCase{
 		auditRepo:     auditRepo,
 		exportCsvRepo: exportCsvRepo,
