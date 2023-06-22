@@ -57,7 +57,7 @@ func (h requestHandler) Login(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, dto.ErrorInternalServerError())
 		return
 	}
-	c.SetCookie(session.SessionName, newSession.Key, 0, "/", os.Getenv("SERVER_HOST"), false, true)
+	c.SetCookie(session.Name, newSession.Key, 0, "/", os.Getenv("DOMAIN"), false, true)
 	c.JSON(http.StatusOK, dto.Authenticated(account.Username, account.Role.RoleName))
 }
 
@@ -68,6 +68,6 @@ func (h requestHandler) Logout(c *gin.Context) {
 		return
 	}
 	c.Header("Access-Control-Allow-Credentials", "true")
-	c.SetCookie(session.SessionName, key, -1, "/", os.Getenv("SERVER_HOST"), false, true)
+	c.SetCookie(session.Name, key, -1, "/", os.Getenv("DOMAIN"), false, true)
 	c.JSON(http.StatusOK, dto.Success("Log out success", nil))
 }
