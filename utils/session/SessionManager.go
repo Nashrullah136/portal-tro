@@ -10,7 +10,7 @@ import (
 	"log"
 )
 
-const SessionName = "SESSION_ID"
+const Name = "SESSION_ID"
 
 type Manager struct {
 	redisConn *redis.Client
@@ -34,7 +34,7 @@ func (m Manager) Create() (*Session, error) {
 }
 
 func (m Manager) Get(c *gin.Context) (*Session, error) {
-	cookie, err := c.Cookie(SessionName)
+	cookie, err := c.Cookie(Name)
 	if err != nil {
 		return nil, err
 	}
@@ -52,7 +52,7 @@ func (m Manager) Get(c *gin.Context) (*Session, error) {
 }
 
 func (m Manager) Delete(c *gin.Context) (string, error) {
-	cookie, err := c.Cookie(SessionName)
+	cookie, err := c.Cookie(Name)
 	if err != nil {
 		log.Println("cookie doesn't exist")
 		return "", nil
