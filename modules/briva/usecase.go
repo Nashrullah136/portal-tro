@@ -66,9 +66,11 @@ func (uc useCase) Update(ctx context.Context, briva entities.Briva) error {
 		auditJson, err := json.Marshal(audit)
 		if err != nil {
 			log.Println("Failed on marshalling audit")
+			return nil
 		}
 		if err = uc.queue.Publish(string(auditJson)); err != nil {
 			log.Println("Failed to publish data to the queue")
+			return nil
 		}
 	}
 	return nil
