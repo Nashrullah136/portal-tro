@@ -12,8 +12,10 @@ import (
 	"nashrul-be/crm/modules/user"
 	"nashrul-be/crm/modules/worker"
 	"nashrul-be/crm/repositories"
+	"nashrul-be/crm/utils/filesystem"
 	redisUtils "nashrul-be/crm/utils/redis"
 	"nashrul-be/crm/utils/session"
+	"os"
 )
 
 func Handle(dbMain *gorm.DB, dbBriva *gorm.DB, engine *gin.Engine, sessionManager session.Manager, redisConn rmq.Connection) error {
@@ -23,7 +25,9 @@ func Handle(dbMain *gorm.DB, dbBriva *gorm.DB, engine *gin.Engine, sessionManage
 	exportCsvRepo := repositories.NewExportCsvRepository(dbMain)
 	brivaRepo := repositories.NewBrivaRepository(dbBriva)
 
-	exportCsvWorker := worker.NewExportCSV(auditRepo, exportCsvRepo)
+	reportFolder := filesystem.NewFolder(os.Getenv("EXPORT_CSV_FOLDER"))
+
+	exportCsvWorker := worker.NewExportCSV(auditRepo, exportCsvRepo, reportFolder)
 
 	queueCsv, err := redisUtils.MakeQueue(redisConn, "csv-export", "csv-export-worker", 10, exportCsvWorker)
 	if err != nil {
@@ -41,7 +45,7 @@ func Handle(dbMain *gorm.DB, dbBriva *gorm.DB, engine *gin.Engine, sessionManage
 	authRoute := authentication.NewRoute(actorUseCase, auditUseCase, sessionManager)
 	authRoute.Handle(engine)
 
-	exportCsvRoute := exportCsv.NewRoute(exportCsvRepo, auditRepo)
+	exportCsvRoute := exportCsv.NewRoute(exportCsvRepo, auditRepo, reportFolder)
 	exportCsvRoute.Handle(engine, sessionManager)
 
 	auditWorker := worker.NewAudit(auditRepo)
