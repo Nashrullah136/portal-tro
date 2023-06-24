@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"nashrul-be/crm/middleware"
 	"nashrul-be/crm/repositories"
+	"nashrul-be/crm/utils/crypto"
 	"nashrul-be/crm/utils/session"
 )
 
@@ -13,8 +14,9 @@ type Route struct {
 
 func NewRoute(actorRepository repositories.ActorRepositoryInterface,
 	roleRepository repositories.RoleRepositoryInterface,
+	hash crypto.Hash,
 ) Route {
-	useCase := NewUseCase(actorRepository, roleRepository)
+	useCase := NewUseCase(actorRepository, roleRepository, hash)
 	actorController := NewController(useCase)
 	requestHandler := NewRequestHandler(actorController)
 	return Route{actorRequestHandler: requestHandler}

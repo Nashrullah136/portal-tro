@@ -5,7 +5,7 @@ import (
 	"errors"
 	"nashrul-be/crm/entities"
 	"nashrul-be/crm/repositories"
-	"nashrul-be/crm/utils/hash"
+	"nashrul-be/crm/utils/crypto"
 )
 
 type UseCaseInterface interface {
@@ -22,16 +22,19 @@ type UseCaseInterface interface {
 func NewUseCase(
 	repositoryInterface repositories.ActorRepositoryInterface,
 	roleRepositoryInterface repositories.RoleRepositoryInterface,
+	hash crypto.Hash,
 ) UseCaseInterface {
 	return useCase{
 		actorRepository: repositoryInterface,
 		roleRepository:  roleRepositoryInterface,
+		hash:            hash,
 	}
 }
 
 type useCase struct {
 	actorRepository repositories.ActorRepositoryInterface
 	roleRepository  repositories.RoleRepositoryInterface
+	hash            crypto.Hash
 }
 
 func (uc useCase) validateActor(actor entities.User, validations ...validateFunc) (error, error) {
@@ -60,7 +63,7 @@ func (uc useCase) GetByUsername(ctx context.Context, username string) (actor ent
 }
 
 func (uc useCase) CreateUser(ctx context.Context, actor entities.User) (result entities.User, err error) {
-	actor.Password, err = hash.Hash(actor.Password)
+	actor.Password, err = uc.hash.Hash(actor.Password)
 	if err != nil {
 		return
 	}
@@ -77,7 +80,7 @@ func (uc useCase) CreateUser(ctx context.Context, actor entities.User) (result e
 
 func (uc useCase) UpdateUser(ctx context.Context, actor entities.User) (result entities.User, err error) {
 	if actor.Password != "" {
-		actor.Password, err = hash.Hash(actor.Password)
+		actor.Password, err = uc.hash.Hash(actor.Password)
 		if err != nil {
 			return
 		}
@@ -98,7 +101,7 @@ func (uc useCase) ChangePassword(ctx context.Context, oldPassword string, user e
 	if err != nil {
 		return nil, err
 	}
-	if result = hash.Compare(oldPassword, dbUser.Password); result != nil {
+	if result = uc.hash.Compare(oldPassword, dbUser.Password); result != nil {
 		return errors.New("wrong password"), nil
 	}
 	_, err = uc.UpdateUser(ctx, user)

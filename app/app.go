@@ -12,6 +12,7 @@ import (
 	"nashrul-be/crm/modules/user"
 	"nashrul-be/crm/modules/worker"
 	"nashrul-be/crm/repositories"
+	"nashrul-be/crm/utils/crypto"
 	"nashrul-be/crm/utils/filesystem"
 	redisUtils "nashrul-be/crm/utils/redis"
 	"nashrul-be/crm/utils/session"
@@ -34,15 +35,17 @@ func Handle(dbMain *gorm.DB, dbBriva *gorm.DB, engine *gin.Engine, sessionManage
 		return err
 	}
 
-	actorRoute := user.NewRoute(actorRepo, roleRepo)
+	bcryptHash := crypto.NewBcryptHash()
+
+	actorRoute := user.NewRoute(actorRepo, roleRepo, bcryptHash)
 	actorRoute.Handle(engine, sessionManager)
 
 	auditRoute := audit.NewRoute(auditRepo, exportCsvRepo, queueCsv)
 	auditRoute.Handle(engine, sessionManager)
 
-	actorUseCase := user.NewUseCase(actorRepo, roleRepo)
+	actorUseCase := user.NewUseCase(actorRepo, roleRepo, bcryptHash)
 	auditUseCase := audit.NewUseCase(auditRepo, exportCsvRepo, queueCsv)
-	authRoute := authentication.NewRoute(actorUseCase, auditUseCase, sessionManager)
+	authRoute := authentication.NewRoute(actorUseCase, auditUseCase, sessionManager, bcryptHash)
 	authRoute.Handle(engine)
 
 	exportCsvRoute := exportCsv.NewRoute(exportCsvRepo, auditRepo, reportFolder)
