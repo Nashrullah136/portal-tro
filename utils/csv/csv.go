@@ -6,8 +6,6 @@ import (
 	"nashrul-be/crm/utils/filesystem"
 )
 
-const ExportFolder = "reports"
-
 type FileCsv struct {
 	File   filesystem.File
 	writer *csv.Writer
