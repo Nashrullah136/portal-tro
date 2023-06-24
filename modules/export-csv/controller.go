@@ -3,11 +3,12 @@ package export_csv
 import (
 	"context"
 	"nashrul-be/crm/dto"
+	"nashrul-be/crm/utils/filesystem"
 )
 
 type ControllerInterface interface {
 	GetAll(ctx context.Context, request GetAllRequest) (dto.BaseResponse, error)
-	DownloadCsv(ctx context.Context, id uint) (string, error)
+	DownloadCsv(ctx context.Context, id uint) (filesystem.File, error)
 }
 
 func NewController(exportUseCase UseCaseInterface) ControllerInterface {
@@ -33,6 +34,6 @@ func (c controller) GetAll(ctx context.Context, request GetAllRequest) (dto.Base
 		totalRow/request.PerPage, totalRow, results), nil
 }
 
-func (c controller) DownloadCsv(ctx context.Context, id uint) (string, error) {
+func (c controller) DownloadCsv(ctx context.Context, id uint) (filesystem.File, error) {
 	return c.exportCsvUseCase.DownloadCsv(ctx, id)
 }

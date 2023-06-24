@@ -5,7 +5,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"nashrul-be/crm/dto"
-	csvutils "nashrul-be/crm/utils/csv"
 	"net/http"
 	"strconv"
 )
@@ -47,6 +46,6 @@ func (h requestHandler) DownloadCsv(c *gin.Context) {
 		c.JSON(http.StatusNotFound, dto.ErrorNotFound(fmt.Sprintf("CSV with id %s not found", idParam)))
 		return
 	}
-	filename, err := h.exportCsvController.DownloadCsv(ctx, uint(id))
-	c.FileAttachment(csvutils.Path(filename), filename)
+	file, err := h.exportCsvController.DownloadCsv(ctx, uint(id))
+	c.FileAttachment(file.Path(), file.Filename())
 }

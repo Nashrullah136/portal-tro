@@ -6,13 +6,12 @@ import (
 	"log"
 	"nashrul-be/crm/entities"
 	"nashrul-be/crm/repositories"
-	csvutils "nashrul-be/crm/utils/csv"
-	"os"
+	"nashrul-be/crm/utils/filesystem"
 )
 
 type UseCaseInterface interface {
 	GetAll(ctx context.Context, query repositories.ExportCsvQuery, limit, offset int) ([]entities.ExportCsv, error)
-	DownloadCsv(ctx context.Context, id uint) (string, error)
+	DownloadCsv(ctx context.Context, id uint) (filesystem.File, error)
 	Delete(ctx context.Context, id uint) error
 	CountAll(ctx context.Context, query repositories.ExportCsvQuery) (int, error)
 }
@@ -20,16 +19,20 @@ type UseCaseInterface interface {
 func NewUseCase(
 	exportCsvRepo repositories.ExportCsvRepositoryInterface,
 	auditRepo repositories.AuditRepositoryInterface,
+	folder filesystem.Folder,
 ) UseCaseInterface {
 	return useCase{
 		exportCsvRepo: exportCsvRepo,
 		auditRepo:     auditRepo,
+		folder:        folder,
 	}
 }
 
+// TODO: abstract file access
 type useCase struct {
 	exportCsvRepo repositories.ExportCsvRepositoryInterface
 	auditRepo     repositories.AuditRepositoryInterface
+	folder        filesystem.Folder
 }
 
 func (uc useCase) GetAll(ctx context.Context, query repositories.ExportCsvQuery, limit, offset int) ([]entities.ExportCsv, error) {
@@ -40,15 +43,15 @@ func (uc useCase) CountAll(ctx context.Context, query repositories.ExportCsvQuer
 	return uc.exportCsvRepo.CountAll(ctx, query)
 }
 
-func (uc useCase) DownloadCsv(ctx context.Context, id uint) (string, error) {
+func (uc useCase) DownloadCsv(ctx context.Context, id uint) (filesystem.File, error) {
 	exportCsv, err := uc.exportCsvRepo.GetById(id)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	if _, err := os.Stat(csvutils.Path(exportCsv.Filename)); err != nil {
-		return "", errors.New("csv file doesn't exist")
+	if !uc.folder.IsExist(exportCsv.Filename) {
+		return nil, errors.New("csv file doesn't exist")
 	}
-	return exportCsv.Filename, nil
+	return filesystem.NewFile(exportCsv.Filename, uc.folder), nil
 }
 
 func (uc useCase) Delete(ctx context.Context, id uint) error {
@@ -56,11 +59,9 @@ func (uc useCase) Delete(ctx context.Context, id uint) error {
 	if err != nil {
 		return err
 	}
-	csvPath := csvutils.Path(exportCsv.Filename)
-	if _, err = os.Stat(csvPath); err == nil {
-		if err = os.Remove(csvPath); err != nil {
-			log.Println("failed to delete csv File")
-		}
+	if err = uc.folder.Remove(exportCsv.Filename); err != nil {
+		log.Println(err)
+		return err
 	}
 	return uc.exportCsvRepo.Delete(ctx, id)
 }

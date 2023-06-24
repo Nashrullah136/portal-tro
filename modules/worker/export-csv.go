@@ -9,19 +9,23 @@ import (
 	"nashrul-be/crm/modules/audit"
 	"nashrul-be/crm/repositories"
 	csvutils "nashrul-be/crm/utils/csv"
+	"nashrul-be/crm/utils/filesystem"
 )
 
 type ExportCSV struct {
 	auditRepo     repositories.AuditRepositoryInterface
 	exportCsvRepo repositories.ExportCsvRepositoryInterface
+	folder        filesystem.Folder
 }
 
 func NewExportCSV(auditRepo repositories.AuditRepositoryInterface,
 	exportCsvRepo repositories.ExportCsvRepositoryInterface,
+	folder filesystem.Folder,
 ) *ExportCSV {
 	return &ExportCSV{
 		auditRepo:     auditRepo,
 		exportCsvRepo: exportCsvRepo,
+		folder:        folder,
 	}
 }
 
@@ -51,7 +55,7 @@ func (e *ExportCSV) Consume(delivery rmq.Delivery) {
 		Reject(&delivery)
 		return
 	}
-	csvFile, err := csvutils.NewCSV()
+	csvFile, err := csvutils.NewCSV(e.folder)
 	defer csvFile.Finish()
 	if err != nil {
 		log.Printf("Failed to create csv file. error: %s\n", err)

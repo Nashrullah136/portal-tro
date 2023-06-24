@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"nashrul-be/crm/middleware"
 	"nashrul-be/crm/repositories"
+	"nashrul-be/crm/utils/filesystem"
 	"nashrul-be/crm/utils/session"
 )
 
@@ -14,8 +15,9 @@ type Route struct {
 func NewRoute(
 	exportCsvRepo repositories.ExportCsvRepositoryInterface,
 	auditRepo repositories.AuditRepositoryInterface,
+	folder filesystem.Folder,
 ) Route {
-	csvUseCase := NewUseCase(exportCsvRepo, auditRepo)
+	csvUseCase := NewUseCase(exportCsvRepo, auditRepo, folder)
 	csvController := NewController(csvUseCase)
 	csvRequestHandler := NewRequestHandler(csvController)
 	return Route{csvRequestHandler: csvRequestHandler}
