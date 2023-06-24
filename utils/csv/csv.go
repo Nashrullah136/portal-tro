@@ -3,6 +3,7 @@ package csv
 import (
 	"encoding/csv"
 	"github.com/google/uuid"
+	"log"
 	"nashrul-be/crm/utils/filesystem"
 )
 
@@ -34,5 +35,7 @@ func (c *FileCsv) Write(data []string) error {
 
 func (c *FileCsv) Finish() {
 	c.writer.Flush()
-	c.File.Close()
+	if err := c.File.Close(); err != nil {
+		log.Printf("err when closing file. err: %s\n", err)
+	}
 }
