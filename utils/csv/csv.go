@@ -3,44 +3,38 @@ package csv
 import (
 	"encoding/csv"
 	"github.com/google/uuid"
-	"os"
-	"path/filepath"
+	"nashrul-be/crm/utils/filesystem"
 )
 
 const ExportFolder = "reports"
 
 type FileCsv struct {
-	File     *os.File
-	Filename string
-	Path     string
-	Writer   *csv.Writer
+	File   filesystem.File
+	writer *csv.Writer
 }
 
-func NewCSV() (*FileCsv, error) {
+func NewCSV(folder filesystem.Folder) (*FileCsv, error) {
 	filename := uuid.NewString() + ".csv"
-	path := Path(filename)
-	file, err := os.Create(path)
-	writer := csv.NewWriter(file)
+	file, err := folder.Create(filename)
 	if err != nil {
 		return nil, err
 	}
+	osFile, err := file.Open()
+	if err != nil {
+		return nil, err
+	}
+	writer := csv.NewWriter(osFile)
 	return &FileCsv{
-		File:     file,
-		Filename: filename,
-		Path:     path,
-		Writer:   writer,
+		File:   filesystem.NewFile(filename, folder),
+		writer: writer,
 	}, nil
 }
 
 func (c *FileCsv) Write(data []string) error {
-	return c.Writer.Write(data)
+	return c.writer.Write(data)
 }
 
 func (c *FileCsv) Finish() {
-	c.Writer.Flush()
+	c.writer.Flush()
 	c.File.Close()
-}
-
-func Path(filename string) string {
-	return filepath.Join(ExportFolder, filename)
 }
