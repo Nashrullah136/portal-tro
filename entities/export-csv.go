@@ -26,5 +26,5 @@ func (ec *ExportCsv) Processing() {
 
 func (ec *ExportCsv) Done(csv csv.FileCsv) {
 	ec.Status = "SUCCESS"
-	ec.Filename = csv.Filename
+	ec.Filename = csv.File.Filename()
 }
