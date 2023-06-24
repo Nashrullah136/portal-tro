@@ -28,7 +28,6 @@ func NewUseCase(
 	}
 }
 
-// TODO: abstract file access
 type useCase struct {
 	exportCsvRepo repositories.ExportCsvRepositoryInterface
 	auditRepo     repositories.AuditRepositoryInterface
