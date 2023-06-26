@@ -46,7 +46,11 @@ func (r exportCsvRepository) buildQuery(ctx context.Context, query ExportCsvQuer
 }
 
 func (r exportCsvRepository) GetAll(ctx context.Context, query ExportCsvQuery, limit, offset int) (exportCsv []entities.ExportCsv, err error) {
-	err = r.buildQuery(ctx, query).Limit(limit).Offset(offset).Find(&exportCsv).Error
+	sql := r.buildQuery(ctx, query)
+	if limit != 0 {
+		sql = sql.Limit(limit)
+	}
+	err = sql.Offset(offset).Find(&exportCsv).Error
 	return
 }
 

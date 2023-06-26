@@ -61,5 +61,8 @@ func Handle(dbMain *gorm.DB, dbBriva *gorm.DB, engine *gin.Engine, sessionManage
 	configRequestHandler := configuration.NewRequestHandler()
 	configRoute := configuration.NewRoute(configRequestHandler)
 	configRoute.Handle(engine, sessionManager)
+
+	exportCsvUseCase := exportCsv.NewUseCase(exportCsvRepo, auditRepo, reportFolder)
+	worker.CleanerCsv(exportCsvUseCase)
 	return nil
 }
