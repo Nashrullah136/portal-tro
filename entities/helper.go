@@ -56,8 +56,8 @@ func UpdatedColumns(oldData Auditor, newData Auditor) (result []string, err erro
 	return result, nil
 }
 
-func NewAudit(tx *gorm.DB, action, entity, entityId string, dataBefore, dataAfter any) (Audit, error) {
-	actor, err := ExtractActorFromContext(tx.Statement.Context)
+func NewAudit(ctx context.Context, action, entity, entityId string, dataBefore, dataAfter any) (Audit, error) {
+	actor, err := ExtractActorFromContext(ctx)
 	if err != nil {
 		return Audit{}, err
 	}
@@ -85,12 +85,12 @@ func NewAudit(tx *gorm.DB, action, entity, entityId string, dataBefore, dataAfte
 	return audit, nil
 }
 
-func AuditCreate(tx *gorm.DB, data Auditor) (Audit, error) {
+func AuditCreate(ctx context.Context, data Auditor) (Audit, error) {
 	dataAfter, err := data.LogPresentation()
 	if err != nil {
 		return Audit{}, err
 	}
-	return NewAudit(tx, "CREATE", data.EntityName(), data.PrimaryKey(), nil, dataAfter)
+	return NewAudit(ctx, "CREATE", data.EntityName(), data.PrimaryKey(), nil, dataAfter)
 
 }
 
@@ -113,7 +113,25 @@ func AuditUpdate(tx *gorm.DB, data Auditor) (Audit, error) {
 	}
 	dataAfter = ExtractColumns(dataAfter, updatedColumn)
 	dataBefore = ExtractColumns(dataBefore, updatedColumn)
-	return NewAudit(tx, "UPDATE", data.EntityName(), data.PrimaryKey(), dataBefore, dataAfter)
+	return NewAudit(tx.Statement.Context, "UPDATE", data.EntityName(), data.PrimaryKey(), dataBefore, dataAfter)
+}
+
+func AuditUpdateWithOldData(ctx context.Context, newData Auditor, oldData Auditor) (Audit, error) {
+	updatedColumn, err := UpdatedColumns(oldData, newData)
+	if err != nil {
+		return Audit{}, err
+	}
+	dataAfter, err := newData.LogPresentation()
+	if err != nil {
+		return Audit{}, err
+	}
+	dataBefore, err := oldData.LogPresentation()
+	if err != nil {
+		return Audit{}, err
+	}
+	dataAfter = ExtractColumns(dataAfter, updatedColumn)
+	dataBefore = ExtractColumns(dataBefore, updatedColumn)
+	return NewAudit(ctx, "UPDATE", newData.EntityName(), newData.PrimaryKey(), dataBefore, dataAfter)
 }
 
 func AuditDelete(tx *gorm.DB, data Auditor) (Audit, error) {
@@ -125,5 +143,5 @@ func AuditDelete(tx *gorm.DB, data Auditor) (Audit, error) {
 	if err != nil {
 		return Audit{}, err
 	}
-	return NewAudit(tx, "DELETE", data.EntityName(), data.PrimaryKey(), dataBefore, nil)
+	return NewAudit(tx.Statement.Context, "DELETE", data.EntityName(), data.PrimaryKey(), dataBefore, nil)
 }

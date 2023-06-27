@@ -60,6 +60,18 @@ func main() {
 		panic(err)
 	}
 
+	dsnRdn := db.DsnSqlServer("RDN")
+	dbRdn, err := db.ConnectSqlServer(dsnRdn)
+	if err != nil {
+		panic(err)
+	}
+
+	dsnSpan := db.DsnSqlServer("SPAN")
+	dbSpan, err := db.ConnectSqlServer(dsnSpan)
+	if err != nil {
+		panic(err)
+	}
+
 	redisConn, err := redisUtils.Connect()
 	if err != nil {
 		panic(err)
@@ -72,7 +84,7 @@ func main() {
 		panic(err)
 	}
 
-	if err = app.Handle(dbMain, dbBriva, engine, sessionManager, messageQueue); err != nil {
+	if err = app.Handle(dbMain, dbBriva, dbRdn, dbSpan, engine, sessionManager, messageQueue); err != nil {
 		panic(err)
 	}
 

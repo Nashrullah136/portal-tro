@@ -62,7 +62,7 @@ func (u *User) BeforeCreate(tx *gorm.DB) error {
 }
 
 func (u *User) AfterCreate(tx *gorm.DB) error {
-	audit, err := AuditCreate(tx, u)
+	audit, err := AuditCreate(tx.Statement.Context, u)
 	if err != nil {
 		return err
 	}

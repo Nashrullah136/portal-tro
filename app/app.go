@@ -9,6 +9,8 @@ import (
 	"nashrul-be/crm/modules/briva"
 	"nashrul-be/crm/modules/configuration"
 	exportCsv "nashrul-be/crm/modules/export-csv"
+	"nashrul-be/crm/modules/rdn"
+	"nashrul-be/crm/modules/span"
 	"nashrul-be/crm/modules/user"
 	"nashrul-be/crm/modules/worker"
 	"nashrul-be/crm/repositories"
@@ -19,12 +21,16 @@ import (
 	"os"
 )
 
-func Handle(dbMain *gorm.DB, dbBriva *gorm.DB, engine *gin.Engine, sessionManager session.Manager, redisConn rmq.Connection) error {
+func Handle(dbMain *gorm.DB, dbBriva *gorm.DB, dbRdn *gorm.DB, dbSpan *gorm.DB,
+	engine *gin.Engine, sessionManager session.Manager, redisConn rmq.Connection) error {
+
 	actorRepo := repositories.NewActorRepository(dbMain)
 	roleRepo := repositories.NewRoleRepository(dbMain)
 	auditRepo := repositories.NewAuditRepository(dbMain)
 	exportCsvRepo := repositories.NewExportCsvRepository(dbMain)
 	brivaRepo := repositories.NewBrivaRepository(dbBriva)
+	rdnRepo := repositories.NewRdnRepository(dbRdn)
+	spanRepo := repositories.NewSpanRepository(dbSpan)
 
 	reportFolder := filesystem.NewFolder(os.Getenv("EXPORT_CSV_FOLDER"))
 
@@ -64,5 +70,11 @@ func Handle(dbMain *gorm.DB, dbBriva *gorm.DB, engine *gin.Engine, sessionManage
 
 	exportCsvUseCase := exportCsv.NewUseCase(exportCsvRepo, auditRepo, reportFolder)
 	worker.CleanerCsv(exportCsvUseCase)
+
+	rdnRoute := rdn.NewRoute(rdnRepo, auditRepo, queueAudit)
+	rdnRoute.Handle(engine, sessionManager)
+
+	spanRoute := span.NewRoute(spanRepo, auditRepo, queueAudit)
+	spanRoute.Handle(engine, sessionManager)
 	return nil
 }
