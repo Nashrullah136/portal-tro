@@ -45,25 +45,19 @@ func (uc controller) RefreshHostList() error {
 	itemIds := make([]string, len(items))
 	for index, item := range items {
 		itemIds[index] = item.ItemId
+		temp := serverUtils[item.HostId]
 		switch {
 		case item.Key == "system.cpu.util":
-			temp := serverUtils[item.HostId]
 			temp.CpuPercentage = item.ItemId
-			serverUtils[item.HostId] = temp
 		case item.Key == "vm.memory.util":
-			temp := serverUtils[item.HostId]
 			temp.MemoryUsage = item.ItemId
-			serverUtils[item.HostId] = temp
 		case item.Key == "system.uptime":
-			temp := serverUtils[item.HostId]
 			temp.SystemUptime = item.ItemId
-			serverUtils[item.HostId] = temp
 		case diskRegex.Match([]byte(item.Key)):
-			temp := serverUtils[item.HostId]
 			diskLabel := diskRegex.FindStringSubmatch(item.Key)[1]
 			temp.Disks[diskLabel] = item.ItemId
-			serverUtils[item.HostId] = temp
 		}
+		serverUtils[item.HostId] = temp
 	}
 	values := maps.Values(serverUtils)
 	if err = uc.cache.SetTemplate(values); err != nil {
