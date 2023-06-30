@@ -1,5 +1,9 @@
 package zabbix
 
+const MethodHostGet = "host.get"
+const MethodItemGet = "item.get"
+const MethodHistoryGet = "history.get"
+
 type API interface {
 	GetAllHost() (result []Host, err error)
 	GetItemFromHosts(hostIds []string) (result []Item, err error)
@@ -22,7 +26,7 @@ func (a api) GetAllHost() (result []Host, err error) {
 			"error",
 		},
 	}
-	if err = a.server.Do(request, &result); err != nil {
+	if err = a.server.Do(MethodHostGet, request, &result); err != nil {
 		return nil, err
 	}
 	return result, err
@@ -47,7 +51,7 @@ func (a api) GetItemFromHosts(hostIds []string) (result []Item, err error) {
 			"searchWildcardsEnabled": true,
 		},
 	}
-	if err = a.server.Do(request, &result); err != nil {
+	if err = a.server.Do(MethodItemGet, request, &result); err != nil {
 		return nil, err
 	}
 	return result, nil
@@ -65,7 +69,7 @@ func (a api) GetHistoryFromItem(itemIds []string) (result []History, err error) 
 		"sortorder": "DESC",
 		"limit":     1,
 	}
-	if err = a.server.Do(request, &result); err != nil {
+	if err = a.server.Do(MethodHistoryGet, request, &result); err != nil {
 		return nil, err
 	}
 	return result, err

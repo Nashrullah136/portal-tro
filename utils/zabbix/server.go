@@ -10,7 +10,7 @@ import (
 
 type Server interface {
 	Login() error
-	Do(params any, result interface{}) error
+	Do(method string, params any, result interface{}) error
 }
 
 type server struct {
@@ -58,10 +58,10 @@ func (z *server) Login() error {
 }
 
 // Do TODO: Handle when auth is not valid anymore
-func (z *server) Do(params any, result interface{}) error {
+func (z *server) Do(method string, params any, result interface{}) error {
 	requestData := map[string]any{
 		"jsonrpc": "2.0",
-		"method":  "user.login",
+		"method":  method,
 		"params":  params,
 		"auth":    z.auth,
 		"id":      1,
