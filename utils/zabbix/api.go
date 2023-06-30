@@ -7,10 +7,10 @@ type API interface {
 }
 
 type api struct {
-	server server
+	server Server
 }
 
-func NewAPI(zabbixServer server) API {
+func NewAPI(zabbixServer Server) API {
 	return api{server: zabbixServer}
 }
 

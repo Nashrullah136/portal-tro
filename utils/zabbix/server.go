@@ -19,7 +19,7 @@ type server struct {
 	auth     string
 }
 
-func NewZabbixServer(url, username, password string) Server {
+func NewServer(url, username, password string) Server {
 	return &server{
 		url:      url,
 		username: username,
