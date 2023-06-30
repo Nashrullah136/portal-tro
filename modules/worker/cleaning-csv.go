@@ -9,10 +9,10 @@ import (
 	"time"
 )
 
-func CleanerCsv(csv exportCsv.UseCaseInterface) {
+func CleanerCsv(csv exportCsv.UseCaseInterface) error {
 	wib, _ := time.LoadLocation("Asia/Jakarta")
 	s := gocron.NewScheduler(wib)
-	s.Every(1).Day().At("00:00").Do(func() {
+	_, err := s.Every(1).Day().At("00:00").Do(func() {
 		allCsv, err := csv.GetAll(context.Background(), repositories.ExportCsvQuery{}, 0, 0)
 		if err != nil {
 			log.Println("error can't get data all data csv req while cleaning")
@@ -23,5 +23,9 @@ func CleanerCsv(csv exportCsv.UseCaseInterface) {
 			}
 		}
 	})
+	if err != nil {
+		return err
+	}
 	s.StartAsync()
+	return nil
 }
