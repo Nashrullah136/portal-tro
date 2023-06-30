@@ -9,6 +9,7 @@ import (
 )
 
 type Server interface {
+	Login() error
 	Do(params any, result interface{}) error
 }
 
