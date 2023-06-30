@@ -12,6 +12,7 @@ import (
 	redisUtils "nashrul-be/crm/utils/redis"
 	"nashrul-be/crm/utils/session"
 	"nashrul-be/crm/utils/translate"
+	"nashrul-be/crm/utils/zabbix"
 	"os"
 )
 
@@ -84,7 +85,12 @@ func main() {
 		panic(err)
 	}
 
-	if err = app.Handle(dbMain, dbBriva, dbRdn, dbSpan, engine, sessionManager, messageQueue); err != nil {
+	zabbixServer := zabbix.NewServer(os.Getenv("ZABBIX_URL"), os.Getenv("ZABBIX_USERNAME"), os.Getenv("ZABBIX_PASSWORD"))
+	zabbixApi := zabbix.NewAPI(zabbixServer)
+
+	zabbixCache := zabbix.NewCache()
+
+	if err = app.Handle(dbMain, dbBriva, dbRdn, dbSpan, engine, sessionManager, messageQueue, zabbixApi, zabbixCache); err != nil {
 		panic(err)
 	}
 

@@ -10,6 +10,7 @@ import (
 	"nashrul-be/crm/modules/configuration"
 	exportCsv "nashrul-be/crm/modules/export-csv"
 	"nashrul-be/crm/modules/rdn"
+	server_utilization "nashrul-be/crm/modules/server-utilization"
 	"nashrul-be/crm/modules/span"
 	"nashrul-be/crm/modules/user"
 	"nashrul-be/crm/modules/worker"
@@ -18,11 +19,13 @@ import (
 	"nashrul-be/crm/utils/filesystem"
 	redisUtils "nashrul-be/crm/utils/redis"
 	"nashrul-be/crm/utils/session"
+	"nashrul-be/crm/utils/zabbix"
 	"os"
 )
 
 func Handle(dbMain *gorm.DB, dbBriva *gorm.DB, dbRdn *gorm.DB, dbSpan *gorm.DB,
-	engine *gin.Engine, sessionManager session.Manager, redisConn rmq.Connection) error {
+	engine *gin.Engine, sessionManager session.Manager, redisConn rmq.Connection,
+	zabbixApi zabbix.API, cache zabbix.Cache) error {
 
 	actorRepo := repositories.NewActorRepository(dbMain)
 	roleRepo := repositories.NewRoleRepository(dbMain)
@@ -60,6 +63,9 @@ func Handle(dbMain *gorm.DB, dbBriva *gorm.DB, dbRdn *gorm.DB, dbSpan *gorm.DB,
 	auditWorker := worker.NewAudit(auditRepo)
 
 	queueAudit, err := redisUtils.MakeQueue(redisConn, "audit-log", "audit-log-worker", 10, auditWorker)
+	if err != nil {
+		return err
+	}
 
 	brivaRoute := briva.NewRoute(brivaRepo, auditRepo, queueAudit)
 	brivaRoute.Handle(engine, sessionManager)
@@ -69,12 +75,21 @@ func Handle(dbMain *gorm.DB, dbBriva *gorm.DB, dbRdn *gorm.DB, dbSpan *gorm.DB,
 	configRoute.Handle(engine, sessionManager)
 
 	exportCsvUseCase := exportCsv.NewUseCase(exportCsvRepo, auditRepo, reportFolder)
-	worker.CleanerCsv(exportCsvUseCase)
+	if err = worker.CleanerCsv(exportCsvUseCase); err != nil {
+		return err
+	}
 
 	rdnRoute := rdn.NewRoute(rdnRepo, auditRepo, queueAudit)
 	rdnRoute.Handle(engine, sessionManager)
 
 	spanRoute := span.NewRoute(spanRepo, auditRepo, queueAudit)
 	spanRoute.Handle(engine, sessionManager)
+
+	if err = worker.UpdateLastDataServerUtil(cache, zabbixApi); err != nil {
+		return err
+	}
+
+	serverUtilRoute := server_utilization.NewRoute(cache, zabbixApi)
+	serverUtilRoute.Handle(engine)
 	return nil
 }
