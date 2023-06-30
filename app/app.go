@@ -89,6 +89,10 @@ func Handle(dbMain *gorm.DB, dbBriva *gorm.DB, dbRdn *gorm.DB, dbSpan *gorm.DB,
 		return err
 	}
 
+	serverUtilController := server_utilization.NewController(cache, zabbixApi)
+	if err = serverUtilController.RefreshHostList(); err != nil {
+		return err
+	}
 	serverUtilRoute := server_utilization.NewRoute(cache, zabbixApi)
 	serverUtilRoute.Handle(engine)
 	return nil
