@@ -10,6 +10,10 @@ type api struct {
 	server server
 }
 
+func NewAPI(zabbixServer server) API {
+	return api{server: zabbixServer}
+}
+
 func (a api) GetAllHost() (result []Host, err error) {
 	request := map[string]any{
 		"output": []string{
