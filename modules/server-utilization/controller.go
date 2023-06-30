@@ -1,38 +1,32 @@
 package server_utilization
 
 import (
-	"context"
-	"encoding/json"
-	"github.com/redis/go-redis/v9"
+	"nashrul-be/crm/dto"
 	"nashrul-be/crm/entities"
 	"nashrul-be/crm/utils/maps"
 	"nashrul-be/crm/utils/zabbix"
 	"regexp"
 )
 
-const ZabbixTemplate = "zabbix-template"
-const ZabbixLastValue = "zabbix-last-value"
-const ZabbixItemIds = "zabbix-item-ids"
-
-type UseCase interface {
+type Controller interface {
 	RefreshHostList() error
-	GetLastData() (map[string][]entities.ServerUtilization, error)
+	GetLastData() (dto.BaseResponse, error)
 	IsValid(utilization entities.ServerUtilization) bool
 }
 
-func NewUseCase(client *redis.Client, api zabbix.API) UseCase {
-	return useCase{
-		redisConn: client,
+func NewController(cache zabbix.Cache, api zabbix.API) Controller {
+	return controller{
+		cache:     cache,
 		zabbixApi: api,
 	}
 }
 
-type useCase struct {
-	redisConn *redis.Client
+type controller struct {
+	cache     zabbix.Cache
 	zabbixApi zabbix.API
 }
 
-func (uc useCase) RefreshHostList() error {
+func (uc controller) RefreshHostList() error {
 	diskRegex := regexp.MustCompile(`vfs.fs.size\[(.+),pused]`)
 	hosts, err := uc.zabbixApi.GetAllHost()
 	if err != nil {
@@ -72,31 +66,19 @@ func (uc useCase) RefreshHostList() error {
 		}
 	}
 	values := maps.Values(serverUtils)
-	valuesJson, err := json.Marshal(values)
-	if err != nil {
+	if err = uc.cache.SetTemplate(values); err != nil {
 		return err
 	}
-	if status := uc.redisConn.Set(context.Background(), ZabbixTemplate, valuesJson, 0); status.Err() != nil {
-		return err
-	}
-	itemIdsJson, err := json.Marshal(itemIds)
-	if err != nil {
-		return err
-	}
-	if status := uc.redisConn.Set(context.Background(), ZabbixItemIds, itemIdsJson, 0); status.Err() != nil {
+	if err = uc.cache.SetItemIds(itemIds); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (uc useCase) GetLastData() (map[string][]entities.ServerUtilization, error) {
-	jsonLastValue := uc.redisConn.Get(context.Background(), ZabbixLastValue)
-	if jsonLastValue.Err() != nil {
-		return nil, jsonLastValue.Err()
-	}
-	serverUtils := make([]entities.ServerUtilization, 18)
-	if err := json.Unmarshal([]byte(jsonLastValue.String()), &serverUtils); err != nil {
-		return nil, err
+func (uc controller) GetLastData() (dto.BaseResponse, error) {
+	serverUtils, err := uc.cache.GetLastValue()
+	if err != nil {
+		return dto.ErrorInternalServerError(), err
 	}
 	threshold := make([]entities.ServerUtilization, 18)
 	safe := make([]entities.ServerUtilization, 18)
@@ -107,13 +89,14 @@ func (uc useCase) GetLastData() (map[string][]entities.ServerUtilization, error)
 			threshold = append(threshold, serverUtil)
 		}
 	}
-	return map[string][]entities.ServerUtilization{
+	result := map[string][]entities.ServerUtilization{
 		"threshold": threshold,
 		"safe":      safe,
-	}, nil
+	}
+	return dto.Success("Success get latest data", result), nil
 }
 
-func (uc useCase) IsValid(utilization entities.ServerUtilization) bool {
+func (uc controller) IsValid(utilization entities.ServerUtilization) bool {
 	checkFunc := []ThresholdFunc{CheckCPU, CheckMemory, CheckUptime, CheckDisk}
 	for _, check := range checkFunc {
 		if !check(utilization) {
