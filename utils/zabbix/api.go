@@ -33,6 +33,7 @@ func (a api) GetAllHost() (result []Host, err error) {
 }
 
 func (a api) GetItemFromHosts(hostIds []string) (result []Item, err error) {
+	var temp []Item
 	request := map[string]any{
 		"output": []string{
 			"hostid",
@@ -45,15 +46,35 @@ func (a api) GetItemFromHosts(hostIds []string) (result []Item, err error) {
 			"key_": []string{
 				"system.cpu.util",
 				"vm.memory.util",
-				"vfs.fs.size[*,pused]",
 				"system.uptime",
 			},
-			"searchWildcardsEnabled": true,
 		},
+		"searchByAny": true,
 	}
-	if err = a.server.Do(MethodItemGet, request, &result); err != nil {
+	if err = a.server.Do(MethodItemGet, request, &temp); err != nil {
 		return nil, err
 	}
+	result = append(result, temp...)
+	request = map[string]any{
+		"output": []string{
+			"hostid",
+			"itemid",
+			"key_",
+			"name",
+		},
+		"hostids": hostIds,
+		"search": map[string]any{
+			"key_": []string{
+				"vfs.fs.size[*",
+				"*:,pused]",
+			},
+		},
+		"searchWildcardsEnabled": true,
+	}
+	if err = a.server.Do(MethodItemGet, request, &temp); err != nil {
+		return nil, err
+	}
+	result = append(result, temp...)
 	return result, nil
 }
 
@@ -61,15 +82,11 @@ func (a api) GetHistoryFromItem(itemIds []string) (result []History, err error) 
 	request := map[string]any{
 		"output": []string{
 			"itemid",
-			"value",
+			"lastvalue",
 		},
-		"history":   0,
-		"itemids":   itemIds,
-		"sortfield": "clock",
-		"sortorder": "DESC",
-		"limit":     1,
+		"itemids": itemIds,
 	}
-	if err = a.server.Do(MethodHistoryGet, request, &result); err != nil {
+	if err = a.server.Do(MethodItemGet, request, &result); err != nil {
 		return nil, err
 	}
 	return result, err

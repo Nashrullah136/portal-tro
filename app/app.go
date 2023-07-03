@@ -3,6 +3,7 @@ package app
 import (
 	"github.com/adjust/rmq/v5"
 	"github.com/gin-gonic/gin"
+	"github.com/go-co-op/gocron"
 	"gorm.io/gorm"
 	"nashrul-be/crm/modules/audit"
 	"nashrul-be/crm/modules/authentication"
@@ -25,7 +26,7 @@ import (
 
 func Handle(dbMain *gorm.DB, dbBriva *gorm.DB, dbRdn *gorm.DB, dbSpan *gorm.DB,
 	engine *gin.Engine, sessionManager session.Manager, redisConn rmq.Connection,
-	zabbixApi zabbix.API, cache zabbix.Cache) error {
+	zabbixApi zabbix.API, cache zabbix.Cache, scheduler *gocron.Scheduler) error {
 
 	actorRepo := repositories.NewActorRepository(dbMain)
 	roleRepo := repositories.NewRoleRepository(dbMain)
@@ -75,7 +76,7 @@ func Handle(dbMain *gorm.DB, dbBriva *gorm.DB, dbRdn *gorm.DB, dbSpan *gorm.DB,
 	configRoute.Handle(engine, sessionManager)
 
 	exportCsvUseCase := exportCsv.NewUseCase(exportCsvRepo, auditRepo, reportFolder)
-	if err = worker.CleanerCsv(exportCsvUseCase); err != nil {
+	if _, err = scheduler.Every(1).Day().At("00:00").Do(worker.CleanerCsv(exportCsvUseCase)); err != nil {
 		return err
 	}
 
@@ -85,15 +86,19 @@ func Handle(dbMain *gorm.DB, dbBriva *gorm.DB, dbRdn *gorm.DB, dbSpan *gorm.DB,
 	spanRoute := span.NewRoute(spanRepo, auditRepo, queueAudit)
 	spanRoute.Handle(engine, sessionManager)
 
-	if err = worker.UpdateLastDataServerUtil(cache, zabbixApi); err != nil {
-		return err
-	}
-
 	serverUtilController := server_utilization.NewController(cache, zabbixApi)
 	if err = serverUtilController.RefreshHostList(); err != nil {
 		return err
 	}
 	serverUtilRoute := server_utilization.NewRoute(cache, zabbixApi)
-	serverUtilRoute.Handle(engine)
+	serverUtilRoute.Handle(engine, sessionManager)
+
+	updateLastData := worker.UpdateLastDataServerUtil(cache, zabbixApi)
+	updateLastData()
+	if _, err = scheduler.Every(1).Minute().Do(updateLastData); err != nil {
+		return err
+	}
+
+	scheduler.StartAsync()
 	return nil
 }

@@ -19,5 +19,5 @@ type Item struct {
 
 type History struct {
 	ItemId string `json:"itemid,omitempty"`
-	Value  string `json:"value,omitempty"`
+	Value  string `json:"lastvalue,omitempty"`
 }

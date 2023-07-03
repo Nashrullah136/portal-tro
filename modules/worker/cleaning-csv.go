@@ -2,17 +2,13 @@ package worker
 
 import (
 	"context"
-	"github.com/go-co-op/gocron"
 	"log"
 	exportCsv "nashrul-be/crm/modules/export-csv"
 	"nashrul-be/crm/repositories"
-	"time"
 )
 
-func CleanerCsv(csv exportCsv.UseCaseInterface) error {
-	wib, _ := time.LoadLocation("Asia/Jakarta")
-	s := gocron.NewScheduler(wib)
-	_, err := s.Every(1).Day().At("00:00").Do(func() {
+func CleanerCsv(csv exportCsv.UseCaseInterface) func() {
+	return func() {
 		allCsv, err := csv.GetAll(context.Background(), repositories.ExportCsvQuery{}, 0, 0)
 		if err != nil {
 			log.Println("error can't get data all data csv req while cleaning")
@@ -22,10 +18,5 @@ func CleanerCsv(csv exportCsv.UseCaseInterface) error {
 				log.Printf("failed delete request for csv request id %d\n", csvReq.ID)
 			}
 		}
-	})
-	if err != nil {
-		return err
 	}
-	s.StartAsync()
-	return nil
 }

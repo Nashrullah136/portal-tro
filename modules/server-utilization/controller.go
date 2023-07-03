@@ -36,7 +36,10 @@ func (uc controller) RefreshHostList() error {
 	hostIds := make([]string, len(hosts))
 	for index, host := range hosts {
 		hostIds[index] = host.HostId
-		serverUtils[host.HostId] = entities.ServerUtilization{Hostname: host.Host}
+		serverUtils[host.HostId] = entities.ServerUtilization{
+			Hostname: host.Host,
+			Disks:    make(map[string]string),
+		}
 	}
 	items, err := uc.zabbixApi.GetItemFromHosts(hostIds)
 	if err != nil {
@@ -74,8 +77,10 @@ func (uc controller) GetLastData() (dto.BaseResponse, error) {
 	if err != nil {
 		return dto.ErrorInternalServerError(), err
 	}
-	threshold := make([]entities.ServerUtilization, 18)
-	safe := make([]entities.ServerUtilization, 18)
+	var (
+		safe      []entities.ServerUtilization
+		threshold []entities.ServerUtilization
+	)
 	for _, serverUtil := range serverUtils {
 		if uc.IsValid(serverUtil) {
 			safe = append(safe, serverUtil)

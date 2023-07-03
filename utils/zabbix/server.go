@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"github.com/tidwall/gjson"
 	"io"
+	"log"
 	"net/http"
 )
 
@@ -77,6 +78,16 @@ func (z *server) Do(method string, params any, result interface{}) error {
 	respBody, err := io.ReadAll(response.Body)
 	if err != nil {
 		return err
+	}
+	errObj := gjson.Get(string(respBody), "error.data")
+	if errObj.String() == "Session terminated, re-login, please." {
+		if err = z.Login(); err != nil {
+			log.Fatal("Failed to re-login to zabbix server")
+		}
+		response, err = http.Post(z.url, "application/json", bytes.NewBuffer(reqBody))
+		if err != nil {
+			return err
+		}
 	}
 	resultResponse := gjson.Get(string(respBody), "result")
 	if err = json.Unmarshal([]byte(resultResponse.Raw), result); err != nil {

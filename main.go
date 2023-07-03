@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/adjust/rmq/v5"
 	"github.com/gin-gonic/gin"
+	"github.com/go-co-op/gocron"
 	"github.com/joho/godotenv"
 	"log"
 	"nashrul-be/crm/app"
@@ -14,6 +15,7 @@ import (
 	"nashrul-be/crm/utils/translate"
 	"nashrul-be/crm/utils/zabbix"
 	"os"
+	"time"
 )
 
 func logErrors(errChan <-chan error) {
@@ -93,7 +95,10 @@ func main() {
 
 	zabbixCache := zabbix.NewCache()
 
-	if err = app.Handle(dbMain, dbBriva, dbRdn, dbSpan, engine, sessionManager, messageQueue, zabbixApi, zabbixCache); err != nil {
+	wib, _ := time.LoadLocation("Asia/Jakarta")
+	scheduler := gocron.NewScheduler(wib)
+
+	if err = app.Handle(dbMain, dbBriva, dbRdn, dbSpan, engine, sessionManager, messageQueue, zabbixApi, zabbixCache, scheduler); err != nil {
 		panic(err)
 	}
 
