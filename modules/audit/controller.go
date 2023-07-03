@@ -2,6 +2,7 @@ package audit
 
 import (
 	"context"
+	"math"
 	"nashrul-be/crm/dto"
 )
 
@@ -30,7 +31,7 @@ func (c controller) GetAll(ctx context.Context, request GetAllRequest) (dto.Base
 	if err != nil {
 		return dto.ErrorInternalServerError(), err
 	}
-	return dto.SuccessPagination("Success retrieve audit", request.Page, totalRow/request.PerPage+1, totalRow, result), nil
+	return dto.SuccessPagination("Success retrieve audit", request.Page, int(math.Ceil(float64(totalRow/request.PerPage))), totalRow, result), nil
 }
 
 func (c controller) CreateAudit(ctx context.Context, action string) (dto.BaseResponse, error) {
