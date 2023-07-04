@@ -51,8 +51,8 @@ func main() {
 	engine := gin.Default()
 	engine.Use(middleware.CORS())
 
-	dsnMain := db.DsnMySQL()
-	dbMain, err := db.ConnectMySql(dsnMain)
+	dsnMain := db.DsnSqlServer("")
+	dbMain, err := db.ConnectSqlServer(dsnMain)
 	if err != nil {
 		panic(err)
 	}
