@@ -11,7 +11,7 @@ const ADMIN = "admin"
 
 // User TODO: add user log presentation
 type User struct {
-	ID        uint      `mapstructure:"-" json:"-"`
+	ID        uint      `gorm:"autoIncrement" mapstructure:"-" json:"-"`
 	Name      string    `mapstructure:"name,omitempty" json:"name,omitempty"`
 	Username  string    `gorm:"primaryKey" mapstructure:"username" json:"username,omitempty"`
 	Password  string    `mapstructure:"password,omitempty" json:"-"`
