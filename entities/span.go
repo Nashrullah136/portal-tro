@@ -9,6 +9,8 @@ type SPAN struct {
 	StatusCode          string `gorm:"column:STATUSCODE" mapstructure:",omitempty"`
 	EmailAddress        string `gorm:"column:EMAILADDRESS" mapstructure:",omitempty"`
 	BeneficiaryAccount  string `gorm:"column:BENEFICIARYACCOUNT" mapstructure:",omitempty"`
+	Amount              string `gorm:"column:AMOUNT"  mapstructure:",omitempty"`
+	BeneficiaryBank     string `gorm:"column:BENEFICIARYBANK" mapstructure:",omitempty"`
 }
 
 func (*SPAN) TableName() string {
