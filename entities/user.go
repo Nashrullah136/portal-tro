@@ -9,7 +9,6 @@ import (
 
 const ADMIN = "admin"
 
-// User TODO: add user log presentation
 type User struct {
 	ID        uint      `gorm:"autoIncrement" mapstructure:"-" json:"-"`
 	Name      string    `mapstructure:"name,omitempty" json:"name,omitempty"`

@@ -58,7 +58,6 @@ func (z *server) Login() error {
 	return nil
 }
 
-// Do TODO: Handle when auth is not valid anymore
 func (z *server) Do(method string, params any, result interface{}) error {
 	requestData := map[string]any{
 		"jsonrpc": "2.0",
