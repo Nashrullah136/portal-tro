@@ -40,7 +40,7 @@ func (r auditRepository) buildGetAllQuery(ctx context.Context, query AuditQuery)
 		sql.Where("date_time >= ?", query.AfterDate)
 	}
 	if !query.BeforeDate.IsZero() {
-		sql.Where("date_time <= ?", query.BeforeDate)
+		sql.Where("date_time < ?", query.BeforeDate.Add(24*time.Hour))
 	}
 	return sql
 }
