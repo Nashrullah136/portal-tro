@@ -5,6 +5,7 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/sqlserver"
 	"gorm.io/gorm"
+	"nashrul-be/crm/utils/localtime"
 	"os"
 	"time"
 )
@@ -15,6 +16,12 @@ type Config struct {
 	Host     string
 	Port     string
 	DBName   string
+}
+
+func GormConfig() *gorm.Config {
+	return &gorm.Config{
+		NowFunc: localtime.Now,
+	}
 }
 
 func DsnWithConfig(config Config) string {
@@ -31,7 +38,9 @@ func DsnMySQL() string {
 }
 
 func DsnSqlServer(prefix string) string {
-	prefix = prefix + "_"
+	if prefix != "" {
+		prefix = prefix + "_"
+	}
 	dsn := fmt.Sprintf("sqlserver://%s:%s@%s:%s/%s",
 		os.Getenv(prefix+"DB_USERNAME"), os.Getenv(prefix+"DB_PASSWORD"),
 		os.Getenv(prefix+"DB_HOST"), os.Getenv(prefix+"DB_PORT"), os.Getenv(prefix+"DB_NAME"))
@@ -42,7 +51,7 @@ func ConnectMySql(dsn string) (*gorm.DB, error) {
 	var dbConn *gorm.DB
 	var err error
 	for i := 0; i < 10; i++ {
-		dbConn, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+		dbConn, err = gorm.Open(mysql.Open(dsn), GormConfig())
 		if err == nil {
 			break
 		}
@@ -58,7 +67,7 @@ func ConnectSqlServer(dsn string) (*gorm.DB, error) {
 	var dbConn *gorm.DB
 	var err error
 	for i := 0; i < 10; i++ {
-		dbConn, err = gorm.Open(sqlserver.Open(dsn), &gorm.Config{})
+		dbConn, err = gorm.Open(sqlserver.Open(dsn), GormConfig())
 		if err == nil {
 			break
 		}
