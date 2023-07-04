@@ -2,7 +2,6 @@ package user
 
 import (
 	"context"
-	"math"
 	"nashrul-be/crm/dto"
 	"nashrul-be/crm/entities"
 )
@@ -49,7 +48,7 @@ func (c controller) GetAll(ctx context.Context, req PaginationRequest) (dto.Base
 	if err != nil {
 		return dto.ErrorInternalServerError(), err
 	}
-	return dto.SuccessPagination("Success retrieve user", req.Page, int(math.Ceil(float64(totalRow/req.PerPage))), totalRow, actorResponse), err
+	return dto.SuccessPagination("Success retrieve user", req.Page, req.PerPage, totalRow, actorResponse), err
 }
 
 func (c controller) CreateActor(ctx context.Context, req CreateRequest) (dto.BaseResponse, error) {

@@ -2,6 +2,7 @@ package dto
 
 import (
 	"fmt"
+	"math"
 	"nashrul-be/crm/utils/translate"
 	"net/http"
 )
@@ -79,14 +80,15 @@ func Success(msg string, data any) BaseResponse {
 	}
 }
 
-func SuccessPagination(msg string, currentPage, totalPage, total int, data any) BaseResponse {
+func SuccessPagination(msg string, currentPage, perpage, total int, data any) BaseResponse {
 	return BaseResponse{
 		Code:    http.StatusOK,
 		Message: msg,
 		Data: map[string]any{
 			"total":      total,
 			"page":       currentPage,
-			"total_page": totalPage,
+			"perpage":    perpage,
+			"total_page": int(math.Ceil(float64(total) / float64(perpage))),
 			"data":       data,
 		},
 	}

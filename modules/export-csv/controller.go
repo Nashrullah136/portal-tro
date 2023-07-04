@@ -2,7 +2,6 @@ package export_csv
 
 import (
 	"context"
-	"math"
 	"nashrul-be/crm/dto"
 	"nashrul-be/crm/utils/filesystem"
 )
@@ -32,7 +31,7 @@ func (c controller) GetAll(ctx context.Context, request GetAllRequest) (dto.Base
 		return dto.ErrorInternalServerError(), err
 	}
 	return dto.SuccessPagination("Success retrieve export request", request.Page,
-		int(math.Ceil(float64(totalRow/request.PerPage))), totalRow, results), nil
+		request.PerPage, totalRow, results), nil
 }
 
 func (c controller) DownloadCsv(ctx context.Context, id uint) (filesystem.File, error) {
