@@ -6,7 +6,7 @@ import (
 	"errors"
 	"github.com/mitchellh/mapstructure"
 	"gorm.io/gorm"
-	"time"
+	"nashrul-be/crm/utils/localtime"
 )
 
 type Auditor interface {
@@ -62,7 +62,7 @@ func NewAudit(ctx context.Context, action, entity, entityId string, dataBefore, 
 		return Audit{}, err
 	}
 	audit := Audit{
-		DateTime: time.Now(),
+		DateTime: localtime.Now(),
 		Username: actor.Username,
 		Action:   action,
 		Entity:   entity,
