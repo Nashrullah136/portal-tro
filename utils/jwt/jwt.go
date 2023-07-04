@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/golang-jwt/jwt/v5"
 	"nashrul-be/crm/entities"
+	"nashrul-be/crm/utils/localtime"
 	"os"
 	"time"
 )
@@ -22,9 +23,9 @@ func GenerateJWT(actor entities.User) (string, error) {
 			Issuer:    "localhost",
 			Subject:   actor.Username,
 			Audience:  []string{"localhost"},
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(1 * time.Hour)),
-			NotBefore: jwt.NewNumericDate(time.Now()),
-			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			ExpiresAt: jwt.NewNumericDate(localtime.Now().Add(1 * time.Hour)),
+			NotBefore: jwt.NewNumericDate(localtime.Now()),
+			IssuedAt:  jwt.NewNumericDate(localtime.Now()),
 			ID:        "",
 		},
 	}
