@@ -22,8 +22,9 @@ type requestHandler struct {
 func (h requestHandler) GetByDocumentNumber(c *gin.Context) {
 	ctx := c.Copy()
 	documentNumber := c.Query("documentNumber")
-	if documentNumber != "" {
+	if documentNumber == "" {
 		c.JSON(http.StatusBadRequest, dto.ErrorBadRequest("Document number is required"))
+		return
 	}
 	response, err := h.spanController.GetByDocumentNumber(ctx, documentNumber)
 	if err != nil {

@@ -24,8 +24,9 @@ type spanRepository struct {
 }
 
 func (r spanRepository) GetBySpanDocumentNumber(ctx context.Context, documentNumber string) (span entities.SPAN, err error) {
-	err = r.db.WithContext(ctx).Where("documentdate = substring(CONVERT(varchar,getdate(),126),1,10) "+
-		"and statuscode not in ('0001','void')").First(&span, documentNumber).Error
+	span.DocumentNumber = documentNumber
+	err = r.db.WithContext(ctx).Where("documentdate = substring(CONVERT(varchar,getdate(),126),1,10) " +
+		"and statuscode not in ('0001','void')").First(&span).Error
 	return span, err
 }
 

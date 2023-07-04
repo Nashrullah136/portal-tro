@@ -3,12 +3,16 @@ package entities
 import "github.com/mitchellh/mapstructure"
 
 type SPAN struct {
-	DocumentNumber      string `gorm:"primaryKey,column:DOCUMENTNUMBER" mapstructure:",omitempty"`
+	DocumentNumber      string `gorm:"column:DOCUMENTNUMBER;primaryKey" mapstructure:",omitempty"`
 	DocumentDate        string `gorm:"column:DOCUMENTDATE" mapstructure:",omitempty"`
 	BeneficiaryBankCode string `gorm:"column:BENEFICIARYBANKCODE" mapstructure:",omitempty"`
 	StatusCode          string `gorm:"column:STATUSCODE" mapstructure:",omitempty"`
 	EmailAddress        string `gorm:"column:EMAILADDRESS" mapstructure:",omitempty"`
 	BeneficiaryAccount  string `gorm:"column:BENEFICIARYACCOUNT" mapstructure:",omitempty"`
+}
+
+func (*SPAN) TableName() string {
+	return "SPANTRANSACTION"
 }
 
 func (r *SPAN) LogPresentation() (result map[string]any, err error) {

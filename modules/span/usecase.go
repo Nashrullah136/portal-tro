@@ -46,22 +46,22 @@ func (uc useCase) UpdatePatchBankRiau(ctx context.Context, span entities.SPAN) e
 	if err != nil {
 		return err
 	}
-	brivaTx := uc.spanRepo.Begin()
+	spanTx := uc.spanRepo.Begin()
 	auditTx := uc.auditRepo.Begin()
-	brivaRepoTx := uc.spanRepo.New(brivaTx)
+	brivaRepoTx := uc.spanRepo.New(spanTx)
 	auditRepoTx := uc.auditRepo.New(auditTx)
-	if err = brivaRepoTx.Update(ctx, span); err != nil {
-		brivaTx.Rollback()
+	if err = brivaRepoTx.Update(ctx, newSpan); err != nil {
+		spanTx.Rollback()
 		auditTx.Rollback()
 		return err
 	}
 	if err = auditRepoTx.Create(audit); err != nil {
-		brivaTx.Rollback()
+		spanTx.Rollback()
 		auditTx.Rollback()
 		return err
 	}
-	if err = brivaTx.Commit().Error; err != nil {
-		brivaTx.Rollback()
+	if err = spanTx.Commit().Error; err != nil {
+		spanTx.Rollback()
 		auditTx.Rollback()
 		return err
 	}
