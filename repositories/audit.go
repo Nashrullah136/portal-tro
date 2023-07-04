@@ -5,6 +5,7 @@ import (
 	"gorm.io/gorm"
 	"nashrul-be/crm/entities"
 	"nashrul-be/crm/utils/db"
+	"nashrul-be/crm/utils/localtime"
 	"time"
 )
 
@@ -73,7 +74,7 @@ func (r auditRepository) CreateAudit(ctx context.Context, action string) (err er
 		return
 	}
 	audit := entities.Audit{
-		DateTime: time.Now(),
+		DateTime: localtime.Now(),
 		Username: user.Username,
 		Action:   action,
 	}
