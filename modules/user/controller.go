@@ -3,13 +3,13 @@ package user
 import (
 	"context"
 	"nashrul-be/crm/dto"
-	"nashrul-be/crm/entities"
 )
 
 type ControllerInterface interface {
 	GetByUsername(ctx context.Context, username string) (dto.BaseResponse, error)
 	GetAll(ctx context.Context, req PaginationRequest) (dto.BaseResponse, error)
 	CreateActor(ctx context.Context, req CreateRequest) (dto.BaseResponse, error)
+	UpdateProfile(ctx context.Context, req UpdateProfile) (dto.BaseResponse, error)
 	UpdateActor(ctx context.Context, req UpdateRequest) (dto.BaseResponse, error)
 	ChangePassword(ctx context.Context, req ChangePasswordRequest) (dto.BaseResponse, error)
 	DeleteActor(ctx context.Context, username string) error
@@ -23,6 +23,16 @@ func NewController(useCaseInterface UseCaseInterface) ControllerInterface {
 
 type controller struct {
 	actorUseCase UseCaseInterface
+}
+
+func (c controller) UpdateProfile(ctx context.Context, req UpdateProfile) (dto.BaseResponse, error) {
+	user := mapUpdateProfileToUser(req)
+	updatedUser, err := c.actorUseCase.UpdateUser(ctx, user)
+	if err != nil {
+		return dto.ErrorInternalServerError(), err
+	}
+	response := mapActorToResponse(updatedUser)
+	return dto.Success("Success update user", response), nil
 }
 
 func (c controller) GetByUsername(ctx context.Context, username string) (dto.BaseResponse, error) {
@@ -86,9 +96,7 @@ func (c controller) UpdateActor(ctx context.Context, req UpdateRequest) (dto.Bas
 }
 
 func (c controller) ChangePassword(ctx context.Context, req ChangePasswordRequest) (dto.BaseResponse, error) {
-	var user entities.User
-	user.Password = req.Password
-	user.Username = req.Username
+	user := mapChangePasswordToUser(req)
 	validationErr, err := c.actorUseCase.validateActor(user, validateExist)
 	if err != nil {
 		return dto.ErrorInternalServerError(), err
@@ -96,7 +104,6 @@ func (c controller) ChangePassword(ctx context.Context, req ChangePasswordReques
 	if validationErr != nil {
 		return dto.ErrorBadRequest(validationErr.Error()), nil
 	}
-	ctx = context.WithValue(ctx, "except", "change password")
 	result, err := c.actorUseCase.ChangePassword(ctx, req.OldPassword, user)
 	if err != nil {
 		return dto.ErrorInternalServerError(), err

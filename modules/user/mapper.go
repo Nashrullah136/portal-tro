@@ -34,3 +34,17 @@ func mapActorToResponse(actor entities.User) Representation {
 		NewUser:   actor.UpdatedAt.Sub(actor.CreatedAt) < 30*time.Second,
 	}
 }
+
+func mapChangePasswordToUser(request ChangePasswordRequest) entities.User {
+	return entities.User{
+		Username: request.Username,
+		Password: request.Password,
+	}
+}
+
+func mapUpdateProfileToUser(profile UpdateProfile) entities.User {
+	return entities.User{
+		Name:     profile.Name,
+		Username: profile.Username,
+	}
+}

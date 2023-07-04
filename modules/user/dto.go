@@ -32,6 +32,11 @@ type ChangePasswordRequest struct {
 	Password    string `json:"password" binding:"required,printascii"`
 }
 
+type UpdateProfile struct {
+	Username string `json:"-"`
+	Name     string `json:"name" binding:"required,printascii"`
+}
+
 type Representation struct {
 	Name      string    `json:"name"`
 	Username  string    `json:"username"`

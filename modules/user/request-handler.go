@@ -10,7 +10,9 @@ import (
 type RequestHandlerInterface interface {
 	GetByUsername(c *gin.Context)
 	GetAll(c *gin.Context)
+	ProfileUser(c *gin.Context)
 	CreateUser(c *gin.Context)
+	UpdateProfile(c *gin.Context)
 	UpdateUser(c *gin.Context)
 	UpdatePasswordUser(c *gin.Context)
 	DeleteUser(c *gin.Context)
@@ -22,6 +24,34 @@ func NewRequestHandler(controllerInterface ControllerInterface) RequestHandlerIn
 
 type requestHandler struct {
 	actorController ControllerInterface
+}
+
+func (h requestHandler) ProfileUser(c *gin.Context) {
+	ctx := c.Copy()
+	user, _ := c.Get("user")
+	response, err := h.actorController.GetByUsername(ctx, user.(entities.User).Username)
+	if err != nil {
+		c.JSON(http.StatusNotFound, actorNotFound())
+		return
+	}
+	c.JSON(response.Code, response)
+}
+
+func (h requestHandler) UpdateProfile(c *gin.Context) {
+	var request UpdateProfile
+	ctx := c.Copy()
+	user, _ := c.Get("user")
+	request.Username = user.(entities.User).Username
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, dto.ErrorValidation(err))
+		return
+	}
+	response, err := h.actorController.UpdateProfile(ctx, request)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, dto.ErrorInternalServerError())
+		return
+	}
+	c.JSON(response.Code, response)
 }
 
 func (h requestHandler) GetByUsername(c *gin.Context) {

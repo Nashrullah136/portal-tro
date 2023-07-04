@@ -23,10 +23,12 @@ func NewRoute(actorRepository repositories.ActorRepositoryInterface,
 }
 
 func (r Route) Handle(router *gin.Engine, sessionManager session.Manager) {
-	router.PATCH("/me", middleware.Authenticate(sessionManager), r.actorRequestHandler.UpdatePasswordUser)
+	router.PATCH("/me/password", middleware.Authenticate(sessionManager), r.actorRequestHandler.UpdatePasswordUser)
+	router.PATCH("/me", middleware.Authenticate(sessionManager), r.actorRequestHandler.UpdateProfile)
+	router.GET("/me", middleware.Authenticate(sessionManager), r.actorRequestHandler.ProfileUser)
 	actor := router.Group("/users", middleware.Authenticate(sessionManager))
-	actor.GET("/:username", r.actorRequestHandler.GetByUsername)
-	actor.GET("", r.actorRequestHandler.GetAll)
+	actor.GET("/:username", middleware.AuthorizationAdminOnly(), r.actorRequestHandler.GetByUsername)
+	actor.GET("", middleware.AuthorizationAdminOnly(), r.actorRequestHandler.GetAll)
 	actor.POST("", middleware.AuthorizationAdminOnly(), r.actorRequestHandler.CreateUser)
 	actor.PATCH("/:username", middleware.AuthorizationAdminOnly(), r.actorRequestHandler.UpdateUser)
 	actor.DELETE("/:username", middleware.AuthorizationAdminOnly(), r.actorRequestHandler.DeleteUser)
