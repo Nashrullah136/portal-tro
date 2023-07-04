@@ -42,6 +42,7 @@ type Representation struct {
 	CreatedBy string    `json:"created_by"`
 	UpdatedAt time.Time `json:"updated_at"`
 	UpdatedBy string    `json:"updated_by"`
+	NewUser   bool      `json:"new_user"`
 }
 
 type PaginationRequest struct {

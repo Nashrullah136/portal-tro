@@ -2,6 +2,7 @@ package user
 
 import (
 	"nashrul-be/crm/entities"
+	"time"
 )
 
 func mapCreateRequestToActor(request CreateRequest) entities.User {
@@ -30,5 +31,6 @@ func mapActorToResponse(actor entities.User) Representation {
 		CreatedBy: actor.CreatedBy,
 		UpdatedAt: actor.UpdatedAt,
 		UpdatedBy: actor.UpdatedBy,
+		NewUser:   actor.UpdatedAt.Sub(actor.CreatedAt) < 30*time.Second,
 	}
 }
