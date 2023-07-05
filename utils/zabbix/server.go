@@ -81,7 +81,8 @@ func (z *server) Do(method string, params any, result interface{}) error {
 	errObj := gjson.Get(string(respBody), "error.data")
 	if errObj.String() == "Session terminated, re-login, please." {
 		if err = z.Login(); err != nil {
-			log.Fatal("Failed to re-login to zabbix server")
+			log.Println("Failed to re-login to zabbix server")
+			return err
 		}
 		response, err = http.Post(z.url, "application/json", bytes.NewBuffer(reqBody))
 		if err != nil {

@@ -23,11 +23,13 @@ func (e *Audit) Consume(delivery rmq.Delivery) {
 	payloadJson := delivery.Payload()
 	if err := json.Unmarshal([]byte(payloadJson), &payload); err != nil {
 		Reject(&delivery)
-		log.Fatalf("Failed to unmarshall payload export csv. error: %s\n", err)
+		log.Printf("Failed to unmarshall payload export csv. error: %s\n", err)
+		return
 	}
 	if err := e.auditRepo.Create(payload); err != nil {
 		Reject(&delivery)
-		log.Fatalf("Failed to insert new audit to database. error: %s\n", err)
+		log.Printf("Failed to insert new audit to database. error: %s\n", err)
+		return
 	}
 	if err := delivery.Ack(); err != nil {
 		log.Printf("Failed to write to csv file. error: %s\n", err)

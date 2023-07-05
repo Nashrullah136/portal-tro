@@ -10,16 +10,19 @@ func UpdateLastDataServerUtil(cache zabbix.Cache, api zabbix.API) func() {
 	return func() {
 		template, err := cache.GetTemplate()
 		if err != nil {
-			log.Fatal("can't get template for server util")
+			log.Println("can't get template for server util")
+			return
 		}
 		itemIds, err := cache.GetItemIds()
 		if err != nil {
-			log.Fatal("can't get item ids for server util")
+			log.Println("can't get item ids for server util")
+			return
 		}
 		var result []entities.ServerUtilization
 		history, err := api.GetHistoryFromItem(itemIds)
 		if err != nil {
-			log.Fatal("Failed to access zabbix server")
+			log.Println("Failed to access zabbix server")
+			return
 		}
 		historyMap := make(map[string]string)
 		for _, val := range history {
@@ -39,7 +42,9 @@ func UpdateLastDataServerUtil(cache zabbix.Cache, api zabbix.API) func() {
 			result = append(result, temp)
 		}
 		if err = cache.SetLastValue(result); err != nil {
-			log.Fatal("Failed to save last value result to redis")
+			log.Println("Failed to save last value result to redis")
+			return
 		}
+		log.Println("Success update latest data from zabbix server")
 	}
 }
