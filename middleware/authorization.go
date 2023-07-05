@@ -29,3 +29,7 @@ func AuthorizationWithRole(roles []string) gin.HandlerFunc {
 func AuthorizationAdminOnly() gin.HandlerFunc {
 	return AuthorizationWithRole([]string{entities.ADMIN})
 }
+
+func AuthorizationUserOnly() gin.HandlerFunc {
+	return AuthorizationWithRole([]string{entities.USER})
+}
