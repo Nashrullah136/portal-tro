@@ -26,7 +26,7 @@ func NewRoute(
 }
 
 func (r Route) Handle(engine *gin.Engine, manager session.Manager) {
-	router := engine.Group("/span", middleware.Authenticate(manager))
-	router.GET("", r.brivaRequestHandler.GetByDocumentNumber)
-	router.POST("", r.brivaRequestHandler.UpdateBankRiau)
+	router := engine.Group("/span", middleware.Authenticate(manager), middleware.AuthorizationUserOnly())
+	router.GET("/:documentNumber", r.brivaRequestHandler.GetByDocumentNumber)
+	router.POST("/:documentNumber", r.brivaRequestHandler.UpdateBankRiau)
 }

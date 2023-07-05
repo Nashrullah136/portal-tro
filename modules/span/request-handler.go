@@ -21,7 +21,7 @@ type requestHandler struct {
 
 func (h requestHandler) GetByDocumentNumber(c *gin.Context) {
 	ctx := c.Copy()
-	documentNumber := c.Query("documentNumber")
+	documentNumber := c.Param("documentNumber")
 	if documentNumber == "" {
 		c.JSON(http.StatusBadRequest, dto.ErrorBadRequest("Document number is required"))
 		return
@@ -37,8 +37,9 @@ func (h requestHandler) GetByDocumentNumber(c *gin.Context) {
 func (h requestHandler) UpdateBankRiau(c *gin.Context) {
 	var request UpdateRequest
 	ctx := c.Copy()
-	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, dto.ErrorValidation(err))
+	request.DocumentNumber = c.Param("documentNumber")
+	if request.DocumentNumber == "" {
+		c.JSON(http.StatusBadRequest, dto.ErrorBadRequest("Document number is required"))
 		return
 	}
 	response, err := h.spanController.UpdateBankRiau(ctx, request)
