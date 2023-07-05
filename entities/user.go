@@ -8,6 +8,7 @@ import (
 )
 
 const ADMIN = "admin"
+const USER = "user"
 
 type User struct {
 	ID        uint      `gorm:"autoIncrement" mapstructure:"-" json:"-"`
