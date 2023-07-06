@@ -13,6 +13,7 @@ type CreateRequest struct {
 	Name     string `json:"name" binding:"omitempty,printascii"`
 	Username string `json:"username" binding:"required,printascii"`
 	Password string `json:"password" binding:"required,printascii"`
+	Role     string `json:"role" binding:"omitempty,oneof='admin' 'user'"`
 }
 
 type UpdateRequest struct {
