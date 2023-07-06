@@ -110,3 +110,10 @@ func NeedChangePassword() BaseResponse {
 		Message: "Please change your password!",
 	}
 }
+
+func UsernameAlreadyLogin() BaseResponse {
+	return BaseResponse{
+		Code:    http.StatusLocked,
+		Message: "Username already log in",
+	}
+}
