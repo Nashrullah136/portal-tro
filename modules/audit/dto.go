@@ -9,8 +9,8 @@ type GetAllRequest struct {
 	Username   string    `form:"username"`
 	Object     string    `form:"object"`
 	ObjectId   string    `form:"object_id"`
-	AfterDate  time.Time `form:"after_date" time_format:"01/02/2006"`
-	BeforeDate time.Time `form:"before_date" time_format:"01/02/2006"`
+	AfterDate  time.Time `form:"after_date" time_format:"2006-01-02"`
+	BeforeDate time.Time `form:"before_date" time_format:"2006-01-02"`
 	Page       int       `form:"page,omitempty"`
 	PerPage    int       `form:"perpage"`
 }
