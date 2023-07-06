@@ -6,13 +6,13 @@ import (
 )
 
 type GetAllRequest struct {
-	Username   string    `form:"username"`
-	Object     string    `form:"object"`
-	ObjectId   string    `form:"object_id"`
-	AfterDate  time.Time `form:"after_date" time_format:"2006-01-02"`
-	BeforeDate time.Time `form:"before_date" time_format:"2006-01-02"`
-	Page       int       `form:"page,omitempty"`
-	PerPage    int       `form:"perpage"`
+	Username string    `form:"username"`
+	Object   string    `form:"object"`
+	ObjectId string    `form:"object_id"`
+	FromDate time.Time `form:"from" time_format:"2006-01-02"`
+	ToDate   time.Time `form:"to" time_format:"2006-01-02"`
+	Page     int       `form:"page,omitempty"`
+	PerPage  int       `form:"perpage"`
 }
 
 type ExportRequest struct {
