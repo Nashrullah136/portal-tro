@@ -8,6 +8,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
 	"log"
+	"nashrul-be/crm/entities"
+	"strings"
 )
 
 const Name = "SESSION_ID"
@@ -20,7 +22,17 @@ func NewManager(redisConn *redis.Client) Manager {
 	return Manager{redisConn: redisConn}
 }
 
-func (m Manager) Create() (*Session, error) {
+func (m Manager) generatePrefix(username string) string {
+	rest := 3 - (len(username) % 3)
+	prefix := username + strings.Repeat(":", rest)
+	return base64.StdEncoding.EncodeToString([]byte(prefix))
+}
+
+func (m Manager) Create(user entities.User) (*Session, error) {
+	prefix := m.generatePrefix(user.Username)
+	if keys := m.redisConn.Keys(context.Background(), prefix+"*"); len(keys.Val()) > 0 {
+		return nil, errors.New("user already login")
+	}
 	randByte := make([]byte, 32)
 	_, err := rand.Read(randByte)
 	if err != nil {
@@ -29,7 +41,7 @@ func (m Manager) Create() (*Session, error) {
 	key := base64.StdEncoding.EncodeToString(randByte)
 	return &Session{
 		redisConn: m.redisConn,
-		Key:       key,
+		Key:       prefix + key,
 	}, nil
 }
 
