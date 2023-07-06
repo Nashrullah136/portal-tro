@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"nashrul-be/crm/middleware"
 	"nashrul-be/crm/repositories"
+	"nashrul-be/crm/utils/filesystem"
 	"nashrul-be/crm/utils/session"
 )
 
@@ -12,8 +13,9 @@ func NewRoute(
 	auditRepo repositories.AuditRepositoryInterface,
 	exportCsvRepo repositories.ExportCsvRepositoryInterface,
 	queue rmq.Queue,
+	folder filesystem.Folder,
 ) Route {
-	auditUseCase := NewUseCase(auditRepo, exportCsvRepo, queue)
+	auditUseCase := NewUseCase(auditRepo, exportCsvRepo, queue, folder)
 	auditController := NewController(auditUseCase)
 	auditRequestHandler := NewRequestHandler(auditController)
 	return Route{auditRequestHandler: auditRequestHandler}
@@ -24,8 +26,8 @@ type Route struct {
 }
 
 func (r Route) Handle(router *gin.Engine, manager session.Manager) {
-	auditRoute := router.Group("/audits", middleware.Authenticate(manager))
-	auditRoute.GET("", r.auditRequestHandler.GetAll)
+	auditRoute := router.Group("/audits", middleware.AuthenticateAndRefresh(manager))
+	auditRoute.GET("", middleware.CheckNewUser(), middleware.AuthorizationUserOnly(), r.auditRequestHandler.GetAll)
 	auditRoute.POST("", r.auditRequestHandler.CreateAudit)
-	auditRoute.GET("/export", r.auditRequestHandler.ExportCSV)
+	auditRoute.GET("/export", middleware.CheckNewUser(), middleware.AuthorizationUserOnly(), r.auditRequestHandler.ExportCSV)
 }

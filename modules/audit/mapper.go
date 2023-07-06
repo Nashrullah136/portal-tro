@@ -19,7 +19,7 @@ func mapExportRequestToAuditQuery(req ExportRequest) repositories.AuditQuery {
 		Username: req.Username,
 		Object:   req.Object,
 		ObjectId: req.ObjectId,
-		FromDate: req.AfterDate,
-		ToDate:   req.BeforeDate,
+		FromDate: req.FromDate,
+		ToDate:   req.ToDate,
 	}
 }

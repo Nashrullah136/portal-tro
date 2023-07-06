@@ -3,12 +3,13 @@ package audit
 import (
 	"context"
 	"nashrul-be/crm/dto"
+	csvutils "nashrul-be/crm/utils/csv"
 )
 
 type ControllerInterface interface {
 	GetAll(ctx context.Context, request GetAllRequest) (dto.BaseResponse, error)
 	CreateAudit(ctx context.Context, action string) (dto.BaseResponse, error)
-	ExportCSV(ctx context.Context, request ExportRequest) error
+	ExportCSV(ctx context.Context, request ExportRequest) (*csvutils.FileCsv, error)
 }
 
 func NewController(auditUseCase UseCaseInterface) ControllerInterface {
@@ -41,7 +42,7 @@ func (c controller) CreateAudit(ctx context.Context, action string) (dto.BaseRes
 	return dto.Success("Success create audit", nil), nil
 }
 
-func (c controller) ExportCSV(ctx context.Context, request ExportRequest) error {
+func (c controller) ExportCSV(ctx context.Context, request ExportRequest) (*csvutils.FileCsv, error) {
 	auditQuery := mapExportRequestToAuditQuery(request)
-	return c.auditUseCase.ExportCSV(ctx, auditQuery)
+	return c.auditUseCase.ExportCsv(ctx, auditQuery)
 }

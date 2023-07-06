@@ -145,7 +145,7 @@ func Test_useCase_ExportCSV(t *testing.T) {
 			csvReqAfter := csvReq
 			csvReqAfter.ID = 1
 			ucMock.exportCsvRepo.EXPECT().Create(csvReq).Return(csvReqAfter, err)
-			if err := uc.ExportCSV(tt.args.ctx, tt.args.query); (err != nil) != tt.wantErr {
+			if err := uc.ExportCsvAsync(tt.args.ctx, tt.args.query); (err != nil) != tt.wantErr {
 				t.Errorf("ExportCSV() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})

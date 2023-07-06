@@ -63,10 +63,10 @@ func (r requestHandler) ExportCSV(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, dto.ErrorValidation(err))
 		return
 	}
-	err := r.auditController.ExportCSV(ctx, request)
+	csvFile, err := r.auditController.ExportCSV(ctx, request)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, dto.ErrorInternalServerError())
 		return
 	}
-	c.JSON(http.StatusCreated, dto.Success("Request created", nil))
+	c.FileAttachment(csvFile.File.Path(), csvFile.File.Filename())
 }
