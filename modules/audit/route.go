@@ -26,7 +26,7 @@ type Route struct {
 }
 
 func (r Route) Handle(router *gin.Engine, manager session.Manager) {
-	auditRoute := router.Group("/audits", middleware.AuthenticateAndRefresh(manager))
+	auditRoute := router.Group("/audits", middleware.Authenticate(manager), middleware.Refresh(manager))
 	auditRoute.GET("", middleware.CheckNewUser(), middleware.AuthorizationUserOnly(), r.auditRequestHandler.GetAll)
 	auditRoute.POST("", r.auditRequestHandler.CreateAudit)
 	auditRoute.GET("/export", middleware.CheckNewUser(), middleware.AuthorizationUserOnly(), r.auditRequestHandler.ExportCSV)

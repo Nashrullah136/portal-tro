@@ -15,6 +15,7 @@ func NewRoute(configRequestHandler RequestHandlerInterface) Route {
 }
 
 func (r Route) Handle(engine *gin.Engine, manager session.Manager) {
-	route := engine.Group("/config", middleware.Authenticate(manager))
+	route := engine.Group("/config", middleware.Authenticate(manager),
+		middleware.Refresh(manager), middleware.CheckNewUser())
 	route.POST("/session-duration", r.configRequestHandler.UpdateSessionDuration)
 }

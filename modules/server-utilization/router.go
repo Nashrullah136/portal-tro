@@ -18,7 +18,7 @@ func NewRoute(cache zabbix.Cache, api zabbix.API) Route {
 }
 
 func (r Route) Handle(engine *gin.Engine, manager session.Manager) {
-	router := engine.Group("/server-utilization", middleware.Authenticate(manager))
+	router := engine.Group("/server-utilization", middleware.Authenticate(manager), middleware.CheckNewUser(), middleware.AuthorizationUserOnly())
 	router.GET("/latest-data", r.requestHandler.GetLatestData)
 	router.GET("/update-host", r.requestHandler.UpdateHostList)
 }

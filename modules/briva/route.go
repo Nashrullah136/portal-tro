@@ -26,7 +26,8 @@ func NewRoute(
 }
 
 func (r Route) Handle(engine *gin.Engine, manager session.Manager) {
-	router := engine.Group("/briva", middleware.Authenticate(manager))
+	router := engine.Group("/briva", middleware.Authenticate(manager),
+		middleware.Refresh(manager), middleware.CheckNewUser(), middleware.AuthorizationUserOnly())
 	router.GET("/:brivano", r.brivaRequestHandler.GetByBrivaNo)
 	router.POST("/:brivano", r.brivaRequestHandler.Update)
 }

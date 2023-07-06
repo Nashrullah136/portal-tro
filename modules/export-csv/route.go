@@ -24,7 +24,8 @@ func NewRoute(
 }
 
 func (r Route) Handle(engine *gin.Engine, manager session.Manager) {
-	route := engine.Group("/exports/csv", middleware.Authenticate(manager))
+	route := engine.Group("/exports/csv", middleware.Authenticate(manager),
+		middleware.Refresh(manager), middleware.CheckNewUser())
 	route.GET("/:id", r.csvRequestHandler.DownloadCsv)
 	route.GET("", r.csvRequestHandler.GetAll)
 }
