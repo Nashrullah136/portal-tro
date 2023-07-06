@@ -38,9 +38,9 @@ func (h requestHandler) Login(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, dto.ErrorBadRequest("Invalid Username/Password"))
 		return
 	}
-	newSession, err := h.sessionManager.Create()
+	newSession, err := h.sessionManager.Create(*account)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, dto.ErrorInternalServerError())
+		c.JSON(http.StatusLocked, dto.UsernameAlreadyLogin())
 		return
 	}
 	accountJson, err := json.Marshal(account)
@@ -58,10 +58,14 @@ func (h requestHandler) Login(c *gin.Context) {
 		return
 	}
 	c.SetCookie(session.Name, newSession.Key, 0, "/", os.Getenv("DOMAIN"), false, true)
-	c.JSON(http.StatusOK, dto.Authenticated(account.Username, account.Role.RoleName))
+	c.JSON(http.StatusOK, dto.Authenticated(*account))
 }
 
 func (h requestHandler) Logout(c *gin.Context) {
+	if err := h.authController.Logout(c.Copy()); err != nil {
+		c.JSON(http.StatusInternalServerError, dto.ErrorInternalServerError())
+		return
+	}
 	key, err := h.sessionManager.Delete(c)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, dto.ErrorInternalServerError())
