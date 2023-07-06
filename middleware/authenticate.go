@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -18,12 +19,12 @@ func Authenticate(manager session.Manager) gin.HandlerFunc {
 		currentSession, err := manager.Get(c)
 		if err != nil {
 			log.Println(err.Error())
+			if errors.Is(err, session.ErrNotExist) {
+				c.Header("Access-Control-Allow-Credentials", "true")
+				c.SetCookie(session.Name, currentSession.Key, -1, "/", os.Getenv("DOMAIN"), false, true)
+			}
 			c.AbortWithStatusJSON(http.StatusUnauthorized, dto.ErrorUnauthorizedDefault())
 			return
-		}
-		duration, _ := strconv.Atoi(os.Getenv("SESSION_DURATION"))
-		if err := currentSession.UpdateExpire(duration); err != nil {
-			log.Println(fmt.Sprintf("Can't update redis expire. error: %s", err))
 		}
 		accountJson, err := currentSession.Get("user")
 		if err != nil {
@@ -38,5 +39,15 @@ func Authenticate(manager session.Manager) gin.HandlerFunc {
 			return
 		}
 		c.Set("user", user)
+	}
+}
+
+func Refresh(manager session.Manager) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		currentSession, _ := manager.Get(c)
+		duration, _ := strconv.Atoi(os.Getenv("SESSION_DURATION"))
+		if err := currentSession.UpdateExpire(duration); err != nil {
+			log.Println(fmt.Sprintf("Can't update redis expire. error: %s", err))
+		}
 	}
 }
