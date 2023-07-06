@@ -10,6 +10,7 @@ import (
 
 type ControllerInterface interface {
 	Login(request LoginRequest) (*entities.User, error)
+	Logout(ctx context.Context) error
 }
 
 func NewAuthController(
@@ -44,4 +45,8 @@ func (c controller) Login(request LoginRequest) (*entities.User, error) {
 		return nil, err
 	}
 	return &account, nil
+}
+
+func (c controller) Logout(ctx context.Context) error {
+	return c.auditUseCase.CreateAudit(ctx, "Logout")
 }
