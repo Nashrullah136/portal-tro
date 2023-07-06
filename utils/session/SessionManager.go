@@ -14,6 +14,8 @@ import (
 
 const Name = "SESSION_ID"
 
+var ErrNotExist = errors.New("session not found")
+
 type Manager struct {
 	redisConn *redis.Client
 }
@@ -55,7 +57,9 @@ func (m Manager) Get(c *gin.Context) (*Session, error) {
 		return nil, err
 	}
 	if redisLen.Val() == 0 {
-		return nil, errors.New("cookies doesn't exist")
+		return &Session{
+			Key: cookie,
+		}, ErrNotExist
 	}
 	return &Session{
 		redisConn: m.redisConn,
