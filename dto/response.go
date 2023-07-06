@@ -3,6 +3,7 @@ package dto
 import (
 	"fmt"
 	"math"
+	"nashrul-be/crm/entities"
 	"nashrul-be/crm/utils/translate"
 	"net/http"
 )
@@ -61,13 +62,14 @@ func ErrorForbidden() BaseResponse {
 	}
 }
 
-func Authenticated(username, role string) BaseResponse {
+func Authenticated(user entities.User) BaseResponse {
 	return BaseResponse{
 		Code:    http.StatusOK,
 		Message: "Authenticated",
 		Data: map[string]any{
-			"username": username,
-			"role":     role,
+			"username": user.Username,
+			"role":     user.Role.RoleName,
+			"new_user": user.IsNewUser(),
 		},
 	}
 }
@@ -99,5 +101,12 @@ func Created(msg string, data any) BaseResponse {
 		Code:    http.StatusCreated,
 		Message: msg,
 		Data:    data,
+	}
+}
+
+func NeedChangePassword() BaseResponse {
+	return BaseResponse{
+		Code:    http.StatusForbidden,
+		Message: "Please change your password!",
 	}
 }
