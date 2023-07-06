@@ -17,10 +17,14 @@ type User struct {
 	Password  string    `mapstructure:"password,omitempty" json:"-"`
 	RoleID    uint      `mapstructure:"role_id,omitempty" json:"role_id,omitempty"`
 	Role      Role      `mapstructure:"-" json:"role,omitempty"`
-	CreatedAt time.Time `mapstructure:"-" json:"-"`
-	CreatedBy string    `mapstructure:"-" json:"-"`
-	UpdatedAt time.Time `mapstructure:"-" json:"-"`
-	UpdatedBy string    `mapstructure:"-" json:"-"`
+	CreatedAt time.Time `mapstructure:"-" json:"created_at,omitempty"`
+	CreatedBy string    `mapstructure:"-" json:"created_by,omitempty"`
+	UpdatedAt time.Time `mapstructure:"-" json:"updated_at,omitempty"`
+	UpdatedBy string    `mapstructure:"-" json:"updated_by,omitempty"`
+}
+
+func (u *User) IsNewUser() bool {
+	return u.UpdatedAt.Sub(u.CreatedAt) < 1*time.Second
 }
 
 func (u *User) LogPresentation() (result map[string]any, err error) {
