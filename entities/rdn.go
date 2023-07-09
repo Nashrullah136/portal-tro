@@ -3,6 +3,7 @@ package entities
 import (
 	"fmt"
 	"github.com/mitchellh/mapstructure"
+	"nashrul-be/crm/utils/audit"
 )
 
 type RDN struct {
@@ -33,7 +34,7 @@ func (r *RDN) EntityName() string {
 	return "RDN"
 }
 
-func (r *RDN) Copy() Auditor {
+func (r *RDN) Copy() audit.Auditor {
 	rdn := *r
 	return &rdn
 }

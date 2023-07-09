@@ -3,7 +3,7 @@ package user
 import (
 	"github.com/gin-gonic/gin"
 	"nashrul-be/crm/dto"
-	"nashrul-be/crm/entities"
+	"nashrul-be/crm/utils"
 	"net/http"
 )
 
@@ -28,8 +28,11 @@ type requestHandler struct {
 
 func (h requestHandler) ProfileUser(c *gin.Context) {
 	ctx := c.Copy()
-	user, _ := c.Get("user")
-	response, err := h.actorController.GetByUsername(ctx, user.(entities.User).Username)
+	user, err := utils.GetUser(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, dto.ErrorInternalServerError())
+	}
+	response, err := h.actorController.GetByUsername(ctx, user.Username)
 	if err != nil {
 		c.JSON(http.StatusNotFound, actorNotFound())
 		return
@@ -40,8 +43,11 @@ func (h requestHandler) ProfileUser(c *gin.Context) {
 func (h requestHandler) UpdateProfile(c *gin.Context) {
 	var request UpdateProfile
 	ctx := c.Copy()
-	user, _ := c.Get("user")
-	request.Username = user.(entities.User).Username
+	user, err := utils.GetUser(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, dto.ErrorInternalServerError())
+	}
+	request.Username = user.Username
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, dto.ErrorValidation(err))
 		return
@@ -123,16 +129,15 @@ func (h requestHandler) UpdateUser(c *gin.Context) {
 func (h requestHandler) UpdatePasswordUser(c *gin.Context) {
 	var request ChangePasswordRequest
 	ctx := c.Copy()
-	actor, exist := c.Get("user")
-	if !exist {
+	user, err := utils.GetUser(c)
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, dto.ErrorInternalServerError())
-		return
 	}
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, dto.ErrorBadRequest(err.Error()))
 		return
 	}
-	request.Username = actor.(entities.User).Username
+	request.Username = user.Username
 	response, err := h.actorController.ChangePassword(ctx, request)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, dto.ErrorInternalServerError())

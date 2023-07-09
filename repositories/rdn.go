@@ -3,7 +3,10 @@ package repositories
 import (
 	"context"
 	"gorm.io/gorm"
+	"log"
 	"nashrul-be/crm/entities"
+	"nashrul-be/crm/utils"
+	"nashrul-be/crm/utils/audit"
 	"nashrul-be/crm/utils/db"
 )
 
@@ -38,7 +41,16 @@ func (r rdnRepository) UpdateWithWhereCond(ctx context.Context, rdn entities.RDN
 }
 
 func (r rdnRepository) MakeAuditUpdate(ctx context.Context, rdn entities.RDN) (entities.Audit, error) {
-	return entities.AuditUpdate(r.db.WithContext(ctx), &rdn)
+	actor, err := utils.GetUserFromContext(ctx)
+	if err != nil {
+		log.Println(err)
+		return entities.Audit{}, err
+	}
+	result, err := audit.Update(r.db, &actor, &rdn)
+	if err != nil {
+		return entities.Audit{}, err
+	}
+	return entities.MapAuditResultToAuditEntities(result), nil
 }
 
 func (r rdnRepository) Begin() db.Transactor {

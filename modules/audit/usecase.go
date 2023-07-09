@@ -7,6 +7,7 @@ import (
 	"log"
 	"nashrul-be/crm/entities"
 	"nashrul-be/crm/repositories"
+	"nashrul-be/crm/utils"
 	csvutils "nashrul-be/crm/utils/csv"
 	"nashrul-be/crm/utils/filesystem"
 )
@@ -78,11 +79,11 @@ func (uc useCase) ExportCsv(ctx context.Context, query repositories.AuditQuery) 
 }
 
 func (uc useCase) ExportCsvAsync(ctx context.Context, query repositories.AuditQuery) error {
-	user, err := entities.ExtractActorFromContext(ctx)
+	user, err := utils.GetUserFromContext(ctx)
 	if err != nil {
 		return err
 	}
-	csvReq := entities.InitExportCsv(user.Username)
+	csvReq := entities.InitExportCsv(user.Identity())
 	csvReq, err = uc.exportCsvRepo.Create(csvReq)
 	if err != nil {
 		return err

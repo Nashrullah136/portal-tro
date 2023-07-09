@@ -4,6 +4,7 @@ import (
 	"context"
 	"gorm.io/gorm"
 	"nashrul-be/crm/entities"
+	"nashrul-be/crm/utils"
 	"nashrul-be/crm/utils/db"
 	"nashrul-be/crm/utils/localtime"
 	"time"
@@ -69,16 +70,16 @@ func (r auditRepository) Create(audit entities.Audit) error {
 }
 
 func (r auditRepository) CreateAudit(ctx context.Context, action string) (err error) {
-	user, err := entities.ExtractActorFromContext(ctx)
+	user, err := utils.GetUserFromContext(ctx)
 	if err != nil {
 		return
 	}
-	audit := entities.Audit{
+	result := entities.Audit{
 		DateTime: localtime.Now(),
-		Username: user.Username,
+		Username: user.Identity(),
 		Action:   action,
 	}
-	err = r.db.WithContext(ctx).Create(&audit).Error
+	err = r.db.WithContext(ctx).Create(&result).Error
 	return
 }
 

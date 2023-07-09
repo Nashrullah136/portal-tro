@@ -4,14 +4,14 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"nashrul-be/crm/dto"
-	"nashrul-be/crm/entities"
+	"nashrul-be/crm/utils"
 	"net/http"
 )
 
 func CheckNewUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		actor, ok := c.MustGet("user").(entities.User)
-		if !ok {
+		actor, err := utils.GetUser(c)
+		if err != nil {
 			c.AbortWithStatus(http.StatusInternalServerError)
 		}
 		if actor.IsNewUser() {

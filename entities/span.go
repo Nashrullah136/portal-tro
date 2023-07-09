@@ -1,6 +1,9 @@
 package entities
 
-import "github.com/mitchellh/mapstructure"
+import (
+	"github.com/mitchellh/mapstructure"
+	"nashrul-be/crm/utils/audit"
+)
 
 type SPAN struct {
 	DocumentNumber      string `gorm:"column:DOCUMENTNUMBER;primaryKey" mapstructure:",omitempty"`
@@ -32,7 +35,7 @@ func (r *SPAN) EntityName() string {
 	return "SPAN"
 }
 
-func (r *SPAN) Copy() Auditor {
+func (r *SPAN) Copy() audit.Auditor {
 	SPAN := *r
 	return &SPAN
 }

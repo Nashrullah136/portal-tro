@@ -7,6 +7,8 @@ import (
 	"log"
 	"nashrul-be/crm/entities"
 	"nashrul-be/crm/repositories"
+	"nashrul-be/crm/utils"
+	"nashrul-be/crm/utils/audit"
 )
 
 type UseCaseInterface interface {
@@ -37,15 +39,21 @@ func (uc useCase) GetByDocumentNumber(ctx context.Context, documentNumber string
 }
 
 func (uc useCase) UpdatePatchBankRiau(ctx context.Context, span entities.SPAN) error {
+	actor, err := utils.GetUserFromContext(ctx)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
 	oldSpan, err := uc.GetByDocumentNumber(ctx, span.DocumentNumber)
 	if err != nil {
 		return err
 	}
 	newSpan := PatchBankRiau(oldSpan)
-	audit, err := entities.AuditUpdateWithOldData(ctx, &newSpan, &oldSpan)
+	auditResult, err := audit.UpdateWithOldData(&actor, &newSpan, &oldSpan)
 	if err != nil {
 		return err
 	}
+	auditEntities := entities.MapAuditResultToAuditEntities(auditResult)
 	spanTx := uc.spanRepo.Begin()
 	auditTx := uc.auditRepo.Begin()
 	brivaRepoTx := uc.spanRepo.New(spanTx)
@@ -55,7 +63,7 @@ func (uc useCase) UpdatePatchBankRiau(ctx context.Context, span entities.SPAN) e
 		auditTx.Rollback()
 		return err
 	}
-	if err = auditRepoTx.Create(audit); err != nil {
+	if err = auditRepoTx.Create(auditEntities); err != nil {
 		spanTx.Rollback()
 		auditTx.Rollback()
 		return err
@@ -68,7 +76,7 @@ func (uc useCase) UpdatePatchBankRiau(ctx context.Context, span entities.SPAN) e
 	if err = auditTx.Commit().Error; err != nil {
 		log.Println("Failed to commit audit table, proceed to publish data to queue.")
 		auditTx.Rollback()
-		auditJson, err := json.Marshal(audit)
+		auditJson, err := json.Marshal(auditEntities)
 		if err != nil {
 			log.Println("Failed on marshalling audit")
 			return nil

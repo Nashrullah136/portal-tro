@@ -8,6 +8,7 @@ import (
 	"log"
 	"nashrul-be/crm/dto"
 	"nashrul-be/crm/entities"
+	"nashrul-be/crm/utils"
 	"nashrul-be/crm/utils/session"
 	"net/http"
 	"os"
@@ -38,7 +39,7 @@ func Authenticate(manager session.Manager) gin.HandlerFunc {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, dto.ErrorInternalServerError())
 			return
 		}
-		c.Set("user", user)
+		utils.SetUser(c, user)
 	}
 }
 

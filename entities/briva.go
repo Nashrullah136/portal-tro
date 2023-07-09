@@ -2,20 +2,13 @@ package entities
 
 import (
 	"github.com/mitchellh/mapstructure"
+	"nashrul-be/crm/utils/audit"
 )
 
 type Briva struct {
 	Brivano  string `gorm:"primaryKey" mapstructure:",omitempty"`
 	CorpName string `mapstructure:",omitempty"`
 	IsActive string `gorm:"column:IsActive" mapstructure:",omitempty"`
-}
-
-func (b *Briva) Off() {
-	b.IsActive = "N"
-}
-
-func (b *Briva) On() {
-	b.IsActive = "Y"
 }
 
 func (b *Briva) LogPresentation() (result map[string]any, err error) {
@@ -33,7 +26,7 @@ func (b *Briva) EntityName() string {
 	return "BRIVA"
 }
 
-func (b *Briva) Copy() Auditor {
+func (b *Briva) Copy() audit.Auditor {
 	newBriva := *b
 	return &newBriva
 }

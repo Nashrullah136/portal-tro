@@ -3,7 +3,10 @@ package repositories
 import (
 	"context"
 	"gorm.io/gorm"
+	"log"
 	"nashrul-be/crm/entities"
+	"nashrul-be/crm/utils"
+	"nashrul-be/crm/utils/audit"
 	"nashrul-be/crm/utils/db"
 )
 
@@ -33,7 +36,16 @@ func (r brivaRepository) Update(ctx context.Context, briva entities.Briva) error
 }
 
 func (r brivaRepository) MakeAuditUpdate(ctx context.Context, briva entities.Briva) (entities.Audit, error) {
-	return entities.AuditUpdate(r.db.WithContext(ctx), &briva)
+	actor, err := utils.GetUserFromContext(ctx)
+	if err != nil {
+		log.Println(err)
+		return entities.Audit{}, err
+	}
+	result, err := audit.Update(r.db, &actor, &briva)
+	if err != nil {
+		return entities.Audit{}, err
+	}
+	return entities.MapAuditResultToAuditEntities(result), nil
 }
 
 func (r brivaRepository) Begin() db.Transactor {

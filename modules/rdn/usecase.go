@@ -7,6 +7,8 @@ import (
 	"log"
 	"nashrul-be/crm/entities"
 	"nashrul-be/crm/repositories"
+	"nashrul-be/crm/utils"
+	"nashrul-be/crm/utils/audit"
 )
 
 type UseCaseInterface interface {
@@ -37,13 +39,18 @@ type useCase struct {
 }
 
 func (uc useCase) MakeAuditBatch(ctx context.Context, rdnData []entities.RDN, patchFunc patch) (result []entities.Audit, err error) {
+	actor, err := utils.GetUserFromContext(ctx)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
 	for _, rdn := range rdnData {
 		rdnPatched := patchFunc(rdn)
-		audit, err := entities.AuditUpdateWithOldData(ctx, &rdnPatched, &rdn)
+		auditResult, err := audit.UpdateWithOldData(&actor, &rdnPatched, &rdn)
 		if err != nil {
 			return nil, err
 		}
-		result = append(result, audit)
+		result = append(result, entities.MapAuditResultToAuditEntities(auditResult))
 	}
 	return result, nil
 }
@@ -96,8 +103,8 @@ func (uc useCase) Update(ctx context.Context, rdnPatch entities.RDN, whereCond m
 		auditTx.Rollback()
 		return err
 	}
-	for _, audit := range audits {
-		if err = auditRepoTx.Create(audit); err != nil {
+	for _, auditData := range audits {
+		if err = auditRepoTx.Create(auditData); err != nil {
 			rdnTx.Rollback()
 			auditTx.Rollback()
 			return err
@@ -111,8 +118,8 @@ func (uc useCase) Update(ctx context.Context, rdnPatch entities.RDN, whereCond m
 	if err = auditTx.Commit().Error; err != nil {
 		log.Println("Failed to commit audit table, proceed to publish data to queue.")
 		auditTx.Rollback()
-		for _, audit := range audits {
-			auditJson, err := json.Marshal(audit)
+		for _, auditData := range audits {
+			auditJson, err := json.Marshal(auditData)
 			if err != nil {
 				log.Println("Failed on marshalling audit")
 			}

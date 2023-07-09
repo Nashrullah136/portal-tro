@@ -5,6 +5,7 @@ import (
 	"nashrul-be/crm/entities"
 	"nashrul-be/crm/modules/audit"
 	"nashrul-be/crm/modules/user"
+	"nashrul-be/crm/utils"
 	"nashrul-be/crm/utils/crypto"
 )
 
@@ -39,8 +40,7 @@ func (c controller) Login(request LoginRequest) (*entities.User, error) {
 	if err = c.hash.Compare(request.Password, account.Password); err != nil {
 		return nil, err
 	}
-	ctx := context.Background()
-	ctx = context.WithValue(ctx, "user", account)
+	ctx := utils.SetUserToContext(context.Background(), account)
 	if err = c.auditUseCase.CreateAudit(ctx, "Login"); err != nil {
 		return nil, err
 	}
