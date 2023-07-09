@@ -50,11 +50,11 @@ func Handle(dbMain *gorm.DB, dbBriva *gorm.DB, dbRdn *gorm.DB, dbSpan *gorm.DB,
 	actorRoute := user.NewRoute(actorRepo, roleRepo, bcryptHash)
 	actorRoute.Handle(engine, sessionManager)
 
-	auditRoute := audit.NewRoute(auditRepo, exportCsvRepo, queueCsv)
+	auditRoute := audit.NewRoute(auditRepo, exportCsvRepo, queueCsv, reportFolder)
 	auditRoute.Handle(engine, sessionManager)
 
 	actorUseCase := user.NewUseCase(actorRepo, roleRepo, bcryptHash)
-	auditUseCase := audit.NewUseCase(auditRepo, exportCsvRepo, queueCsv)
+	auditUseCase := audit.NewUseCase(auditRepo, exportCsvRepo, queueCsv, reportFolder)
 	authRoute := authentication.NewRoute(actorUseCase, auditUseCase, sessionManager, bcryptHash)
 	authRoute.Handle(engine, sessionManager)
 
