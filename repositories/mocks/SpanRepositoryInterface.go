@@ -121,6 +121,58 @@ func (_c *SpanRepositoryInterface_GetBySpanDocumentNumber_Call) RunAndReturn(run
 	return _c
 }
 
+// IsSpanExist provides a mock function with given fields: span
+func (_m *SpanRepositoryInterface) IsSpanExist(span entities.SPAN) (bool, error) {
+	ret := _m.Called(span)
+
+	var r0 bool
+	var r1 error
+	if rf, ok := ret.Get(0).(func(entities.SPAN) (bool, error)); ok {
+		return rf(span)
+	}
+	if rf, ok := ret.Get(0).(func(entities.SPAN) bool); ok {
+		r0 = rf(span)
+	} else {
+		r0 = ret.Get(0).(bool)
+	}
+
+	if rf, ok := ret.Get(1).(func(entities.SPAN) error); ok {
+		r1 = rf(span)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// SpanRepositoryInterface_IsSpanExist_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'IsSpanExist'
+type SpanRepositoryInterface_IsSpanExist_Call struct {
+	*mock.Call
+}
+
+// IsSpanExist is a helper method to define mock.On call
+//   - span entities.SPAN
+func (_e *SpanRepositoryInterface_Expecter) IsSpanExist(span interface{}) *SpanRepositoryInterface_IsSpanExist_Call {
+	return &SpanRepositoryInterface_IsSpanExist_Call{Call: _e.mock.On("IsSpanExist", span)}
+}
+
+func (_c *SpanRepositoryInterface_IsSpanExist_Call) Run(run func(span entities.SPAN)) *SpanRepositoryInterface_IsSpanExist_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(entities.SPAN))
+	})
+	return _c
+}
+
+func (_c *SpanRepositoryInterface_IsSpanExist_Call) Return(exist bool, err error) *SpanRepositoryInterface_IsSpanExist_Call {
+	_c.Call.Return(exist, err)
+	return _c
+}
+
+func (_c *SpanRepositoryInterface_IsSpanExist_Call) RunAndReturn(run func(entities.SPAN) (bool, error)) *SpanRepositoryInterface_IsSpanExist_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // MakeAuditUpdate provides a mock function with given fields: ctx, span
 func (_m *SpanRepositoryInterface) MakeAuditUpdate(ctx context.Context, span entities.SPAN) (entities.Audit, error) {
 	ret := _m.Called(ctx, span)

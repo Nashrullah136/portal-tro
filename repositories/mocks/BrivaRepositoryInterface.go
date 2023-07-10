@@ -121,6 +121,58 @@ func (_c *BrivaRepositoryInterface_GetByBrivaNo_Call) RunAndReturn(run func(cont
 	return _c
 }
 
+// IsBrivaExist provides a mock function with given fields: briva
+func (_m *BrivaRepositoryInterface) IsBrivaExist(briva entities.Briva) (bool, error) {
+	ret := _m.Called(briva)
+
+	var r0 bool
+	var r1 error
+	if rf, ok := ret.Get(0).(func(entities.Briva) (bool, error)); ok {
+		return rf(briva)
+	}
+	if rf, ok := ret.Get(0).(func(entities.Briva) bool); ok {
+		r0 = rf(briva)
+	} else {
+		r0 = ret.Get(0).(bool)
+	}
+
+	if rf, ok := ret.Get(1).(func(entities.Briva) error); ok {
+		r1 = rf(briva)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// BrivaRepositoryInterface_IsBrivaExist_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'IsBrivaExist'
+type BrivaRepositoryInterface_IsBrivaExist_Call struct {
+	*mock.Call
+}
+
+// IsBrivaExist is a helper method to define mock.On call
+//   - briva entities.Briva
+func (_e *BrivaRepositoryInterface_Expecter) IsBrivaExist(briva interface{}) *BrivaRepositoryInterface_IsBrivaExist_Call {
+	return &BrivaRepositoryInterface_IsBrivaExist_Call{Call: _e.mock.On("IsBrivaExist", briva)}
+}
+
+func (_c *BrivaRepositoryInterface_IsBrivaExist_Call) Run(run func(briva entities.Briva)) *BrivaRepositoryInterface_IsBrivaExist_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(entities.Briva))
+	})
+	return _c
+}
+
+func (_c *BrivaRepositoryInterface_IsBrivaExist_Call) Return(exist bool, err error) *BrivaRepositoryInterface_IsBrivaExist_Call {
+	_c.Call.Return(exist, err)
+	return _c
+}
+
+func (_c *BrivaRepositoryInterface_IsBrivaExist_Call) RunAndReturn(run func(entities.Briva) (bool, error)) *BrivaRepositoryInterface_IsBrivaExist_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // MakeAuditUpdate provides a mock function with given fields: ctx, briva
 func (_m *BrivaRepositoryInterface) MakeAuditUpdate(ctx context.Context, briva entities.Briva) (entities.Audit, error) {
 	ret := _m.Called(ctx, briva)
