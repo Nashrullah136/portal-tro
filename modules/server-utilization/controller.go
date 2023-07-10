@@ -8,13 +8,13 @@ import (
 	"regexp"
 )
 
-type Controller interface {
+type ControllerInterface interface {
 	RefreshHostList() error
 	GetLastData() (dto.BaseResponse, error)
 	IsValid(utilization entities.ServerUtilization) bool
 }
 
-func NewController(cache zabbix.Cache, api zabbix.API) Controller {
+func NewController(cache zabbix.Cache, api zabbix.API) ControllerInterface {
 	return controller{
 		cache:     cache,
 		zabbixApi: api,

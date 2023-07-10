@@ -8,7 +8,7 @@ import (
 )
 
 type Route struct {
-	requestHandler RequestHandler
+	requestHandler RequestHandlerInterface
 }
 
 func NewRoute(cache zabbix.Cache, api zabbix.API) Route {

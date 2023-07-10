@@ -6,17 +6,17 @@ import (
 	"net/http"
 )
 
-type RequestHandler interface {
+type RequestHandlerInterface interface {
 	UpdateHostList(c *gin.Context)
 	GetLatestData(c *gin.Context)
 }
 
-func NewRequestHandler(serverUtilController Controller) RequestHandler {
+func NewRequestHandler(serverUtilController ControllerInterface) RequestHandlerInterface {
 	return requestHandler{serverUtilController: serverUtilController}
 }
 
 type requestHandler struct {
-	serverUtilController Controller
+	serverUtilController ControllerInterface
 }
 
 func (h requestHandler) UpdateHostList(c *gin.Context) {
