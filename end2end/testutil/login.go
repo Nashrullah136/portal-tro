@@ -4,7 +4,22 @@ import (
 	"github.com/gavv/httpexpect/v2"
 	"net/http"
 	"strings"
+	"testing"
 )
+
+func LoginAs(t *testing.T, e *httpexpect.Expect, who string) map[string]string {
+	switch who {
+	case "admin":
+		return LoginAsAdmin(e)
+	case "user":
+		return LoginAsUser(e)
+	case "newUser":
+		return LoginAsNewUser(e)
+	default:
+		t.Fatal("unexpected value who")
+		return nil
+	}
+}
 
 func LoginAsAdmin(e *httpexpect.Expect) map[string]string {
 	credential := map[string]string{
@@ -17,6 +32,14 @@ func LoginAsAdmin(e *httpexpect.Expect) map[string]string {
 func LoginAsUser(e *httpexpect.Expect) map[string]string {
 	credential := map[string]string{
 		"username": "user",
+		"password": "user",
+	}
+	return Login(e, credential)
+}
+
+func LoginAsNewUser(e *httpexpect.Expect) map[string]string {
+	credential := map[string]string{
+		"username": "newUser",
 		"password": "user",
 	}
 	return Login(e, credential)

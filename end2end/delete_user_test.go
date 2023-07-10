@@ -24,14 +24,8 @@ func Test_delete_user(t *testing.T) {
 				testutil.CreateUser(e, req)
 			}
 			var auth map[string]string
-			loginAs, ok := data.Control["loginAs"].(string)
-			if ok {
-				switch loginAs {
-				case "user":
-					auth = testutil.LoginAsUser(e)
-				case "admin":
-					auth = testutil.LoginAsAdmin(e)
-				}
+			if loginAs, ok := data.Control["loginAs"].(string); ok {
+				auth = testutil.LoginAs(t, e, loginAs)
 			}
 			defer testutil.Logout(e, auth)
 			createdUser := entities.User{Username: data.Data["username"].(string)}

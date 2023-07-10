@@ -21,14 +21,8 @@ func Test_get_span(t *testing.T) {
 				t.Fatal(err)
 			}
 			var auth map[string]string
-			loginAs, ok := data.Control["loginAs"].(string)
-			if ok {
-				switch loginAs {
-				case "user":
-					auth = testutil.LoginAsUser(e)
-				case "admin":
-					auth = testutil.LoginAsAdmin(e)
-				}
+			if loginAs, ok := data.Control["loginAs"].(string); ok {
+				auth = testutil.LoginAs(t, e, loginAs)
 			}
 			defer testutil.Logout(e, auth)
 			responseBody := e.GET("/span/" + data.Data["documentNumber"].(string)).WithHeaders(auth).

@@ -22,14 +22,8 @@ func Test_update_user(t *testing.T) {
 				testutil.CreateUser(e, req)
 			}
 			var auth map[string]string
-			loginAs, ok := data.Control["loginAs"].(string)
-			if ok {
-				switch loginAs {
-				case "user":
-					auth = testutil.LoginAsUser(e)
-				case "admin":
-					auth = testutil.LoginAsAdmin(e)
-				}
+			if loginAs, ok := data.Control["loginAs"].(string); ok {
+				auth = testutil.LoginAs(t, e, loginAs)
 			}
 			var createdUser entities.User
 			if err := db.Where("username = ?", data.Control["create"].(map[string]any)["username"]).Find(&createdUser).Error; err != nil {

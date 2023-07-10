@@ -22,8 +22,7 @@ func Test_update_profile(t *testing.T) {
 				testutil.CreateUser(e, req)
 			}
 			var auth map[string]string
-			loginCredential, exist := data.Control["login"]
-			if exist {
+			if loginCredential, exist := data.Control["login"]; exist {
 				auth = testutil.Login(e, loginCredential)
 			}
 			var createdUser entities.User
