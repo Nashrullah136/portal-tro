@@ -7,8 +7,6 @@ import (
 	"log"
 	"nashrul-be/crm/entities"
 	"nashrul-be/crm/repositories"
-	"nashrul-be/crm/utils"
-	"nashrul-be/crm/utils/audit"
 )
 
 type UseCaseInterface interface {
@@ -39,21 +37,15 @@ func (uc useCase) GetByDocumentNumber(ctx context.Context, documentNumber string
 }
 
 func (uc useCase) UpdatePatchBankRiau(ctx context.Context, span entities.SPAN) error {
-	actor, err := utils.GetUserFromContext(ctx)
-	if err != nil {
-		log.Println(err)
-		return err
-	}
 	oldSpan, err := uc.GetByDocumentNumber(ctx, span.DocumentNumber)
 	if err != nil {
 		return err
 	}
 	newSpan := PatchBankRiau(oldSpan)
-	auditResult, err := audit.UpdateWithOldData(&actor, &newSpan, &oldSpan)
+	auditEntities, err := uc.spanRepo.MakeAuditUpdateWithOldData(ctx, oldSpan, newSpan)
 	if err != nil {
 		return err
 	}
-	auditEntities := entities.MapAuditResultToAuditEntities(auditResult)
 	spanTx := uc.spanRepo.Begin()
 	auditTx := uc.auditRepo.Begin()
 	spanRepoTx := uc.spanRepo.New(spanTx)

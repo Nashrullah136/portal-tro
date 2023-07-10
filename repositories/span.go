@@ -14,6 +14,7 @@ type SpanRepositoryInterface interface {
 	GetBySpanDocumentNumber(ctx context.Context, documentNumber string) (span entities.SPAN, err error)
 	Update(ctx context.Context, span entities.SPAN) error
 	MakeAuditUpdate(ctx context.Context, span entities.SPAN) (entities.Audit, error)
+	MakeAuditUpdateWithOldData(ctx context.Context, oldSpan entities.SPAN, newSpan entities.SPAN) (entities.Audit, error)
 	Begin() db.Transactor
 	New(transact db.Transactor) SpanRepositoryInterface
 }
@@ -44,6 +45,19 @@ func (r spanRepository) MakeAuditUpdate(ctx context.Context, span entities.SPAN)
 		return entities.Audit{}, err
 	}
 	result, err := audit.Update(r.db, &actor, &span)
+	if err != nil {
+		return entities.Audit{}, err
+	}
+	return entities.MapAuditResultToAuditEntities(result), nil
+}
+
+func (r spanRepository) MakeAuditUpdateWithOldData(ctx context.Context, oldSpan entities.SPAN, newSpan entities.SPAN) (entities.Audit, error) {
+	actor, err := utils.GetUserFromContext(ctx)
+	if err != nil {
+		log.Println(err)
+		return entities.Audit{}, err
+	}
+	result, err := audit.UpdateWithOldData(&actor, &newSpan, &oldSpan)
 	if err != nil {
 		return entities.Audit{}, err
 	}
