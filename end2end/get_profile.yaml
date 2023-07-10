@@ -1,0 +1,45 @@
+- name: Get profile as user
+  data:
+  expect:
+    code: 200
+    name: user
+    username: user
+    role: user
+    createdBy: admin
+    updatedBy: admin
+  control:
+    case: success
+    loginAs: user
+
+- name: Get profile as admin
+  data:
+  expect:
+    code: 200
+    name: admin
+    username: admin
+    role: admin
+    createdBy: SYSTEM
+    updatedBy: SYSTEM
+  control:
+    case: success
+    loginAs: admin
+
+- name: Get profile as new user
+  data:
+  expect:
+    code: 200
+    name: user
+    username: newUser
+    role: user
+    createdBy: admin
+    updatedBy: admin
+  control:
+    loginAs: newUser
+    case: success
+
+- name: Get profile without login
+  data:
+  expect:
+    code: 401
+  control:
+    case: fail
