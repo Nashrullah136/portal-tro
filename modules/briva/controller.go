@@ -30,6 +30,13 @@ func (c controller) GetByBrivaNo(ctx context.Context, brivano string) (dto.BaseR
 
 func (c controller) Update(ctx context.Context, request UpdateRequest) (dto.BaseResponse, error) {
 	briva := mapUpdateRequestToBriva(request)
+	validateErr, err := c.brivaUseCase.ValidateBriva(briva, validateExist)
+	if err != nil {
+		return dto.ErrorInternalServerError(), nil
+	}
+	if validateErr != nil {
+		return dto.ErrorBadRequest(validateErr.Error()), nil
+	}
 	if err := c.brivaUseCase.Update(ctx, briva); err != nil {
 		return dto.ErrorInternalServerError(), err
 	}

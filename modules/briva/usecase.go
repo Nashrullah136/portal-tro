@@ -10,6 +10,7 @@ import (
 )
 
 type UseCaseInterface interface {
+	ValidateBriva(briva entities.Briva, validations ...validateFunc) (error, error)
 	GetByBrivaNo(ctx context.Context, brivano string) (entities.Briva, error)
 	Update(ctx context.Context, briva entities.Briva) error
 }
@@ -30,6 +31,19 @@ type useCase struct {
 	brivaRepo repositories.BrivaRepositoryInterface
 	auditRepo repositories.AuditRepositoryInterface
 	queue     rmq.Queue
+}
+
+func (uc useCase) ValidateBriva(briva entities.Briva, validations ...validateFunc) (error, error) {
+	for _, validation := range validations {
+		validationError, err := validation(briva, uc.brivaRepo)
+		if err != nil {
+			return nil, err
+		}
+		if validationError != nil {
+			return validationError, nil
+		}
+	}
+	return nil, nil
 }
 
 func (uc useCase) GetByBrivaNo(ctx context.Context, brivano string) (entities.Briva, error) {

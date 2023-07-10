@@ -7,11 +7,11 @@ import (
 )
 
 func InitTest(t *testing.T) (*httpexpect.Expect, error) {
-	db, err := GetConn()
-	if err != nil {
+	if err := LoadEnv(); err != nil {
 		return nil, err
 	}
-	if err = LoadEnv(); err != nil {
+	db, err := GetConn()
+	if err != nil {
 		return nil, err
 	}
 	redisConn, err := redisUtils.Connect()

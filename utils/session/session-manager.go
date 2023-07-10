@@ -9,6 +9,7 @@ import (
 	"github.com/redis/go-redis/v9"
 	"log"
 	"nashrul-be/crm/entities"
+	"os"
 	"strings"
 )
 
@@ -32,8 +33,10 @@ func (m Manager) generatePrefix(username string) string {
 
 func (m Manager) Create(user entities.User) (*Session, error) {
 	prefix := m.generatePrefix(user.Username)
-	if keys := m.redisConn.Keys(context.Background(), prefix+"*"); len(keys.Val()) > 0 {
-		return nil, errors.New("user already login")
+	if os.Getenv("ONE_USER_ONE_SESSION") != "false" {
+		if keys := m.redisConn.Keys(context.Background(), prefix+"*"); len(keys.Val()) > 0 {
+			return nil, errors.New("user already login")
+		}
 	}
 	randByte := make([]byte, 32)
 	_, err := rand.Read(randByte)

@@ -1,0 +1,27 @@
+- name: Get BRIVA
+  data:
+    brivano: "12121"
+  expect:
+    code: 200
+    brivano: "12121"
+  control:
+    loginAs: user
+    case: success
+
+- name: Get BRIVA as admin
+  data:
+    brivano: "12121"
+  expect:
+    code: 403
+  control:
+    loginAs: admin
+    case: fail
+
+- name: Get BRIVA not found
+  data:
+    brivano: "121"
+  expect:
+    code: 404
+  control:
+    loginAs: user
+    case: fail

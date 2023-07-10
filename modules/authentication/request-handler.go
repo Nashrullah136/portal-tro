@@ -66,12 +66,12 @@ func (h requestHandler) Login(c *gin.Context) {
 func (h requestHandler) Logout(c *gin.Context) {
 	currentSession, err := h.sessionManager.Get(c)
 	if err == nil {
+		middleware.Authenticate(h.sessionManager)(c)
 		_, err := h.sessionManager.Delete(c)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, dto.ErrorInternalServerError())
 			return
 		}
-		middleware.Authenticate(h.sessionManager)(c)
 		if err := h.authController.Logout(c.Copy()); err != nil {
 			c.JSON(http.StatusInternalServerError, dto.ErrorInternalServerError())
 			return

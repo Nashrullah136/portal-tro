@@ -23,6 +23,7 @@ func Test_create_audit(t *testing.T) {
 			var auth map[string]string
 			if req, exist := data.Data["login"]; exist {
 				auth = testutil.Login(e, req)
+				defer testutil.Logout(e, auth)
 			}
 			responseBody := e.POST("/audits").WithHeaders(auth).
 				WithJSON(data.Data["req"]).Expect().Status(data.Expect["code"].(int)).JSON().Object()

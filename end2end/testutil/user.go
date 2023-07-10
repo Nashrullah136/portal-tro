@@ -8,4 +8,5 @@ import (
 func CreateUser(e *httpexpect.Expect, req any) {
 	auth := LoginAsAdmin(e)
 	e.POST("/users").WithHeaders(auth).WithJSON(req).Expect().Status(http.StatusCreated)
+	Logout(e, auth)
 }

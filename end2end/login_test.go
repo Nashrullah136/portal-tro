@@ -1,9 +1,7 @@
 package end2end
 
 import (
-	"github.com/stretchr/testify/assert"
 	"nashrul-be/crm/end2end/testutil"
-	"nashrul-be/crm/entities"
 	"testing"
 )
 
@@ -19,6 +17,7 @@ func Test_login(t *testing.T) {
 				t.Fatal(err)
 			}
 			req := e.POST("/login").WithJSON(data.Data).Expect().Status(data.Expect["code"].(int))
+			defer testutil.Logout(e, map[string]string{"Cookies": testutil.GetCookie(req)})
 			req.Header("Set-Cookie").NotEmpty()
 			responseBody := req.JSON().Object()
 			responseBody.Value("code").Number().IsEqual(data.Expect["code"])
@@ -26,16 +25,7 @@ func Test_login(t *testing.T) {
 			responseData := responseBody.Value("data").Object()
 			responseData.Value("role").IsString().IsEqual(data.Expect["role"])
 			responseData.Value("username").IsString().IsEqual(data.Expect["username"])
-			db, err := testutil.GetConn()
-			if err != nil {
-				t.Fatal(err)
-			}
-			var audit entities.Audit
-			if err := db.Order("date_time desc").First(&audit).Error; err != nil {
-				t.Fatal(err)
-			}
-			assert.Equal(t, data.Expect["username"], audit.Username)
-			assert.Equal(t, "Login", audit.Action)
+			testutil.AssertAudit(t, data.Expect["username"].(string), "Login", "", "", nil, nil)
 		})
 	}
 }

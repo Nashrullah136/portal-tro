@@ -1,0 +1,37 @@
+- name: Update profile
+  data:
+    username: Minnie_12
+    update:
+      name: randomness
+  expect:
+    code: 200
+    name: randomness
+    username: Minnie_12
+    role: user
+    login:
+      username: Minnie_12
+      password: random_231
+  control:
+    login:
+      username: Minnie_12
+      password: random_231
+    case: success
+    create:
+      name: random Thing
+      username: Minnie_12
+      password: random_231
+
+- name: Update profile without login
+  data:
+    username: Minnie_12
+    update:
+      name: randomness
+  expect:
+    code: 401
+  control:
+    case: fail
+    create:
+      name: random Thing
+      username: Minnie_12
+      password: random_231
+

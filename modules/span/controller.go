@@ -30,6 +30,13 @@ func (c controller) GetByDocumentNumber(ctx context.Context, documentNumber stri
 
 func (c controller) UpdateBankRiau(ctx context.Context, request UpdateRequest) (dto.BaseResponse, error) {
 	span := mapUpdateRequestToSpan(request)
+	result, err := c.spanUseCase.ValidateSpan(span, validateExist)
+	if err != nil {
+		return dto.ErrorInternalServerError(), err
+	}
+	if result != nil {
+		return dto.ErrorBadRequest(result.Error()), nil
+	}
 	if err := c.spanUseCase.UpdatePatchBankRiau(ctx, span); err != nil {
 		return dto.ErrorInternalServerError(), err
 	}

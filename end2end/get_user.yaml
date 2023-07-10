@@ -18,17 +18,10 @@
   data:
     username: Minnie_12
   expect:
-    code: 200
-    name: random Thing
-    username: Minnie_12
-    role: user
+    code: 403
   control:
-    case: success
+    case: fail
     loginAs: user
-    create:
-      name: random Thing
-      username: Minnie_12
-      password: random_231
 
 - name: Get user not found
   data:
@@ -36,7 +29,7 @@
   expect:
     code: 404
   control:
-    loginAs: user
+    loginAs: admin
     case: fail
 
 - name: Get user without login

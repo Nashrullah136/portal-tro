@@ -33,6 +33,7 @@ func Test_delete_user(t *testing.T) {
 					auth = testutil.LoginAsAdmin(e)
 				}
 			}
+			defer testutil.Logout(e, auth)
 			createdUser := entities.User{Username: data.Data["username"].(string)}
 			if err := db.Find(&createdUser).Error; err != nil {
 				t.Fatal(err)

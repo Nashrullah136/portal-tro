@@ -24,7 +24,7 @@ func NewRoute(actorUseCase user.UseCaseInterface,
 	}
 }
 
-func (r Route) Handle(router *gin.Engine, manager session.Manager) {
+func (r Route) Handle(router *gin.Engine) {
 	router.POST("/login", r.authRequestHandler.Login)
 	router.GET("/logout", r.authRequestHandler.Logout)
 }

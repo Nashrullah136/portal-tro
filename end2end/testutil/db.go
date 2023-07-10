@@ -1,10 +1,12 @@
 package testutil
 
 import (
-	"github.com/glebarez/sqlite"
+	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"nashrul-be/crm/utils/db"
 )
 
 func GetConn() (*gorm.DB, error) {
-	return gorm.Open(sqlite.Open("tro.db"), &gorm.Config{})
+	dsn := db.DsnMySQL()
+	return gorm.Open(mysql.Open(dsn), &gorm.Config{})
 }

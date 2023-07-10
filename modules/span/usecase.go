@@ -10,6 +10,7 @@ import (
 )
 
 type UseCaseInterface interface {
+	ValidateSpan(span entities.SPAN, validations ...validateFunc) (error, error)
 	GetByDocumentNumber(ctx context.Context, documentNumber string) (entities.SPAN, error)
 	UpdatePatchBankRiau(ctx context.Context, span entities.SPAN) error
 }
@@ -30,6 +31,19 @@ type useCase struct {
 	spanRepo  repositories.SpanRepositoryInterface
 	auditRepo repositories.AuditRepositoryInterface
 	queue     rmq.Queue
+}
+
+func (uc useCase) ValidateSpan(span entities.SPAN, validations ...validateFunc) (error, error) {
+	for _, validation := range validations {
+		validationError, err := validation(span, uc.spanRepo)
+		if err != nil {
+			return nil, err
+		}
+		if validationError != nil {
+			return validationError, nil
+		}
+	}
+	return nil, nil
 }
 
 func (uc useCase) GetByDocumentNumber(ctx context.Context, documentNumber string) (entities.SPAN, error) {

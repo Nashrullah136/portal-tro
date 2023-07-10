@@ -14,7 +14,7 @@ func AssertAudit(t *testing.T, username, action, entity, entityID string, dataBe
 		auditAfter  map[string]any
 	)
 	db, _ := GetConn()
-	if err := db.Order("date_time desc").First(&audit).Error; err != nil {
+	if err := db.Order("id desc").First(&audit).Error; err != nil {
 		t.Fatal(err.Error())
 	}
 	assert.Equal(t, username, audit.Username)

@@ -1,0 +1,27 @@
+- name: Get SPAN
+  data:
+    documentNumber: "230081301007314000002"
+  expect:
+    code: 200
+    DocumentNumber: "230081301007314000002"
+  control:
+    loginAs: user
+    case: success
+
+- name: Get SPAN as admin
+  data:
+    documentNumber: "230081301007314000002"
+  expect:
+    code: 403
+  control:
+    loginAs: admin
+    case: fail
+
+- name: Get SPAN not found
+  data:
+    documentNumber: "30052023000298551595"
+  expect:
+    code: 404
+  control:
+    loginAs: user
+    case: fail

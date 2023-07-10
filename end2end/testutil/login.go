@@ -24,9 +24,16 @@ func LoginAsUser(e *httpexpect.Expect) map[string]string {
 
 func Login(e *httpexpect.Expect, credential any) map[string]string {
 	req := e.POST("/login").WithJSON(credential).Expect().Status(http.StatusOK)
-	setCookie := req.Header("Set-Cookie").Raw()
-	cookie := strings.SplitN(setCookie, ";", 2)[0]
 	return map[string]string{
-		"Cookie": cookie,
+		"Cookie": GetCookie(req),
 	}
+}
+
+func GetCookie(response *httpexpect.Response) string {
+	setCookie := response.Header("Set-Cookie").Raw()
+	return strings.SplitN(setCookie, ";", 2)[0]
+}
+
+func Logout(e *httpexpect.Expect, credential map[string]string) {
+	e.GET("/logout").WithHeaders(credential)
 }

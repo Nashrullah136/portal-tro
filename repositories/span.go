@@ -2,15 +2,18 @@ package repositories
 
 import (
 	"context"
+	"errors"
 	"gorm.io/gorm"
 	"log"
 	"nashrul-be/crm/entities"
 	"nashrul-be/crm/utils"
 	"nashrul-be/crm/utils/audit"
 	"nashrul-be/crm/utils/db"
+	"nashrul-be/crm/utils/localtime"
 )
 
 type SpanRepositoryInterface interface {
+	IsSpanExist(span entities.SPAN) (exist bool, err error)
 	GetBySpanDocumentNumber(ctx context.Context, documentNumber string) (span entities.SPAN, err error)
 	Update(ctx context.Context, span entities.SPAN) error
 	MakeAuditUpdate(ctx context.Context, span entities.SPAN) (entities.Audit, error)
@@ -27,10 +30,23 @@ type spanRepository struct {
 	db *gorm.DB
 }
 
+func (r spanRepository) IsSpanExist(span entities.SPAN) (exist bool, err error) {
+	var count int64
+	err = r.db.Model(&entities.SPAN{}).Where("DOCUMENTNUMBER = ?", span.DocumentNumber).Count(&count).Error
+	if err != nil {
+		return
+	}
+	exist = count > 0
+	return
+}
+
 func (r spanRepository) GetBySpanDocumentNumber(ctx context.Context, documentNumber string) (span entities.SPAN, err error) {
 	span.DocumentNumber = documentNumber
-	err = r.db.WithContext(ctx).Where("documentdate = substring(CONVERT(varchar,getdate(),126),1,10) " +
-		"and statuscode not in ('0001','void')").First(&span).Error
+	err = r.db.WithContext(ctx).Where("documentdate = ?", localtime.Now().Format("2006-01-02")).
+		Where("statuscode not in ('0001','void')").First(&span).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return entities.SPAN{}, utils.ErrNotFound
+	}
 	return span, err
 }
 

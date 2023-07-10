@@ -11,6 +11,7 @@ import (
 )
 
 type BrivaRepositoryInterface interface {
+	IsBrivaExist(briva entities.Briva) (exist bool, err error)
 	GetByBrivaNo(ctx context.Context, brivano string) (briva entities.Briva, err error)
 	Update(ctx context.Context, briva entities.Briva) error
 	MakeAuditUpdate(ctx context.Context, briva entities.Briva) (entities.Audit, error)
@@ -24,6 +25,16 @@ func NewBrivaRepository(db *gorm.DB) BrivaRepositoryInterface {
 
 type brivaRepository struct {
 	db *gorm.DB
+}
+
+func (r brivaRepository) IsBrivaExist(briva entities.Briva) (exist bool, err error) {
+	var count int64
+	err = r.db.Model(&entities.Briva{}).Where("brivano = ?", briva.Brivano).Count(&count).Error
+	if err != nil {
+		return
+	}
+	exist = count > 0
+	return
 }
 
 func (r brivaRepository) GetByBrivaNo(ctx context.Context, brivano string) (briva entities.Briva, err error) {

@@ -27,6 +27,7 @@ func Test_create_user(t *testing.T) {
 					auth = testutil.LoginAsAdmin(e)
 				}
 			}
+			defer testutil.Logout(e, auth)
 			responseBody := e.POST("/users").WithHeaders(auth).WithJSON(data.Data).
 				Expect().Status(data.Expect["code"].(int)).JSON().Object()
 			responseBody.Value("code").Number().IsEqual(data.Expect["code"])

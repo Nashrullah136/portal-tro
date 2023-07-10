@@ -6,15 +6,15 @@ import (
 	"testing"
 )
 
-func Test_update_user(t *testing.T) {
-	testData, err := testutil.ReadYamlFile("update_user.yaml")
+func Test_update_profile(t *testing.T) {
+	db, _ := testutil.GetConn()
+	testData, err := testutil.ReadYamlFile("update_profile.yaml")
 	if err != nil {
 		t.Fatal(err)
 	}
 	for _, data := range testData {
 		t.Run(data.Name, func(t *testing.T) {
 			e, err := testutil.InitTest(t)
-			db, _ := testutil.GetConn()
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -22,20 +22,15 @@ func Test_update_user(t *testing.T) {
 				testutil.CreateUser(e, req)
 			}
 			var auth map[string]string
-			loginAs, ok := data.Control["loginAs"].(string)
-			if ok {
-				switch loginAs {
-				case "user":
-					auth = testutil.LoginAsUser(e)
-				case "admin":
-					auth = testutil.LoginAsAdmin(e)
-				}
+			loginCredential, exist := data.Control["login"]
+			if exist {
+				auth = testutil.Login(e, loginCredential)
 			}
 			var createdUser entities.User
 			if err := db.Where("username = ?", data.Control["create"].(map[string]any)["username"]).Find(&createdUser).Error; err != nil {
 				t.Fatal(err)
 			}
-			responseBody := e.PATCH("/users/" + data.Data["username"].(string)).WithHeaders(auth).
+			responseBody := e.PATCH("/me").WithHeaders(auth).
 				WithJSON(data.Data["update"]).Expect().Status(data.Expect["code"].(int)).JSON().Object()
 			responseBody.Value("code").IsNumber().IsEqual(data.Expect["code"])
 			if data.Control["case"].(string) == "success" {
@@ -44,7 +39,7 @@ func Test_update_user(t *testing.T) {
 				responseData.Value("username").IsString().IsEqual(data.Expect["username"])
 				responseData.Value("role").IsString().IsEqual(data.Expect["role"])
 				responseData.Value("created_by").IsString().IsEqual("admin")
-				responseData.Value("updated_by").IsString().IsEqual("admin")
+				responseData.Value("updated_by").IsString().IsEqual(data.Expect["username"])
 				update := data.Data["update"].(map[string]any)
 				wantDataBefore := make(map[string]any)
 				wantDataAfter := make(map[string]any)
@@ -52,11 +47,7 @@ func Test_update_user(t *testing.T) {
 					wantDataBefore["name"] = createdUser.Name
 					wantDataAfter["name"] = name
 				}
-				if _, exist := update["password"]; exist {
-					wantDataBefore["password"] = "-"
-					wantDataAfter["password"] = "-"
-				}
-				testutil.AssertAudit(t, data.Control["loginAs"].(string), "UPDATE", "USER",
+				testutil.AssertAudit(t, data.Expect["username"].(string), "UPDATE", "USER",
 					data.Expect["username"].(string), wantDataBefore, wantDataAfter)
 				testutil.Login(e, data.Expect["login"])
 			}

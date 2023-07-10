@@ -22,8 +22,9 @@ func Test_change_password(t *testing.T) {
 			var auth map[string]string
 			if req, exist := data.Control["login"]; exist {
 				auth = testutil.Login(e, req)
+				defer testutil.Logout(e, auth)
 			}
-			responseBody := e.PATCH("/me").WithHeaders(auth).
+			responseBody := e.PATCH("/me/password").WithHeaders(auth).
 				WithJSON(data.Data).Expect().Status(data.Expect["code"].(int)).JSON().Object()
 			responseBody.Value("code").IsNumber().IsEqual(data.Expect["code"])
 			if data.Control["case"].(string) == "success" {
