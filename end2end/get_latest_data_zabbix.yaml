@@ -1,0 +1,23 @@
+- name: Get latest data zabbix as user
+  data:
+  expect:
+    code: 200
+  control:
+    loginAs: user
+    case: success
+
+- name: Get latest data zabbix as admin
+  data:
+  expect:
+    code: 403
+  control:
+    loginAs: admin
+    case: fail
+
+- name: Get latest data zabbix as new user
+  data:
+  expect:
+    code: 403
+  control:
+    loginAs: newUser
+    case: fail
