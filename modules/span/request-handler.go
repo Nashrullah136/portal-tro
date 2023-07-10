@@ -45,6 +45,7 @@ func (h requestHandler) UpdateBankRiau(c *gin.Context) {
 	response, err := h.spanController.UpdateBankRiau(ctx, request)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, dto.ErrorInternalServerError())
+		return
 	}
 	c.JSON(response.Code, response)
 }
