@@ -56,9 +56,9 @@ func (uc useCase) UpdatePatchBankRiau(ctx context.Context, span entities.SPAN) e
 	auditEntities := entities.MapAuditResultToAuditEntities(auditResult)
 	spanTx := uc.spanRepo.Begin()
 	auditTx := uc.auditRepo.Begin()
-	brivaRepoTx := uc.spanRepo.New(spanTx)
+	spanRepoTx := uc.spanRepo.New(spanTx)
 	auditRepoTx := uc.auditRepo.New(auditTx)
-	if err = brivaRepoTx.Update(ctx, newSpan); err != nil {
+	if err = spanRepoTx.Update(ctx, newSpan); err != nil {
 		spanTx.Rollback()
 		auditTx.Rollback()
 		return err
