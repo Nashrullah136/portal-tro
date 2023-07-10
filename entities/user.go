@@ -12,16 +12,16 @@ const ADMIN = "admin"
 const USER = "user"
 
 type User struct {
-	ID        uint      `gorm:"autoIncrement" mapstructure:"-" json:"-"`
-	Name      string    `mapstructure:"name,omitempty" json:"name,omitempty"`
-	Username  string    `gorm:"primaryKey" mapstructure:"username" json:"username,omitempty"`
-	Password  string    `mapstructure:"password,omitempty" json:"-"`
-	RoleID    uint      `mapstructure:"role_id,omitempty" json:"role_id,omitempty"`
-	Role      Role      `mapstructure:"-" json:"role,omitempty"`
-	CreatedAt time.Time `mapstructure:"-" json:"created_at,omitempty"`
-	CreatedBy string    `mapstructure:"-" json:"created_by,omitempty"`
-	UpdatedAt time.Time `mapstructure:"-" json:"updated_at,omitempty"`
-	UpdatedBy string    `mapstructure:"-" json:"updated_by,omitempty"`
+	ID        uint       `gorm:"autoIncrement" mapstructure:"-" json:"-"`
+	Name      string     `mapstructure:"name,omitempty" json:"name,omitempty"`
+	Username  string     `gorm:"primaryKey" mapstructure:"username" json:"username,omitempty"`
+	Password  string     `mapstructure:"password,omitempty" json:"-"`
+	RoleID    uint       `mapstructure:"role_id,omitempty" json:"role_id,omitempty"`
+	Role      Role       `mapstructure:"-" json:"role,omitempty"`
+	CreatedAt *time.Time `mapstructure:"-" json:"created_at,omitempty"`
+	CreatedBy string     `mapstructure:"-" json:"created_by,omitempty"`
+	UpdatedAt *time.Time `mapstructure:"-" json:"updated_at,omitempty"`
+	UpdatedBy string     `mapstructure:"-" json:"updated_by,omitempty"`
 }
 
 func (u *User) Identity() string {
@@ -29,7 +29,7 @@ func (u *User) Identity() string {
 }
 
 func (u *User) IsNewUser() bool {
-	return u.UpdatedAt.Sub(u.CreatedAt) < 1*time.Second
+	return u.UpdatedAt.Sub(*u.CreatedAt) < 1*time.Second
 }
 
 func (u *User) LogPresentation() (result map[string]any, err error) {

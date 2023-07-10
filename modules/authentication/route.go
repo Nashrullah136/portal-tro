@@ -2,7 +2,6 @@ package authentication
 
 import (
 	"github.com/gin-gonic/gin"
-	"nashrul-be/crm/middleware"
 	"nashrul-be/crm/modules/audit"
 	"nashrul-be/crm/modules/user"
 	"nashrul-be/crm/utils/crypto"
@@ -27,5 +26,5 @@ func NewRoute(actorUseCase user.UseCaseInterface,
 
 func (r Route) Handle(router *gin.Engine, manager session.Manager) {
 	router.POST("/login", r.authRequestHandler.Login)
-	router.GET("/logout", middleware.Authenticate(manager), r.authRequestHandler.Logout)
+	router.GET("/logout", r.authRequestHandler.Logout)
 }

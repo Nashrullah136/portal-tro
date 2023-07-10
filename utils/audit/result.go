@@ -3,7 +3,7 @@ package audit
 import "time"
 
 type Result struct {
-	DateTime   time.Time
+	DateTime   *time.Time
 	Username   string
 	Action     string
 	Entity     string

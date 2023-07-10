@@ -2,7 +2,8 @@ package localtime
 
 import "time"
 
-func Now() time.Time {
+func Now() *time.Time {
 	loc, _ := time.LoadLocation("Asia/Jakarta")
-	return time.Now().In(loc)
+	result := time.Now().In(loc)
+	return &result
 }

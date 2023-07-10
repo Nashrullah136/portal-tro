@@ -20,7 +20,10 @@ type Config struct {
 
 func GormConfig() *gorm.Config {
 	return &gorm.Config{
-		NowFunc: localtime.Now,
+		NowFunc: func() time.Time {
+			result := localtime.Now
+			return *result()
+		},
 	}
 }
 

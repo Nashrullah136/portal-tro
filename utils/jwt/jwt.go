@@ -16,6 +16,7 @@ type JwtClaims struct {
 }
 
 func GenerateJWT(actor entities.User) (string, error) {
+	now := localtime.Now()
 	claims := JwtClaims{
 		ID:   actor.ID,
 		Role: actor.Role.RoleName,
@@ -24,8 +25,8 @@ func GenerateJWT(actor entities.User) (string, error) {
 			Subject:   actor.Username,
 			Audience:  []string{"localhost"},
 			ExpiresAt: jwt.NewNumericDate(localtime.Now().Add(1 * time.Hour)),
-			NotBefore: jwt.NewNumericDate(localtime.Now()),
-			IssuedAt:  jwt.NewNumericDate(localtime.Now()),
+			NotBefore: jwt.NewNumericDate(*now),
+			IssuedAt:  jwt.NewNumericDate(*now),
 			ID:        "",
 		},
 	}

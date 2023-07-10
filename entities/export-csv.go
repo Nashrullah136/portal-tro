@@ -10,7 +10,7 @@ type ExportCsv struct {
 	User      string
 	Status    string
 	Filename  string
-	CreatedAt time.Time
+	CreatedAt *time.Time
 }
 
 func InitExportCsv(username string) ExportCsv {

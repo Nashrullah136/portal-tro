@@ -39,14 +39,14 @@ type UpdateProfile struct {
 }
 
 type Representation struct {
-	Name      string    `json:"name"`
-	Username  string    `json:"username"`
-	Role      string    `json:"role"`
-	CreatedAt time.Time `json:"created_at"`
-	CreatedBy string    `json:"created_by"`
-	UpdatedAt time.Time `json:"updated_at"`
-	UpdatedBy string    `json:"updated_by"`
-	NewUser   bool      `json:"new_user"`
+	Name      string     `json:"name"`
+	Username  string     `json:"username"`
+	Role      string     `json:"role"`
+	CreatedAt *time.Time `json:"created_at"`
+	CreatedBy string     `json:"created_by"`
+	UpdatedAt *time.Time `json:"updated_at"`
+	UpdatedBy string     `json:"updated_by"`
+	NewUser   bool       `json:"new_user"`
 }
 
 type PaginationRequest struct {

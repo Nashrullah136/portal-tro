@@ -2,8 +2,10 @@ package authentication
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/gin-gonic/gin"
 	"nashrul-be/crm/dto"
+	"nashrul-be/crm/middleware"
 	"nashrul-be/crm/utils/session"
 	"net/http"
 	"os"
@@ -62,16 +64,22 @@ func (h requestHandler) Login(c *gin.Context) {
 }
 
 func (h requestHandler) Logout(c *gin.Context) {
-	if err := h.authController.Logout(c.Copy()); err != nil {
-		c.JSON(http.StatusInternalServerError, dto.ErrorInternalServerError())
-		return
+	currentSession, err := h.sessionManager.Get(c)
+	if err == nil {
+		_, err := h.sessionManager.Delete(c)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, dto.ErrorInternalServerError())
+			return
+		}
+		middleware.Authenticate(h.sessionManager)(c)
+		if err := h.authController.Logout(c.Copy()); err != nil {
+			c.JSON(http.StatusInternalServerError, dto.ErrorInternalServerError())
+			return
+		}
 	}
-	key, err := h.sessionManager.Delete(c)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, dto.ErrorInternalServerError())
-		return
+	if errors.Is(err, session.ErrNotExist) {
+		c.Header("Access-Control-Allow-Credentials", "true")
+		c.SetCookie(session.Name, currentSession.Key, -1, "/", os.Getenv("DOMAIN"), false, true)
 	}
-	c.Header("Access-Control-Allow-Credentials", "true")
-	c.SetCookie(session.Name, key, -1, "/", os.Getenv("DOMAIN"), false, true)
 	c.JSON(http.StatusOK, dto.Success("Log out success", nil))
 }

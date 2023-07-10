@@ -39,10 +39,10 @@ func (r auditRepository) buildGetAllQuery(ctx context.Context, query AuditQuery)
 		sql.Where("entity_id = ?", query.ObjectId)
 	}
 	if !query.FromDate.IsZero() {
-		sql.Where("date_time >= ?", query.FromDate)
+		sql.Where("CONVERT(DATETIME, ?) <= date_time", query.FromDate)
 	}
 	if !query.ToDate.IsZero() {
-		sql.Where("date_time < ?", query.ToDate.Add(24*time.Hour))
+		sql.Where("date_time < CONVERT(DATETIME, ?)", query.ToDate.Add(24*time.Hour))
 	}
 	return sql
 }
