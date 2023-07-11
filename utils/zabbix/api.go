@@ -4,6 +4,7 @@ const MethodHostGet = "host.get"
 const MethodItemGet = "item.get"
 const MethodHistoryGet = "history.get"
 
+//go:generate mockery --name API
 type API interface {
 	GetAllHost() (result []Host, err error)
 	GetItemFromHosts(hostIds []string) (result []Item, err error)

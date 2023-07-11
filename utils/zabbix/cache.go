@@ -8,6 +8,7 @@ var (
 	lastValue []entities.ServerUtilization
 )
 
+//go:generate mockery --name Cache
 type Cache interface {
 	SetTemplate(template []entities.ServerUtilization) error
 	GetTemplate() ([]entities.ServerUtilization, error)
