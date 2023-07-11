@@ -11,7 +11,7 @@ import (
 
 type UseCaseInterface interface {
 	ValidateSpan(span entities.SPAN, validations ...validateFunc) (error, error)
-	GetByDocumentNumber(ctx context.Context, documentNumber string) (entities.SPAN, error)
+	GetByDocumentNumberPatchBankRiau(ctx context.Context, documentNumber string) (entities.SPAN, error)
 	UpdatePatchBankRiau(ctx context.Context, span entities.SPAN) error
 }
 
@@ -46,14 +46,17 @@ func (uc useCase) ValidateSpan(span entities.SPAN, validations ...validateFunc) 
 	return nil, nil
 }
 
-func (uc useCase) GetByDocumentNumber(ctx context.Context, documentNumber string) (entities.SPAN, error) {
+func (uc useCase) GetByDocumentNumberPatchBankRiau(ctx context.Context, documentNumber string) (entities.SPAN, error) {
 	return uc.spanRepo.GetBySpanDocumentNumber(ctx, documentNumber)
 }
 
 func (uc useCase) UpdatePatchBankRiau(ctx context.Context, span entities.SPAN) error {
-	oldSpan, err := uc.GetByDocumentNumber(ctx, span.DocumentNumber)
+	oldSpan, err := uc.GetByDocumentNumberPatchBankRiau(ctx, span.DocumentNumber)
 	if err != nil {
 		return err
+	}
+	if !eligibleForPatchBankRiau(oldSpan) {
+		return nil
 	}
 	newSpan := PatchBankRiau(oldSpan)
 	auditEntities, err := uc.spanRepo.MakeAuditUpdateWithOldData(ctx, oldSpan, newSpan)

@@ -80,7 +80,7 @@ func Test_useCase_GetByDocumentNumber(t *testing.T) {
 				err = nil
 			}
 			ucMock.spanRepo.EXPECT().GetBySpanDocumentNumber(tt.args.ctx, tt.args.documentNumber).Return(tt.want, err)
-			got, err := uc.GetByDocumentNumber(tt.args.ctx, tt.args.documentNumber)
+			got, err := uc.GetByDocumentNumberPatchBankRiau(tt.args.ctx, tt.args.documentNumber)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("GetByDocumentNumber() error = %v, wantErr %v", err, tt.wantErr)
 				return
