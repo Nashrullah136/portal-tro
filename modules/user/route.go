@@ -26,7 +26,7 @@ func (r Route) Handle(router *gin.Engine, sessionManager session.Manager) {
 	me := router.Group("/me", middleware.Authenticate(sessionManager),
 		middleware.Refresh(sessionManager))
 	me.PATCH("/password", r.actorRequestHandler.UpdatePasswordUser)
-	me.PATCH("", r.actorRequestHandler.UpdateProfile)
+	me.PATCH("", middleware.CheckNewUser(), r.actorRequestHandler.UpdateProfile)
 	me.GET("", r.actorRequestHandler.ProfileUser)
 	actor := router.Group("/users", middleware.Authenticate(sessionManager),
 		middleware.Refresh(sessionManager), middleware.AuthorizationAdminOnly())
