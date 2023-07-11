@@ -6,7 +6,7 @@ import (
 	"log"
 	"nashrul-be/crm/entities"
 	"nashrul-be/crm/utils"
-	"nashrul-be/crm/utils/audit"
+	"nashrul-be/crm/utils/auditUtils"
 	"nashrul-be/crm/utils/db"
 )
 
@@ -52,7 +52,7 @@ func (r brivaRepository) MakeAuditUpdate(ctx context.Context, briva entities.Bri
 		log.Println(err)
 		return entities.Audit{}, err
 	}
-	result, err := audit.Update(r.db, &actor, &briva)
+	result, err := auditUtils.Update(r.db, &actor, &briva)
 	if err != nil {
 		return entities.Audit{}, err
 	}

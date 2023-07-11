@@ -7,7 +7,7 @@ import (
 	"log"
 	"nashrul-be/crm/entities"
 	"nashrul-be/crm/utils"
-	"nashrul-be/crm/utils/audit"
+	"nashrul-be/crm/utils/auditUtils"
 	"nashrul-be/crm/utils/db"
 	"nashrul-be/crm/utils/localtime"
 )
@@ -60,7 +60,7 @@ func (r spanRepository) MakeAuditUpdate(ctx context.Context, span entities.SPAN)
 		log.Println(err)
 		return entities.Audit{}, err
 	}
-	result, err := audit.Update(r.db, &actor, &span)
+	result, err := auditUtils.Update(r.db, &actor, &span)
 	if err != nil {
 		return entities.Audit{}, err
 	}
@@ -73,7 +73,7 @@ func (r spanRepository) MakeAuditUpdateWithOldData(ctx context.Context, oldSpan 
 		log.Println(err)
 		return entities.Audit{}, err
 	}
-	result, err := audit.UpdateWithOldData(&actor, &newSpan, &oldSpan)
+	result, err := auditUtils.UpdateWithOldData(&actor, &newSpan, &oldSpan)
 	if err != nil {
 		return entities.Audit{}, err
 	}

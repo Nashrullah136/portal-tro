@@ -8,6 +8,7 @@ import (
 	"nashrul-be/crm/utils/crypto"
 )
 
+//go:generate mockery --name UseCaseInterface --inpackage
 type UseCaseInterface interface {
 	validateActor(actor entities.User, validations ...validateFunc) (error, error)
 	CountAll(ctx context.Context, username, role string) (int, error)

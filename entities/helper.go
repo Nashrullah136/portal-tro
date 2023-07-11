@@ -3,10 +3,10 @@ package entities
 import (
 	"context"
 	"errors"
-	"nashrul-be/crm/utils/audit"
+	"nashrul-be/crm/utils/auditUtils"
 )
 
-func MapAuditResultToAuditEntities(result audit.Result) Audit {
+func MapAuditResultToAuditEntities(result auditUtils.Result) Audit {
 	return Audit{
 		DateTime:   result.DateTime,
 		Username:   result.Username,

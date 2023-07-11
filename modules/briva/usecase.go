@@ -9,6 +9,7 @@ import (
 	"nashrul-be/crm/repositories"
 )
 
+//go:generate mockery --name UseCaseInterface --inpackage
 type UseCaseInterface interface {
 	ValidateBriva(briva entities.Briva, validations ...validateFunc) (error, error)
 	GetByBrivaNo(ctx context.Context, brivano string) (entities.Briva, error)

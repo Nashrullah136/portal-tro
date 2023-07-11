@@ -1,4 +1,4 @@
-package audit
+package auditUtils
 
 import (
 	"github.com/mitchellh/mapstructure"

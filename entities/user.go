@@ -4,7 +4,7 @@ import (
 	"github.com/mitchellh/mapstructure"
 	"gorm.io/gorm"
 	"log"
-	"nashrul-be/crm/utils/audit"
+	"nashrul-be/crm/utils/auditUtils"
 	"time"
 )
 
@@ -48,7 +48,7 @@ func (u *User) EntityName() string {
 	return "USER"
 }
 
-func (u *User) Copy() audit.Auditor {
+func (u *User) Copy() auditUtils.Auditor {
 	result := *u
 	return &result
 }
@@ -76,7 +76,7 @@ func (u *User) AfterCreate(tx *gorm.DB) error {
 		log.Println(err)
 		return err
 	}
-	auditResult, err := audit.Create(&actor, u)
+	auditResult, err := auditUtils.Create(&actor, u)
 	if err != nil {
 		return err
 	}
@@ -90,7 +90,7 @@ func (u *User) BeforeUpdate(tx *gorm.DB) error {
 		log.Println(err)
 		return err
 	}
-	auditResult, err := audit.Update(tx, &actor, u)
+	auditResult, err := auditUtils.Update(tx, &actor, u)
 	if err != nil {
 		return err
 	}
@@ -108,7 +108,7 @@ func (u *User) BeforeDelete(tx *gorm.DB) error {
 		log.Println(err)
 		return err
 	}
-	auditResult, err := audit.Delete(tx, &actor, u)
+	auditResult, err := auditUtils.Delete(tx, &actor, u)
 	if err != nil {
 		return err
 	}

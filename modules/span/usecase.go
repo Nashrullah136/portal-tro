@@ -9,6 +9,7 @@ import (
 	"nashrul-be/crm/repositories"
 )
 
+//go:generate mockery --name UseCaseInterface --inpackage
 type UseCaseInterface interface {
 	ValidateSpan(span entities.SPAN, validations ...validateFunc) (error, error)
 	GetByDocumentNumberPatchBankRiau(ctx context.Context, documentNumber string) (entities.SPAN, error)

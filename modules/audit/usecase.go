@@ -12,6 +12,7 @@ import (
 	"nashrul-be/crm/utils/filesystem"
 )
 
+//go:generate mockery --name UseCaseInterface
 type UseCaseInterface interface {
 	GetAll(ctx context.Context, query repositories.AuditQuery, limit, offset int) ([]entities.Audit, error)
 	CreateAudit(ctx context.Context, action string) error

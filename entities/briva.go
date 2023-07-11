@@ -2,7 +2,7 @@ package entities
 
 import (
 	"github.com/mitchellh/mapstructure"
-	"nashrul-be/crm/utils/audit"
+	"nashrul-be/crm/utils/auditUtils"
 )
 
 type Briva struct {
@@ -26,7 +26,7 @@ func (b *Briva) EntityName() string {
 	return "BRIVA"
 }
 
-func (b *Briva) Copy() audit.Auditor {
+func (b *Briva) Copy() auditUtils.Auditor {
 	newBriva := *b
 	return &newBriva
 }

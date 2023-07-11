@@ -6,7 +6,7 @@ import (
 	"log"
 	"nashrul-be/crm/entities"
 	"nashrul-be/crm/utils"
-	"nashrul-be/crm/utils/audit"
+	"nashrul-be/crm/utils/auditUtils"
 	"nashrul-be/crm/utils/db"
 )
 
@@ -46,7 +46,7 @@ func (r rdnRepository) MakeAuditUpdate(ctx context.Context, rdn entities.RDN) (e
 		log.Println(err)
 		return entities.Audit{}, err
 	}
-	result, err := audit.Update(r.db, &actor, &rdn)
+	result, err := auditUtils.Update(r.db, &actor, &rdn)
 	if err != nil {
 		return entities.Audit{}, err
 	}

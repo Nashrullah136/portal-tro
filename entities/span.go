@@ -2,7 +2,7 @@ package entities
 
 import (
 	"github.com/mitchellh/mapstructure"
-	"nashrul-be/crm/utils/audit"
+	"nashrul-be/crm/utils/auditUtils"
 )
 
 type SPAN struct {
@@ -35,7 +35,7 @@ func (r *SPAN) EntityName() string {
 	return "SPAN"
 }
 
-func (r *SPAN) Copy() audit.Auditor {
+func (r *SPAN) Copy() auditUtils.Auditor {
 	SPAN := *r
 	return &SPAN
 }
