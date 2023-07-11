@@ -8,7 +8,7 @@ import (
 	"nashrul-be/crm/entities"
 	"nashrul-be/crm/repositories"
 	"nashrul-be/crm/utils"
-	"nashrul-be/crm/utils/audit"
+	"nashrul-be/crm/utils/auditUtils"
 )
 
 type UseCaseInterface interface {
@@ -46,7 +46,7 @@ func (uc useCase) MakeAuditBatch(ctx context.Context, rdnData []entities.RDN, pa
 	}
 	for _, rdn := range rdnData {
 		rdnPatched := patchFunc(rdn)
-		auditResult, err := audit.UpdateWithOldData(&actor, &rdnPatched, &rdn)
+		auditResult, err := auditUtils.UpdateWithOldData(&actor, &rdnPatched, &rdn)
 		if err != nil {
 			return nil, err
 		}
