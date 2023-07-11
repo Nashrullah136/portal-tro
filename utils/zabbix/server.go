@@ -29,6 +29,10 @@ func NewServer(url, username, password string) Server {
 	}
 }
 
+func (z *server) isLogin() bool {
+	return z.auth != ""
+}
+
 func (z *server) Login() error {
 	if z.auth != "" {
 		return nil
@@ -59,6 +63,11 @@ func (z *server) Login() error {
 }
 
 func (z *server) Do(method string, params any, result interface{}) error {
+	if !z.isLogin() {
+		if err := z.Login(); err != nil {
+			return err
+		}
+	}
 	requestData := map[string]any{
 		"jsonrpc": "2.0",
 		"method":  method,
