@@ -2,10 +2,10 @@ package authentication
 
 import (
 	"encoding/json"
-	"errors"
 	"github.com/gin-gonic/gin"
 	"nashrul-be/crm/dto"
-	"nashrul-be/crm/middleware"
+	"nashrul-be/crm/entities"
+	"nashrul-be/crm/utils"
 	"nashrul-be/crm/utils/session"
 	"net/http"
 	"os"
@@ -66,8 +66,11 @@ func (h requestHandler) Login(c *gin.Context) {
 func (h requestHandler) Logout(c *gin.Context) {
 	currentSession, err := h.sessionManager.Get(c)
 	if err == nil {
-		middleware.Authenticate(h.sessionManager)(c)
-		_, err := h.sessionManager.Delete(c)
+		accountJson, _ := currentSession.Get("user")
+		var user entities.User
+		_ = json.Unmarshal([]byte(accountJson), &user)
+		utils.SetUser(c, user)
+		_, err = h.sessionManager.Delete(c)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, dto.ErrorInternalServerError())
 			return
@@ -77,7 +80,7 @@ func (h requestHandler) Logout(c *gin.Context) {
 			return
 		}
 	}
-	if errors.Is(err, session.ErrNotExist) {
+	if currentSession != nil {
 		c.Header("Access-Control-Allow-Credentials", "true")
 		c.SetCookie(session.Name, currentSession.Key, -1, "/", os.Getenv("DOMAIN"), false, true)
 	}
