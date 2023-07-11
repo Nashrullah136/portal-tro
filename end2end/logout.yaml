@@ -1,0 +1,35 @@
+- name: Login as admin
+  data:
+  expect:
+    code: 200
+    username: admin
+  control:
+    case: success
+    withCookie: true
+    loginAs: admin
+
+- name: Logout as user
+  data:
+  expect:
+    code: 200
+    username: user
+  control:
+    case: success
+    withCookie: true
+    loginAs: user
+
+- name: Logout with cookies not exist
+  data:
+    Cookie: SESSION_ID=8172381236913
+  expect:
+    code: 200
+  control:
+    withCookie: true
+    case: fail
+
+- name: Logout without login
+  data:
+  expect:
+    code: 200
+  control:
+    case: fail
