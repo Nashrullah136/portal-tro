@@ -8,6 +8,18 @@
     loginAs: user
     case: success
 
+- name: Update SPAN twice
+  data:
+    documentNumber: "230081301007314000002"
+  expect:
+    code: 200
+    code2: 200
+    DocumentNumber: "230081301007314000002"
+  control:
+    loginAs: user
+    case: success
+    twice: true
+
 - name: Update SPAN as admin
   data:
     documentNumber: "230081301007314000002"

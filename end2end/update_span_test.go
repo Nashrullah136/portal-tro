@@ -45,6 +45,11 @@ func Test_update_span(t *testing.T) {
 				testutil.AssertAudit(t, "user", "UPDATE", "SPAN",
 					data.Data["documentNumber"].(string), wantDataBefore, wantDataAfter)
 			}
+			if val, exist := data.Control["twice"]; exist && val.(bool) {
+				responseBody := e.POST("/span/" + data.Data["documentNumber"].(string)).WithHeaders(auth).
+					Expect().Status(data.Expect["code2"].(int)).JSON().Object()
+				responseBody.Value("code").IsNumber().IsEqual(data.Expect["code2"])
+			}
 			t.Cleanup(func() {
 				err := testutil.DeleteSpan()
 				if err != nil {
