@@ -29,7 +29,7 @@ func Test_logout(t *testing.T) {
 			req := e.GET("/logout").WithHeaders(auth).Expect().Status(data.Expect["code"].(int))
 			responseBody := req.JSON().Object()
 			responseBody.Value("code").Number().IsEqual(data.Expect["code"])
-			if val, exist := data.Control["withCookie"]; exist && val == "true" {
+			if val, exist := data.Control["withCookie"]; exist && val.(bool) {
 				req.Header("Set-Cookie").NotEmpty()
 			}
 			if data.Control["case"].(string) == "success" {
