@@ -1,0 +1,49 @@
+Software requirement
+- Golang (https://go.dev/doc/install) v1.20+
+- Node.js (https://nodejs.org/en) v20.4.0+
+- Redis (https://github.com/zkteco-home/redis-windows/releases/tag/7.0.11) v7.0.11+
+- Xampp (https://www.apachefriends.org/download.html) v8.2.4+
+
+Installation Front End:
+- Download source code dari https://gitlab.com/oneside-tro-finpro/fe-tro
+- Ekstrak source code ke dalam sebuah folder
+- Ganti nilai variable REACT_APP_API_ENDPOINT menjadi 'http://<ip-server-deployment>/api/v1/'
+  pada file .env
+- Buka command prompt (cmd)
+- Jalankan command `cd <directory-ke-tempat-kode>`
+- Jalankan command `npm run build` 
+- Command sebelumnya akan menghasilkan folder baru bernama build di dalam
+  directory source code
+- Pindahkan folder build tersebut ke dalam folder "C:\xampp\htdocs"
+
+Installation Back End:
+- Download source code dari https://gitlab.com/oneside-tro-finpro/be-tro
+- Ekstrak source code ke dalam sebuah folder
+- Sesuaikan variable yang ada pada file .env sesuai dengan enviroment deployment
+- Buka command prompt (cmd)
+- Jalankan command `cd <directory-ke-tempat-kode>`
+- Jalankan command `go build` 
+- Command sebelumnya akan menghasilkan file baru bernama crm.exe di dalam
+  directory source code
+- Jalankan command `sc.exe create <new_service_name> binPath="<path_to_the_service_executable>"`
+- Jalankan command `sc.exe start <new_service_name>`
+
+Configuration DB:
+- Jalankan sql script sql server yang bernama scripts.sql yang terdapat pada 
+  folder migrations pada langkah installation back end
+
+Configuration XAMPP:
+- Tambahkan kode di bawah ke dalam file "C:\xampp\apache\conf\httpd.conf"
+       LoadModule proxy_http_module modules/mod_proxy_http.so
+- Tambahkan kode dibawah ke dalam file "C:\xampp\apache\conf\extra\httpd-vhosts.conf"
+       <VirtualHost *:80> 
+         ProxyPreserveHost On
+         ProxyRequests Off
+         ServerName www.tro.id
+         ServerAlias tro.id
+         DocumentRoot "C:/xampp/htdocs/build"
+         ProxyPass /api/v1/ http://localhost:8080/
+         ProxyPassReverse /api/v1/ http://localhost:8080/
+       </VirtualHost>
+- Matikan lalu nyalakan lagi service apache melalui XAMPP Control Panel
+
