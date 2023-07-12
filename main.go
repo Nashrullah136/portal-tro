@@ -48,32 +48,32 @@ func main() {
 	if err := translate.RegisterTranslator(); err != nil {
 		panic(err)
 	}
+	gin.SetMode(gin.ReleaseMode)
 	engine := gin.Default()
 	engine.Use(middleware.CORS())
 
-	dsnMain := db.DsnSqlServer("")
-	dbMain, err := db.ConnectSqlServer(dsnMain)
+	dbMain, err := db.Connect("TRO")
 	if err != nil {
 		panic(err)
 	}
+	log.Println("Success connect to DB TRO")
 
-	dsnBriva := db.DsnSqlServer("BRIVA")
-	dbBriva, err := db.ConnectSqlServer(dsnBriva)
+	dbBriva, err := db.Connect("BRIVA")
 	if err != nil {
 		panic(err)
 	}
+	log.Println("Success connect to DB BRIVA")
 
-	dsnRdn := db.DsnSqlServer("RDN")
-	dbRdn, err := db.ConnectSqlServer(dsnRdn)
-	if err != nil {
-		panic(err)
-	}
+	//dbRdn, err := db.Connect("TRO")
+	//if err != nil {
+	//	panic(err)
+	//}
 
-	dsnSpan := db.DsnSqlServer("SPAN")
-	dbSpan, err := db.ConnectSqlServer(dsnSpan)
+	dbSpan, err := db.Connect("SPAN")
 	if err != nil {
 		panic(err)
 	}
+	log.Println("Success connect to DB SPAN")
 
 	redisConn, err := redisUtils.Connect()
 	if err != nil {
@@ -92,13 +92,14 @@ func main() {
 		panic("can't login to zabbix server")
 	}
 	zabbixApi := zabbix.NewAPI(zabbixServer)
+	log.Println("Success login to zabbix server")
 
 	zabbixCache := zabbix.NewCache()
 
 	wib, _ := time.LoadLocation("Asia/Jakarta")
 	scheduler := gocron.NewScheduler(wib)
 
-	if err = app.Handle(dbMain, dbBriva, dbRdn, dbSpan, engine, sessionManager, messageQueue, zabbixApi, zabbixCache, scheduler); err != nil {
+	if err = app.Handle(dbMain, dbBriva, dbMain, dbSpan, engine, sessionManager, messageQueue, zabbixApi, zabbixCache, scheduler); err != nil {
 		panic(err)
 	}
 

@@ -34,6 +34,7 @@ func (z *server) isLogin() bool {
 }
 
 func (z *server) Login() error {
+	log.Println("Trying login to zabbix server...")
 	if z.auth != "" {
 		return nil
 	}
