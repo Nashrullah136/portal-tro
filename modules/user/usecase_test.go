@@ -16,12 +16,6 @@ type useCaseMock struct {
 	hash            *mocksCrypt.Hash
 }
 
-func defaultUser() *entities.User {
-	return &entities.User{
-		Username: "admin",
-	}
-}
-
 func defaultMock(t *testing.T) useCaseMock {
 	return useCaseMock{
 		actorRepository: mocks.NewActorRepositoryInterface(t),

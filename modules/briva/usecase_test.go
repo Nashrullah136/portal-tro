@@ -18,12 +18,6 @@ type useCaseMock struct {
 	queue     rmq.Queue
 }
 
-func defaultUser() *entities.User {
-	return &entities.User{
-		Username: "admin",
-	}
-}
-
 func defaultMock(t *testing.T) useCaseMock {
 	return useCaseMock{
 		brivaRepo: mocks.NewBrivaRepositoryInterface(t),
