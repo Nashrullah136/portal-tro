@@ -11,11 +11,13 @@ import (
 	"nashrul-be/crm/entities"
 	"os"
 	"strings"
+	"sync"
 )
 
 const Name = "SESSION_ID"
 
 var ErrNotExist = errors.New("session not found")
+var createLock = &sync.Mutex{}
 
 type Manager struct {
 	redisConn *redis.Client
@@ -33,6 +35,8 @@ func (m Manager) generatePrefix(username string) string {
 
 func (m Manager) Create(user entities.User) (*Session, error) {
 	prefix := m.generatePrefix(user.Username)
+	createLock.Lock()
+	defer createLock.Unlock()
 	if os.Getenv("ONE_USER_ONE_SESSION") != "false" {
 		if keys := m.redisConn.Keys(context.Background(), prefix+"*"); len(keys.Val()) > 0 {
 			return nil, errors.New("user already login")
