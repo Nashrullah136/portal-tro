@@ -105,7 +105,9 @@ func Test_useCase_Delete(t *testing.T) {
 			}
 			exportCsv := entities.ExportCsv{}
 			ucMock.exportCsvRepo.EXPECT().GetById(tt.args.id).Return(exportCsv, err)
-			ucMock.folder.EXPECT().Remove(exportCsv.Filename).Return(err)
+			file := mocksFs.NewFile(t)
+			ucMock.folder.EXPECT().GetFile(exportCsv.Filename).Return(file, err)
+			file.EXPECT().Remove().Return(err)
 			ucMock.exportCsvRepo.EXPECT().Delete(tt.args.ctx, tt.args.id).Return(err)
 			if err := uc.Delete(tt.args.ctx, tt.args.id); (err != nil) != tt.wantErr {
 				t.Errorf("Delete() error = %v, wantErr %v", err, tt.wantErr)
@@ -145,8 +147,8 @@ func Test_useCase_DownloadCsv(t *testing.T) {
 			}
 			exportCsv := entities.ExportCsv{}
 			ucMock.exportCsvRepo.EXPECT().GetById(tt.args.id).Return(exportCsv, err)
-			ucMock.folder.EXPECT().IsExist(exportCsv.Filename).Return(true)
 			tt.want = filesystem.NewFile(exportCsv.Filename, uc.folder)
+			ucMock.folder.EXPECT().GetFile(exportCsv.Filename).Return(tt.want, err)
 			got, err := uc.DownloadCsv(tt.args.ctx, tt.args.id)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("DownloadCsv() error = %v, wantErr %v", err, tt.wantErr)
