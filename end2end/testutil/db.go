@@ -7,6 +7,6 @@ import (
 )
 
 func GetConn() (*gorm.DB, error) {
-	dsn := db.DsnMySQL()
+	dsn := db.DsnMySQL("")
 	return gorm.Open(mysql.Open(dsn), &gorm.Config{})
 }
