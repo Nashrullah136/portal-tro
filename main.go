@@ -104,6 +104,7 @@ func main() {
 	}
 
 	urlServe := fmt.Sprintf("%s:%s", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT"))
+	log.Printf("Serve on %s\n", urlServe)
 	if err = engine.Run(urlServe); err != nil {
 		panic(err)
 	}
