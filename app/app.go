@@ -75,8 +75,8 @@ func Handle(dbMain *gorm.DB, dbBriva *gorm.DB, dbRdn *gorm.DB, dbSpan *gorm.DB,
 	configRoute := configuration.NewRoute(configRequestHandler)
 	configRoute.Handle(engine, sessionManager)
 
-	exportCsvUseCase := exportCsv.NewUseCase(exportCsvRepo, auditRepo, reportFolder)
-	if _, err = scheduler.Every(1).Day().At("00:00").Do(worker.CleanerCsv(exportCsvUseCase)); err != nil {
+	//exportCsvUseCase := exportCsv.NewUseCase(exportCsvRepo, auditRepo, reportFolder)
+	if _, err = scheduler.Every(1).Day().At("00:00").Do(worker.CleanerCsv(reportFolder)); err != nil {
 		return err
 	}
 

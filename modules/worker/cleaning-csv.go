@@ -1,22 +1,21 @@
 package worker
 
 import (
-	"context"
 	"log"
-	exportCsv "nashrul-be/crm/modules/export-csv"
-	"nashrul-be/crm/repositories"
+	"nashrul-be/crm/utils/filesystem"
 )
 
-func CleanerCsv(csv exportCsv.UseCaseInterface) func() {
+func CleanerCsv(folder filesystem.Folder) func() {
 	return func() {
-		allCsv, err := csv.GetAll(context.Background(), repositories.ExportCsvQuery{}, 0, 0)
-		if err != nil {
-			log.Println("error can't get data all data csv req while cleaning")
-		}
-		for _, csvReq := range allCsv {
-			if err := csv.Delete(context.Background(), csvReq.ID); err != nil {
-				log.Printf("failed delete request for csv request id %d\n", csvReq.ID)
+		log.Println("Starting cleaning csv file...")
+		files := folder.GetAllFiles()
+		for _, file := range files {
+			log.Printf("Deleting file %s\n", file.Filename())
+			if err := file.Remove(); err != nil {
+				log.Printf("Failed to delete file %s\n", file.Filename())
+				continue
 			}
+			log.Printf("Success delete file %s\n", file.Filename())
 		}
 	}
 }
