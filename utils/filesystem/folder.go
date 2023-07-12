@@ -6,11 +6,14 @@ import (
 	"path"
 )
 
+var ErrNotExist = errors.New("file not found")
+
+//go:generate mockery --name File
 type Folder interface {
-	IsExist(filename string) bool
 	Create(filename string) (File, error)
-	Remove(filename string) error
-	GetPath(filename string) string
+	GetFile(filename string) (File, error)
+	GetAllFiles() []File
+	GetPath() string
 }
 
 type folder struct {
@@ -21,15 +24,36 @@ func NewFolder(path string) Folder {
 	return folder{path: path}
 }
 
-func (f folder) IsExist(filename string) bool {
-	if _, err := os.Stat(f.GetPath(filename)); err != nil {
+func (f folder) isExist(filename string) bool {
+	if _, err := os.Stat(getFilePath(f, filename)); err != nil {
 		return false
 	}
 	return true
 }
 
+func (f folder) GetFile(filename string) (File, error) {
+	if !f.isExist(filename) {
+		return nil, ErrNotExist
+	}
+	return &file{
+		osFile:   nil,
+		filename: filename,
+		folder:   f,
+	}, nil
+}
+
+func (f folder) GetAllFiles() (files []File) {
+	dirs, _ := os.ReadDir(f.path)
+	for _, dir := range dirs {
+		if !dir.IsDir() {
+			files = append(files, NewFile(dir.Name(), f))
+		}
+	}
+	return
+}
+
 func (f folder) Create(filename string) (File, error) {
-	osFile, err := os.Create(f.GetPath(filename))
+	osFile, err := os.Create(getFilePath(f, filename))
 	if err != nil {
 		return nil, err
 	}
@@ -40,13 +64,10 @@ func (f folder) Create(filename string) (File, error) {
 	}, nil
 }
 
-func (f folder) Remove(filename string) error {
-	if !f.IsExist(filename) {
-		return errors.New("filename doesn't exist")
-	}
-	return os.Remove(f.GetPath(filename))
+func (f folder) GetPath() string {
+	return f.path
 }
 
-func (f folder) GetPath(filename string) string {
-	return path.Join(f.path, filename)
+func getFilePath(folder Folder, filename string) string {
+	return path.Join(folder.GetPath(), filename)
 }

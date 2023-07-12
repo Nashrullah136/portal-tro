@@ -2,11 +2,13 @@ package filesystem
 
 import "os"
 
+//go:generate mockery --name File
 type File interface {
 	Filename() string
 	Path() string
 	Open() (*os.File, error)
 	Close() error
+	Remove() error
 }
 
 type file struct {
@@ -28,7 +30,11 @@ func (f *file) Filename() string {
 }
 
 func (f *file) Path() string {
-	return f.folder.GetPath(f.filename)
+	return getFilePath(f.folder, f.filename)
+}
+
+func (f *file) Remove() error {
+	return os.Remove(f.Path())
 }
 
 func (f *file) Open() (*os.File, error) {

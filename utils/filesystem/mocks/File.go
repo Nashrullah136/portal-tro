@@ -197,6 +197,47 @@ func (_c *File_Path_Call) RunAndReturn(run func() string) *File_Path_Call {
 	return _c
 }
 
+// Remove provides a mock function with given fields:
+func (_m *File) Remove() error {
+	ret := _m.Called()
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func() error); ok {
+		r0 = rf()
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// File_Remove_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Remove'
+type File_Remove_Call struct {
+	*mock.Call
+}
+
+// Remove is a helper method to define mock.On call
+func (_e *File_Expecter) Remove() *File_Remove_Call {
+	return &File_Remove_Call{Call: _e.mock.On("Remove")}
+}
+
+func (_c *File_Remove_Call) Run(run func()) *File_Remove_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *File_Remove_Call) Return(_a0 error) *File_Remove_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *File_Remove_Call) RunAndReturn(run func() error) *File_Remove_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 type mockConstructorTestingTNewFile interface {
 	mock.TestingT
 	Cleanup(func())

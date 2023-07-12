@@ -47,7 +47,7 @@ func (uc useCase) DownloadCsv(ctx context.Context, id uint) (filesystem.File, er
 	if err != nil {
 		return nil, err
 	}
-	if !uc.folder.IsExist(exportCsv.Filename) {
+	if _, err := uc.folder.GetFile(exportCsv.Filename); err != nil {
 		return nil, errors.New("csv file doesn't exist")
 	}
 	return filesystem.NewFile(exportCsv.Filename, uc.folder), nil
@@ -58,7 +58,11 @@ func (uc useCase) Delete(ctx context.Context, id uint) error {
 	if err != nil {
 		return err
 	}
-	if err = uc.folder.Remove(exportCsv.Filename); err != nil {
+	csvFile, err := uc.folder.GetFile(exportCsv.Filename)
+	if err != nil {
+		return err
+	}
+	if err = csvFile.Remove(); err != nil {
 		log.Println(err)
 		return err
 	}
