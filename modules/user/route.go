@@ -29,7 +29,7 @@ func (r Route) Handle(router *gin.Engine, sessionManager session.Manager) {
 	me.PATCH("", middleware.CheckNewUser(), r.actorRequestHandler.UpdateProfile)
 	me.GET("", r.actorRequestHandler.ProfileUser)
 	actor := router.Group("/users", middleware.Authenticate(sessionManager),
-		middleware.Refresh(sessionManager), middleware.AuthorizationAdminOnly())
+		middleware.Refresh(sessionManager), middleware.CheckNewUser(), middleware.AuthorizationAdminOnly())
 	actor.GET("/:username", r.actorRequestHandler.GetByUsername)
 	actor.GET("", r.actorRequestHandler.GetAll)
 	actor.POST("", r.actorRequestHandler.CreateUser)
