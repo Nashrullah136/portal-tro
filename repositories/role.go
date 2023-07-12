@@ -18,6 +18,7 @@ type roleRepository struct {
 }
 
 func (r roleRepository) GetByID(id uint) (role entities.Role, err error) {
-	err = r.db.First(&role, id).Error
+	role.ID = id
+	err = r.db.First(&role).Error
 	return
 }

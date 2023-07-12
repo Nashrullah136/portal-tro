@@ -38,7 +38,8 @@ func (r brivaRepository) IsBrivaExist(briva entities.Briva) (exist bool, err err
 }
 
 func (r brivaRepository) GetByBrivaNo(ctx context.Context, brivano string) (briva entities.Briva, err error) {
-	err = r.db.WithContext(ctx).First(&briva, brivano).Error
+	briva.Brivano = brivano
+	err = r.db.WithContext(ctx).First(&briva).Error
 	return briva, err
 }
 
