@@ -8,7 +8,7 @@ import (
 
 var ErrNotExist = errors.New("file not found")
 
-//go:generate mockery --name File
+//go:generate mockery --name Folder
 type Folder interface {
 	Create(filename string) (File, error)
 	GetFile(filename string) (File, error)
