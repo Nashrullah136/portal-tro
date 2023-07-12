@@ -30,7 +30,7 @@ Installation Back End:
 
 Configuration DB:
 - Jalankan sql script sql server yang bernama scripts.sql yang terdapat pada 
-  folder migrations pada langkah installation back end
+  folder migrations pada langkah installation back end pada database TRO
 
 Configuration XAMPP:
 - Tambahkan kode di bawah ke dalam file "C:\xampp\apache\conf\httpd.conf"
