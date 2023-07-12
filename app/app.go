@@ -10,7 +10,6 @@ import (
 	"nashrul-be/crm/modules/briva"
 	"nashrul-be/crm/modules/configuration"
 	exportCsv "nashrul-be/crm/modules/export-csv"
-	"nashrul-be/crm/modules/rdn"
 	server_utilization "nashrul-be/crm/modules/server-utilization"
 	"nashrul-be/crm/modules/span"
 	"nashrul-be/crm/modules/user"
@@ -33,7 +32,7 @@ func Handle(dbMain *gorm.DB, dbBriva *gorm.DB, dbRdn *gorm.DB, dbSpan *gorm.DB,
 	auditRepo := repositories.NewAuditRepository(dbMain)
 	exportCsvRepo := repositories.NewExportCsvRepository(dbMain)
 	brivaRepo := repositories.NewBrivaRepository(dbBriva)
-	rdnRepo := repositories.NewRdnRepository(dbRdn)
+	//rdnRepo := repositories.NewRdnRepository(dbRdn)
 	spanRepo := repositories.NewSpanRepository(dbSpan)
 
 	reportFolder := filesystem.NewFolder(os.Getenv("EXPORT_CSV_FOLDER"))
@@ -80,8 +79,8 @@ func Handle(dbMain *gorm.DB, dbBriva *gorm.DB, dbRdn *gorm.DB, dbSpan *gorm.DB,
 		return err
 	}
 
-	rdnRoute := rdn.NewRoute(rdnRepo, auditRepo, queueAudit)
-	rdnRoute.Handle(engine, sessionManager)
+	//rdnRoute := rdn.NewRoute(rdnRepo, auditRepo, queueAudit)
+	//rdnRoute.Handle(engine, sessionManager)
 
 	spanRoute := span.NewRoute(spanRepo, auditRepo, queueAudit)
 	spanRoute.Handle(engine, sessionManager)
