@@ -23,7 +23,7 @@ func defaultController(mock controllerMock) ControllerInterface {
 }
 
 func Test_controller_GetByDocumentNumber(t *testing.T) {
-	span := entities.SPAN{}
+	span := entities.SPAN{StatusCode: "0002"}
 	type args struct {
 		ctx            context.Context
 		documentNumber string
@@ -40,7 +40,7 @@ func Test_controller_GetByDocumentNumber(t *testing.T) {
 				ctx:            context.Background(),
 				documentNumber: "12122",
 			},
-			want:    dto.Success("Success retrieve span", span),
+			want:    dto.Success("Success retrieve span", mapSpanToPresentation(span)),
 			wantErr: false,
 		},
 	}

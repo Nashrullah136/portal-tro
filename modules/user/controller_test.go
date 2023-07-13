@@ -228,7 +228,7 @@ func Test_controller_GetByUsername(t *testing.T) {
 				ctx:      context.Background(),
 				username: "user",
 			},
-			want:    dto.Success("Success retrieve data", actorResponse),
+			want:    dto.Success("Success retrieve user", actorResponse),
 			wantErr: false,
 		},
 	}

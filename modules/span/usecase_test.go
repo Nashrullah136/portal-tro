@@ -107,7 +107,7 @@ func Test_useCase_UpdatePatchBankRiau(t *testing.T) {
 			name: "Normal case",
 			args: args{
 				ctx:  utils.SetUserToContext(context.Background(), *defaultUser()),
-				span: entities.SPAN{DocumentNumber: "123123"},
+				span: entities.SPAN{DocumentNumber: "123123", StatusCode: "0002"},
 			},
 			wantErr: false,
 		},

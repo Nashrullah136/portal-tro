@@ -116,7 +116,7 @@ func Test_useCase_ExportCSV(t *testing.T) {
 		query repositories.AuditQuery
 	}
 
-	account := entities.User{
+	account := &entities.User{
 		Username: "admin",
 	}
 	tests := []struct {
