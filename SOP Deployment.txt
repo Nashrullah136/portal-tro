@@ -9,11 +9,11 @@ Installation Redis:
 - Ekstrak hasil download ke dalam sebuah sebuah folder
 - Buka command prompt (cmd)
 - Jalankan command `cd <directory-folder-redis>`
-- Jalankan command `redis-server --service-install redis.conf --loglevel verbose`
-- Jalankan command `redis-server --service-start`
+- Jalankan command `redis-server.exe --service-install redis.conf --loglevel verbose`
+- Jalankan command `redis-server.exe --service-start`
 
 Installation Front End:
-- Download source code dari https://gitlab.com/oneside-tro-finpro/fe-tro
+- Download source code dari https://gitlab.com/oneside-tro-finpro/fe-tro/-/tree/develop
 - Ekstrak source code ke dalam sebuah folder
 - Ganti nilai variable REACT_APP_API_ENDPOINT menjadi 'http://<ip-server-deployment>/api/v1/'
   pada file .env
@@ -25,7 +25,7 @@ Installation Front End:
 - Pindahkan folder build tersebut ke dalam folder "C:\xampp\htdocs"
 
 Installation Back End:
-- Download source code dari https://gitlab.com/oneside-tro-finpro/be-tro
+- Download source code dari https://gitlab.com/oneside-tro-finpro/be-tro/-/tree/develop
 - Ekstrak source code ke dalam sebuah folder
 - Ubah nama .env.example menjadi .env
 - Sesuaikan variable yang ada pada file .env sesuai dengan enviroment deployment
