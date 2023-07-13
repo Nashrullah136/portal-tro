@@ -26,6 +26,10 @@ func Init() error {
 	return nil
 }
 
+func CliOnly() {
+	logger = log.New(os.Stdout, "", log.LstdFlags)
+}
+
 func Get() *log.Logger {
 	return logger
 }
