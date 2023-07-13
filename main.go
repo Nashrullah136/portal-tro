@@ -94,7 +94,6 @@ func main() {
 
 	zabbixServer := zabbix.NewServer(os.Getenv("ZABBIX_URL"), os.Getenv("ZABBIX_USERNAME"), os.Getenv("ZABBIX_PASSWORD"))
 	zabbixApi := zabbix.NewAPI(zabbixServer)
-	logutils.Get().Println("Success login to zabbix server")
 
 	zabbixCache := zabbix.NewCache()
 

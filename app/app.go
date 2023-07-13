@@ -85,20 +85,22 @@ func Handle(dbMain *gorm.DB, dbBriva *gorm.DB, dbRdn *gorm.DB, dbSpan *gorm.DB,
 	//rdnRoute := rdn.NewRoute(rdnRepo, auditRepo, queueAudit)
 	//rdnRoute.Handle(engine, sessionManager)
 
-	spanRoute := span.NewRoute(spanRepo, auditRepo, queueAudit)
-	spanRoute.Handle(engine, sessionManager)
+	if os.Getenv("SERVER_UTIL") != "off" {
+		spanRoute := span.NewRoute(spanRepo, auditRepo, queueAudit)
+		spanRoute.Handle(engine, sessionManager)
 
-	serverUtilController := serverUtilization.NewController(cache, zabbixApi)
-	if err = serverUtilController.RefreshHostList(); err != nil {
-		return err
-	}
-	serverUtilRoute := serverUtilization.NewRoute(cache, zabbixApi)
-	serverUtilRoute.Handle(engine, sessionManager)
+		serverUtilController := serverUtilization.NewController(cache, zabbixApi)
+		if err = serverUtilController.RefreshHostList(); err != nil {
+			return err
+		}
+		serverUtilRoute := serverUtilization.NewRoute(cache, zabbixApi)
+		serverUtilRoute.Handle(engine, sessionManager)
 
-	updateLastData := worker.UpdateLastDataServerUtil(cache, zabbixApi)
-	updateLastData()
-	if _, err = scheduler.Every(1).Minute().Do(updateLastData); err != nil {
-		return err
+		updateLastData := worker.UpdateLastDataServerUtil(cache, zabbixApi)
+		updateLastData()
+		if _, err = scheduler.Every(1).Minute().Do(updateLastData); err != nil {
+			return err
+		}
 	}
 
 	if err := redisUtils.CreateCleaner(redisConn, scheduler); err != nil {
