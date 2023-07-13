@@ -3,187 +3,337 @@
 * User object
 ```
 {
-  id: integer
   username: string
   email: string
   created_at: datetime(iso 8601)
   created_by: string
   updated_at: datetime(iso 8601)
   updated_by: string
+  new_user: bool //flag if the account changed password or not
 }
 ```
 **POST /login**
 ----
-Login as user
+Login
 * **Headers**
   - Content-Type: application/json
 * **URL Params**  
   None
 * **Data Params**  
-  None
-* **Success Response:**
-* **Code:** 200  
-  **Content:**
 ```
 {
   username: string
   password: string
 }
 ```
+* **Success Response:**\
+  * **Code:** 200\
+    **Header:** \
+    ```Set-Cookies: SESSION_ID=<session-code>; domain=<ip-server>; httpOnly``` \
+    **Content:**
+    ```
+    {
+      code: 200
+      message: "Authenticated"
+      data: {
+        username: string //username account
+        role: string //role account
+        new_user: bool //flag if the account changed password or not
+      }
+    }
+    ```
 * **Error Response**
 * **Error Response:**
-  * **Code:** 404  
+  * **Code:** 400\
     **Content:**
-    `{ message : "Wrong username/password" }`
+    ```
+    {
+      code: 400
+      message: "Invalid Username/Password"
+    }
+    ```
 
 **GET /logout**
 ----
 Logout user
 * **Headers**
-  - Authorization: Bearer `<JWT Token>`
+  - Content-Type: application/json
+  - Cookies: `Session_ID=<session-code>`
 * **URL Params**  
   None
 * **Data Params**  
   None
 * **Success Response:**
-* **Code:** 200
+  * **Code:** 20\
+    **Header:** \
+    ```Set-Cookies: SESSION_ID=<session-code>; Max-age=0; domain=<ip-server>; httpOnly```
 
 **GET /users**
 ----
-Returns all users in the system.
+Get users in the system.
 * **Headers**
   - Content-Type: application/json
-  - Authorization: Bearer `<JWT Token>`
+  - Cookies: `Session_ID=<session-code>`
 * **URL Params**  
-    None
+    - perpage
+    - page
+    - username
+    - role (val: user, admin)
 * **Data Params**  
-    username: string
-    role: string
+    None
 * **Success Response:**
-* **Code:** 200  
-  **Content:**
-```
-{
-  message: string
-  users: [
-           {<user_object>},
-           {<user_object>},
-           {<user_object>}
-         ]
-}
-```
+  * **Code:** 200\
+    **Content:**
+    ```
+    {
+      code: 200
+      message: ""
+      users: [
+               {<user_object>},
+               {<user_object>},
+               {<user_object>}
+             ]
+    }
+    ```
 
 **GET /users/:username**
 ----
 Returns the specified user.
 * **Headers**  
   - Content-Type: application/json  
-  - Authorization: Bearer `<JWT Token>`
+  - Cookies: `Session_ID=<session-code>`
 * **URL Params**  
-  *Required:* `username=[string]`
+  None
 * **Data Params**  
   None
 * **Success Response:**
-* **Code:** 200  
-  **Content:**  `{ <user_object> }`
+  * **Code:** 200  
+    **Content:**  
+    ```
+    {
+      code: 200
+      message: Success retrieve user
+      data: <user_object>
+    }
+    ```
 * **Error Response:**
     * **Code:** 404  
       **Content:** 
-      `{ message : "User doesn't exist" }`  
-    OR
+      ```
+        {
+          code: 404
+          message : "User not found" 
+        }
+      ```
     * **Code:** 401  
-      **Content:** `{ message : "You are unauthorized to make this request." }`
+      **Content:**
+      ```
+        { 
+          code: 401
+          message : "Unauthorized" 
+        }
+      ```
 
 **POST /users**
 ----
 Creates a new User and returns the new object.
 * **Headers**  
   - Content-Type: application/json
-  - Authorization: Bearer `<JWT Token>`
+  - Cookies: `Session_ID=<session-code>`
 * **URL Params**  
   None
 * **Data Params**
-```
+  ```
   {
     name: string, //optional
     username: string, //required
     password: string, //required
   }
-```
+  ```
 * **Success Response:**
   * **Code:** 200  
-    **Content:**  `{ <user_object> }`
-  * **Code:** 400
-    **Content:** `{ message : "Username already taken" }`
+    **Content:**
+    ```
+    {
+      code: 200
+      message: "Success create user"
+      data: <user_object>
+    }
+    ```
+* **Error Response:**
+  * **Code:** 400\
+    **Content:**
+    ```
+    {
+      code: 400
+      message : "Username already taken" 
+    }
+    ```
 
 **PATCH /users/:username**
 ----
 Updates fields on the specified user and returns the updated object.
 * **Headers**
-  - Authorization: Bearer `<JWT Token>`
+  - Content-Type: application/json
+  - Cookies: `Session_ID=<session-code>`
 * **URL Params**  
     *Required:* `username=[string]`
 * **Data Params**
-```
+  ```
   {
-    name: string,
+    name: string
+    old_password: string \\required if field password is not null
+    password: string
   }
-```
-* **Headers**  
-  Content-Type: application/json  
-  Cookie: Bearer `<OAuth Token>`
+  ```
 * **Success Response:**
-* **Code:** 200  
-  **Content:**  `{ <user_object> }`
+  * **Code:** 200  
+    **Content:** 
+    ```
+    {
+      code: 200
+      message: "Success update user" 
+      data: <user_object>
+    }
+    ```
 * **Error Response:**
-    * **Code:** 404  
-      **Content:** `{ message : "User doesn't exist" }`  
-      OR
-    * **Code:** 401  
-      **Content:** `{ message : "You are unauthorized to make this request." }`
+  * **Code:** 404  
+    **Content:**
+    ```
+    {
+    code: 400
+    message : "Username already taken"
+    }
+    ```
+  * **Code:** 401  
+    **Content:**
+    ```
+    {
+    code: 401
+    message : "Unauthorized"
+    }
+    ```
+    
+**GET /me**
+----
+Get profile for authenticated user.
+* **Headers**
+  - Content-Type: application/json
+  - Cookies: `Session_ID=<session-code>`
+* **URL Params**\
+  None
+* **Data Params**\
+  None
+* **Success Response:**
+  * **Code:** 200  
+    **Content:**
+    ```
+    {
+      "code": 200
+      "message": "Success retrieve data"
+      "data": {
+        "<user-object>"
+      }
+    }
+    ```
+* **Error Response:**
+  * **Code:** 401  
+    **Content:**
+    ```json
+    {
+      "code": 200,
+      "message": "Unauthorized"
+    }
+    ```      
 
 **PATCH /me**
 ----
-Updates fields on the specified user and returns the updated object.
+Update profile for authenticated user.
 * **Headers**
-  - Authorization: Bearer `<JWT Token>`
+  - Content-Type: application/json
+  - Cookies: `Session_ID=<session-code>`
 * **URL Params**  
   *Required:* `username=[string]`
 * **Data Params**
-```
-  {
-    old_password: string //required
-    password: string //required
-  }
-```
-* **Headers**  
-  Content-Type: application/json  
-  Cookie: Bearer `<OAuth Token>`
+  ```
+    {
+      name: string //required
+    }
+  ```
 * **Success Response:**
-* **Code:** 200  
-  **Content:**  `{ <user_object> }`
+  * **Code:** 200  
+    **Content:**
+    ```json
+    {
+      "code": 200,
+      "message": "Success update profile"
+    }
+    ```
 * **Error Response:**
-  * **Code:** 404  
-    **Content:** `{ error : "User doesn't exist" }`
+  * **Code:** 401  
+    **Content:**
+    ```json
+    {
+      "code": 200,
+      "message": "Unauthorized"
+    }
+    ```    
+
+**PATCH /me/password**
+----
+Change password for authenticated user.
+* **Headers**
+  - Content-Type: application/json
+  - Cookies: `Session_ID=<session-code>`
+* **URL Params**  
+  *Required:* `username=[string]`
+* **Data Params**
+  ```
+    {
+      old_password: string //required
+      password: string //required
+    }
+  ```
+* **Success Response:**
+  * **Code:** 200  
+    **Content:**
+    ```json
+    {
+      "code": 200,
+      "message": "Success update password"
+    }
+    ```
+* **Error Response:**
+  * **Code:** 401  
+    **Content:**
+    ```json
+    {
+      "code": 200,
+      "message": "Unauthorized"
+    }
+    ```
 
 **DELETE /users/:username**
 ----
 Deletes the specified user.
+* **Headers**
+  - Content-Type: application/json
+  - Cookies: `Session_ID=<session-code>`
 * **URL Params**  
   *Required:* `username=[string]`
 * **Data Params**  
   None
-* **Headers**  
-  Content-Type: application/json  
-  Authorization: Bearer `<OAuth Token>`
 * **Success Response:**
     * **Code:** 204
 * **Error Response:**
-    * **Code:** 404  
-      **Content:** `{ error : "User doesn't exist" }`  
-      OR
     * **Code:** 401  
-      **Content:** `{ error : "You are unauthorized to make this request." }`
+      **Content:** 
+      ```
+      {
+       code: 401
+       message: "Unauthorized"
+      }
+      ```
 
 # Audit
 
@@ -203,40 +353,49 @@ Deletes the specified user.
 
 **GET /audits**
 ----
+Get data audits
+* **Headers**
+  - Content-Type: application/json
+  - Cookies: `Session_ID=<session-code>`
 * **URL Params**  
   None
 * **Data Params**
-```
+  ```
   {
     username: string
     object: string
     object_id: string
-    date_start: datetime
-    date_end: datetime
+    from: datetime
+    to: datetime
    }
-``` 
-* **Headers**  
-  Content-Type: application/json  
-  Authorization: Bearer `<OAuth Token>`
+  ```
 * **Success Response:**
-  * **Code:** 204
+  * **Code:** 200
     **Content:** 
     ```
-      {
-        message: "Success",
-        data: <Audit Object>
-      }
+    {
+      code: 200
+      message: "Success",
+      data: [
+        <Audit Object>,
+        <Audit Object>,
+        <Audit Object>
+      ]
+    }
     ```
 * **Error Response:**
-  * **Code:** 404  
-    **Content:** `{ error : "User doesn't exist" }`  
-    OR
   * **Code:** 401  
-    **Content:** `{ error : "You are unauthorized to make this request." }`
-
+    **Content:**
+    ```json
+    {
+      "code": 401,
+      "message": "Unauthorized"
+    }
+    ```
 
 **POST /audits**
 ----
+Create audit data with specified action
 * **URL Params**  
   None
 * **Data Params**
@@ -245,21 +404,327 @@ Deletes the specified user.
     action: string
   }
 ```
-* **Headers**  
-  Content-Type: application/json  
-  Authorization: Bearer `<OAuth Token>`
+* **Headers**
+  - Content-Type: application/json
+  - Cookies: `Session_ID=<session-code>`
 * **Success Response:**
   * **Code:** 204
     **Content:**
-    ```
+    ```json
       {
-        message: "Success",
-        data: <Audit Object>
+        "code": 204,
+        "message": "Success"
       }
     ```
 * **Error Response:**
-  * **Code:** 404  
-    **Content:** `{ error : "User doesn't exist" }`  
-    OR
   * **Code:** 401  
-    **Content:** `{ error : "You are unauthorized to make this request." }`
+    **Content:**
+    ```json
+    {
+      "code": 401,
+      "message": "Unauthorized"
+    }
+    ```
+
+**GET /audits/export**
+----
+Download audits data as csv
+* **Headers**
+  - Content-Type: application/json
+  - Cookies: `Session_ID=<session-code>`
+* **URL Params**  
+  None
+* **Data Params**
+  ```
+  {
+    username: string
+    object: string
+    object_id: string
+    from: datetime
+    to: datetime
+   }
+  ```
+* **Success Response:**
+  * **Code:** 200
+    **Header:**
+      - Content-Disposition: attachment; filename=`filename` 
+* **Error Response:**
+  * **Code:** 401  
+    **Content:**
+    ```json
+    {
+      "code": 401,
+      "message": "Unauthorized"
+    }
+    ```
+    
+# BRIVA
+
+* BRIVA Object
+```
+{
+  Brivano: string
+  CorpName: string
+  IsActive: string
+}
+```
+
+**GET /briva/:brivano**
+----
+Get data briva with brivano
+* **Headers**
+  - Content-Type: application/json
+  - Cookies: `Session_ID=<session-code>`
+* **URL Params**  
+  None
+* **Data Params**
+  None
+* **Success Response:**
+  * **Code:** 200
+    **Content**
+    ```
+    {
+      code: 200
+      message: "Brivano has been found"
+      data: <BRIVA object>
+    }
+    ```
+* **Error Response:**
+  * **Code:** 401  
+    **Content:**
+    ```json
+    {
+      "code": 401,
+      "message": "Unauthorized"
+    }
+    ```
+
+**POST /briva/:brivano**
+----
+Change BRIVA's active state
+* **Headers**
+  - Content-Type: application/json
+  - Cookies: `Session_ID=<session-code>`
+* **URL Params**  
+  None
+* **Data Params**
+  ```
+  {
+    active: string (val: "1" or "0")
+  }
+  ```
+* **Success Response:**
+  * **Code:** 200
+    **Content**
+    ```
+    {
+      code: 200
+      message: "Success update briva"
+    }
+    ```
+* **Error Response:**
+  * **Code:** 401  
+    **Content:**
+    ```json
+    {
+      "code": 401,
+      "message": "Unauthorized"
+    }
+    ```
+
+# SPAN
+
+* SPAN Object
+```
+{
+  DocumentNumber: string
+  DocumentDate: string
+  BeneficiaryBankCode: string
+  StatusCode: string
+  EmailAddress: string
+  BeneficiaryAccount: string
+  Amount: string
+  BeneficiaryBank: string
+  is_patched: bool //status if span already patched or not
+}
+```
+
+**GET /span/:documentNumber**
+----
+Get SPAN data with document number
+* **Headers**
+  - Content-Type: application/json
+  - Cookies: `Session_ID=<session-code>`
+* **URL Params**  
+  None
+* **Data Params**
+  None
+* **Success Response:**
+  * **Code:** 200
+    **Content**
+    ```
+    {
+      code: 200
+      message: "Success retrieve span"
+      data: <SPAN object>
+    }
+    ```
+* **Error Response:**
+  * **Code:** 401  
+    **Content:**
+    ```json
+    {
+      "code": 401,
+      "message": "Unauthorized"
+    }
+    ```
+
+**POST /SPAN/:documentNumber**
+----
+Patch data span for specific document number
+* **Headers**
+  - Content-Type: application/json
+  - Cookies: `Session_ID=<session-code>`
+* **URL Params**  
+  None
+* **Data Params**
+  None
+* **Success Response:**
+  * **Code:** 200
+    **Content**
+    ```
+    {
+      code: 200
+      message: "Success update SPAN"
+    }
+    ```
+* **Error Response:**
+  * **Code:** 401  
+    **Content:**
+    ```json
+    {
+      "code": 401,
+      "message": "Unauthorized"
+    }
+    ```
+
+# Server Utilization 
+
+* Server Utilization Object
+```
+{
+  hostname: string
+  cpu_percentage: string //float number (percentage)
+  memory_usage: string //float number (percentage)
+  system_uptime: string //float number (percentage)
+  disks: [
+    <name-disk>: string //float number (percentage),
+    <name-disk>: string //float number (percentage)
+  ]
+}
+```
+
+**GET /server-utilization/latest-data**
+----
+Get latest data for all server monitoring
+* **Headers**
+  - Content-Type: application/json
+  - Cookies: `Session_ID=<session-code>`
+* **URL Params**  
+  None
+* **Data Params**
+  None
+* **Success Response:**
+  * **Code:** 200
+    **Content**
+    ```
+    {
+      code: 200
+      message: "Success get latest data"
+      data: {
+        safe: [
+          <Server Utilization Object>,
+          <Server Utilization Object>,
+          <Server Utilization Object>
+        ],
+        threshold: [
+          <Server Utilization Object>,
+          <Server Utilization Object>,
+          <Server Utilization Object>
+        ]
+      }
+    }
+    ```
+* **Error Response:**
+  * **Code:** 401  
+    **Content:**
+    ```json
+    {
+      "code": 401,
+      "message": "Unauthorized"
+    }
+    ```
+
+**GET /server-utilization/update-host**
+----
+Update server monitoring list
+* **Headers**
+  - Content-Type: application/json
+  - Cookies: `Session_ID=<session-code>`
+* **URL Params**  
+  None
+* **Data Params**
+  None
+* **Success Response:**
+  * **Code:** 200
+    **Content**
+    ```
+    {
+      code: 200
+      message: "Success update host list"
+    }
+    ```
+* **Error Response:**
+  * **Code:** 401  
+    **Content:**
+    ```json
+    {
+      "code": 401,
+      "message": "Unauthorized"
+    }
+    ```
+
+# Configuration
+
+**POST /config/session-duration**
+----
+Change session duration IDLE
+* **Headers**
+  - Content-Type: application/json
+  - Cookies: `Session_ID=<session-code>`
+* **URL Params**  
+  None
+* **Data Params**
+  ```
+  {
+    duration: integer //in seconds
+  }
+  ```
+* **Success Response:**
+  * **Code:** 200
+    **Content**
+    ```
+    {
+      code: 200
+      message: "Success update configuration"
+    }
+    ```
+* **Error Response:**
+  * **Code:** 401  
+    **Content:**
+    ```json
+    {
+      "code": 401,
+      "message": "Unauthorized"
+    }
+    ```
