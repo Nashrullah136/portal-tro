@@ -5,5 +5,5 @@ import (
 )
 
 func eligibleForPatchBankRiau(span entities.SPAN) bool {
-	return span.StatusCode == "0000"
+	return span.StatusCode == "0002"
 }
