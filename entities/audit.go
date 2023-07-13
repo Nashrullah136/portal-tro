@@ -28,7 +28,7 @@ func (a Audit) HeaderCSV() []string {
 func (a Audit) CsvRepresentation() []string {
 	return []string{
 		a.Username,
-		a.DateTime.String(),
+		a.DateTime.Format("2006-01-02 15:04:05"),
 		a.Action,
 		a.Entity,
 		a.EntityID,
