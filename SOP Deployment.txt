@@ -32,6 +32,7 @@ Installation Back End:
 - Sesuaikan variable yang ada pada file .env sesuai dengan enviroment deployment
 - Buka command prompt (cmd)
 - Jalankan command `cd <directory-ke-tempat-kode>`
+- Jalankan command `go mod tidy`
 - Jalankan command `go build` 
 - Command sebelumnya akan menghasilkan file baru bernama crm.exe di dalam
   directory source code
