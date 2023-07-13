@@ -21,7 +21,7 @@ func Init() error {
 	if os.Getenv("LOG") == "cli" {
 		writer = io.MultiWriter(writer, os.Stdout)
 	}
-	logger = log.New(writer, "INFO :", log.LstdFlags|log.Llongfile)
+	logger = log.New(writer, "[INFO] ", log.LstdFlags|log.Llongfile)
 	gin.DefaultWriter = writer
 	return nil
 }
