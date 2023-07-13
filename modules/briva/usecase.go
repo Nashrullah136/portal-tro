@@ -4,9 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/adjust/rmq/v5"
-	"log"
 	"nashrul-be/crm/entities"
 	"nashrul-be/crm/repositories"
+	"nashrul-be/crm/utils/logutils"
 )
 
 //go:generate mockery --name UseCaseInterface --inpackage
@@ -76,15 +76,15 @@ func (uc useCase) Update(ctx context.Context, briva entities.Briva) error {
 		return err
 	}
 	if err = auditTx.Commit().Error; err != nil {
-		log.Println("Failed to commit audit table, proceed to publish data to queue.")
+		logutils.Get().Println("Failed to commit audit table, proceed to publish data to queue.")
 		auditTx.Rollback()
 		auditJson, err := json.Marshal(audit)
 		if err != nil {
-			log.Println("Failed on marshalling audit")
+			logutils.Get().Println("Failed on marshalling audit")
 			return nil
 		}
 		if err = uc.queue.Publish(string(auditJson)); err != nil {
-			log.Println("Failed to publish data to the queue")
+			logutils.Get().Println("Failed to publish data to the queue")
 			return nil
 		}
 	}

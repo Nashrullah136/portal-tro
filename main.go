@@ -10,6 +10,7 @@ import (
 	"nashrul-be/crm/app"
 	"nashrul-be/crm/middleware"
 	"nashrul-be/crm/utils/db"
+	"nashrul-be/crm/utils/logutils"
 	redisUtils "nashrul-be/crm/utils/redis"
 	"nashrul-be/crm/utils/session"
 	"nashrul-be/crm/utils/translate"
@@ -23,16 +24,16 @@ func logErrors(errChan <-chan error) {
 		switch err := err.(type) {
 		case *rmq.HeartbeatError:
 			if err.Count == rmq.HeartbeatErrorLimit {
-				log.Print("heartbeat error (limit): ", err)
+				logutils.Get().Print("heartbeat error (limit): ", err)
 			} else {
-				log.Print("heartbeat error: ", err)
+				logutils.Get().Print("heartbeat error: ", err)
 			}
 		case *rmq.ConsumeError:
-			log.Print("consume error: ", err)
+			logutils.Get().Print("consume error: ", err)
 		case *rmq.DeliveryError:
-			log.Print("delivery error: ", err.Delivery, err)
+			logutils.Get().Print("delivery error: ", err.Delivery, err)
 		default:
-			log.Print("other error: ", err)
+			logutils.Get().Print("other error: ", err)
 		}
 	}
 }
@@ -43,6 +44,10 @@ func main() {
 
 	if err := godotenv.Load(); err != nil {
 		panic(err)
+	}
+
+	if err := logutils.Init(); err != nil {
+		log.Panicf("Can't init log. error: %s", err)
 	}
 
 	if err := translate.RegisterTranslator(); err != nil {
@@ -56,13 +61,13 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	log.Println("Success connect to DB TRO")
+	logutils.Get().Println("Success connect to DB TRO")
 
 	dbBriva, err := db.Connect("BRIVA")
 	if err != nil {
 		panic(err)
 	}
-	log.Println("Success connect to DB BRIVA")
+	logutils.Get().Println("Success connect to DB BRIVA")
 
 	//dbRdn, err := db.Connect("TRO")
 	//if err != nil {
@@ -73,7 +78,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	log.Println("Success connect to DB SPAN")
+	logutils.Get().Println("Success connect to DB SPAN")
 
 	redisConn, err := redisUtils.Connect()
 	if err != nil {
@@ -88,11 +93,8 @@ func main() {
 	}
 
 	zabbixServer := zabbix.NewServer(os.Getenv("ZABBIX_URL"), os.Getenv("ZABBIX_USERNAME"), os.Getenv("ZABBIX_PASSWORD"))
-	if err = zabbixServer.Login(); err != nil {
-		panic("can't login to zabbix server")
-	}
 	zabbixApi := zabbix.NewAPI(zabbixServer)
-	log.Println("Success login to zabbix server")
+	logutils.Get().Println("Success login to zabbix server")
 
 	zabbixCache := zabbix.NewCache()
 
@@ -104,7 +106,7 @@ func main() {
 	}
 
 	urlServe := fmt.Sprintf("%s:%s", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT"))
-	log.Printf("Serve on %s\n", urlServe)
+	logutils.Get().Printf("Serve on %s\n", urlServe)
 	if err = engine.Run(urlServe); err != nil {
 		panic(err)
 	}

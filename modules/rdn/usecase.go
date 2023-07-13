@@ -4,11 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/adjust/rmq/v5"
-	"log"
 	"nashrul-be/crm/entities"
 	"nashrul-be/crm/repositories"
 	"nashrul-be/crm/utils"
 	"nashrul-be/crm/utils/auditUtils"
+	"nashrul-be/crm/utils/logutils"
 )
 
 type UseCaseInterface interface {
@@ -41,7 +41,7 @@ type useCase struct {
 func (uc useCase) MakeAuditBatch(ctx context.Context, rdnData []entities.RDN, patchFunc patch) (result []entities.Audit, err error) {
 	actor, err := utils.GetUserFromContext(ctx)
 	if err != nil {
-		log.Println(err)
+		logutils.Get().Println(err)
 		return nil, err
 	}
 	for _, rdn := range rdnData {
@@ -116,15 +116,15 @@ func (uc useCase) Update(ctx context.Context, rdnPatch entities.RDN, whereCond m
 		return err
 	}
 	if err = auditTx.Commit().Error; err != nil {
-		log.Println("Failed to commit audit table, proceed to publish data to queue.")
+		logutils.Get().Println("Failed to commit audit table, proceed to publish data to queue.")
 		auditTx.Rollback()
 		for _, auditData := range audits {
 			auditJson, err := json.Marshal(auditData)
 			if err != nil {
-				log.Println("Failed on marshalling audit")
+				logutils.Get().Println("Failed on marshalling audit")
 			}
 			if err = uc.queue.Publish(string(auditJson)); err != nil {
-				log.Println("Failed to publish data to the queue")
+				logutils.Get().Println("Failed to publish data to the queue")
 			}
 		}
 	}

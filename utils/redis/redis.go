@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/redis/go-redis/v9"
-	"log"
+	"nashrul-be/crm/utils/logutils"
 	"os"
 )
 
@@ -13,7 +13,7 @@ func Connect() (*redis.Client, error) {
 		redisConn *redis.Client
 		err       error
 	)
-	log.Println("Connecting to redis...")
+	logutils.Get().Println("Connecting to redis...")
 	for i := 0; i < 10; i++ {
 		redisConn = redis.NewClient(&redis.Options{
 			Addr:     fmt.Sprintf("%s:%s", os.Getenv("REDIS_HOST"), os.Getenv("REDIS_PORT")),
@@ -21,7 +21,7 @@ func Connect() (*redis.Client, error) {
 			DB:       0,
 		})
 		if err = redisConn.Ping(context.Background()).Err(); err == nil {
-			log.Println("Success connect to redis")
+			logutils.Get().Println("Success connect to redis")
 			break
 		}
 	}

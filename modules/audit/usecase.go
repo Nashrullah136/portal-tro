@@ -4,12 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/adjust/rmq/v5"
-	"log"
 	"nashrul-be/crm/entities"
 	"nashrul-be/crm/repositories"
 	"nashrul-be/crm/utils"
 	csvutils "nashrul-be/crm/utils/csv"
 	"nashrul-be/crm/utils/filesystem"
+	"nashrul-be/crm/utils/logutils"
 )
 
 //go:generate mockery --name UseCaseInterface
@@ -57,22 +57,22 @@ func (uc useCase) CreateAudit(ctx context.Context, action string) error {
 func (uc useCase) ExportCsv(ctx context.Context, query repositories.AuditQuery) (*csvutils.FileCsv, error) {
 	audits, err := uc.auditRepo.GetAll(ctx, query, 0, 0)
 	if err != nil {
-		log.Printf("Failed to get audit trail data. error: %s\n", err)
+		logutils.Get().Printf("Failed to get audit trail data. error: %s\n", err)
 		return nil, err
 	}
 	csvFile, err := csvutils.NewCSV(uc.folder)
 	defer csvFile.Finish()
 	if err != nil {
-		log.Printf("Failed to create csv file. error: %s\n", err)
+		logutils.Get().Printf("Failed to create csv file. error: %s\n", err)
 		return nil, err
 	}
 	if err = csvFile.Write(entities.Audit{}.HeaderCSV()); err != nil {
-		log.Printf("Failed to write to csv file. error: %s\n", err)
+		logutils.Get().Printf("Failed to write to csv file. error: %s\n", err)
 		return nil, err
 	}
 	for _, auditData := range audits {
 		if err = csvFile.Write(auditData.CsvRepresentation()); err != nil {
-			log.Printf("Failed to write to csv file. error: %s\n", err)
+			logutils.Get().Printf("Failed to write to csv file. error: %s\n", err)
 			return nil, err
 		}
 	}

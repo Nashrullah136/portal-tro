@@ -10,13 +10,14 @@ import (
 	"nashrul-be/crm/modules/briva"
 	"nashrul-be/crm/modules/configuration"
 	exportCsv "nashrul-be/crm/modules/export-csv"
-	server_utilization "nashrul-be/crm/modules/server-utilization"
+	serverUtilization "nashrul-be/crm/modules/server-utilization"
 	"nashrul-be/crm/modules/span"
 	"nashrul-be/crm/modules/user"
 	"nashrul-be/crm/modules/worker"
 	"nashrul-be/crm/repositories"
 	"nashrul-be/crm/utils/crypto"
 	"nashrul-be/crm/utils/filesystem"
+	"nashrul-be/crm/utils/logutils"
 	redisUtils "nashrul-be/crm/utils/redis"
 	"nashrul-be/crm/utils/session"
 	"nashrul-be/crm/utils/zabbix"
@@ -74,8 +75,10 @@ func Handle(dbMain *gorm.DB, dbBriva *gorm.DB, dbRdn *gorm.DB, dbSpan *gorm.DB,
 	configRoute := configuration.NewRoute(configRequestHandler)
 	configRoute.Handle(engine, sessionManager)
 
-	//exportCsvUseCase := exportCsv.NewUseCase(exportCsvRepo, auditRepo, reportFolder)
 	if _, err = scheduler.Every(1).Day().At("00:00").Do(worker.CleanerCsv(reportFolder)); err != nil {
+		return err
+	}
+	if _, err = scheduler.Every(1).Day().At("00:00").Do(logutils.Init); err != nil {
 		return err
 	}
 
@@ -85,11 +88,11 @@ func Handle(dbMain *gorm.DB, dbBriva *gorm.DB, dbRdn *gorm.DB, dbSpan *gorm.DB,
 	spanRoute := span.NewRoute(spanRepo, auditRepo, queueAudit)
 	spanRoute.Handle(engine, sessionManager)
 
-	serverUtilController := server_utilization.NewController(cache, zabbixApi)
+	serverUtilController := serverUtilization.NewController(cache, zabbixApi)
 	if err = serverUtilController.RefreshHostList(); err != nil {
 		return err
 	}
-	serverUtilRoute := server_utilization.NewRoute(cache, zabbixApi)
+	serverUtilRoute := serverUtilization.NewRoute(cache, zabbixApi)
 	serverUtilRoute.Handle(engine, sessionManager)
 
 	updateLastData := worker.UpdateLastDataServerUtil(cache, zabbixApi)
@@ -98,6 +101,9 @@ func Handle(dbMain *gorm.DB, dbBriva *gorm.DB, dbRdn *gorm.DB, dbSpan *gorm.DB,
 		return err
 	}
 
+	if err := redisUtils.CreateCleaner(redisConn, scheduler); err != nil {
+		return err
+	}
 	scheduler.StartAsync()
 	return nil
 }

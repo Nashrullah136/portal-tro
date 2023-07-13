@@ -1,8 +1,8 @@
 package worker
 
 import (
-	"log"
 	"nashrul-be/crm/entities"
+	"nashrul-be/crm/utils/logutils"
 	"nashrul-be/crm/utils/zabbix"
 )
 
@@ -10,18 +10,18 @@ func UpdateLastDataServerUtil(cache zabbix.Cache, api zabbix.API) func() {
 	return func() {
 		template, err := cache.GetTemplate()
 		if err != nil {
-			log.Println("can't get template for server util")
+			logutils.Get().Println("can't get template for server util")
 			return
 		}
 		itemIds, err := cache.GetItemIds()
 		if err != nil {
-			log.Println("can't get item ids for server util")
+			logutils.Get().Println("can't get item ids for server util")
 			return
 		}
 		var result []entities.ServerUtilization
 		history, err := api.GetHistoryFromItem(itemIds)
 		if err != nil {
-			log.Println("Failed to access zabbix server")
+			logutils.Get().Println("Failed to access zabbix server")
 			return
 		}
 		historyMap := make(map[string]string)
@@ -42,9 +42,9 @@ func UpdateLastDataServerUtil(cache zabbix.Cache, api zabbix.API) func() {
 			result = append(result, temp)
 		}
 		if err = cache.SetLastValue(result); err != nil {
-			log.Println("Failed to save last value result to redis")
+			logutils.Get().Println("Failed to save last value result to redis")
 			return
 		}
-		log.Println("Success update latest data from zabbix server")
+		logutils.Get().Println("Success update latest data from zabbix server")
 	}
 }

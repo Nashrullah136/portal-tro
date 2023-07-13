@@ -1,21 +1,21 @@
 package worker
 
 import (
-	"log"
 	"nashrul-be/crm/utils/filesystem"
+	"nashrul-be/crm/utils/logutils"
 )
 
 func CleanerCsv(folder filesystem.Folder) func() {
 	return func() {
-		log.Println("Starting cleaning csv file...")
+		logutils.Get().Println("Starting cleaning csv file...")
 		files := folder.GetAllFiles()
 		for _, file := range files {
-			log.Printf("Deleting file %s\n", file.Filename())
+			logutils.Get().Printf("Deleting file %s\n", file.Filename())
 			if err := file.Remove(); err != nil {
-				log.Printf("Failed to delete file %s\n", file.Filename())
+				logutils.Get().Printf("Failed to delete file %s\n", file.Filename())
 				continue
 			}
-			log.Printf("Success delete file %s\n", file.Filename())
+			logutils.Get().Printf("Success delete file %s\n", file.Filename())
 		}
 	}
 }

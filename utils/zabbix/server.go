@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"github.com/tidwall/gjson"
 	"io"
-	"log"
+	"nashrul-be/crm/utils/logutils"
 	"net/http"
 )
 
@@ -34,7 +34,7 @@ func (z *server) isLogin() bool {
 }
 
 func (z *server) Login() error {
-	log.Println("Trying login to zabbix server...")
+	logutils.Get().Println("Trying login to zabbix server...")
 	if z.auth != "" {
 		return nil
 	}
@@ -91,7 +91,7 @@ func (z *server) Do(method string, params any, result interface{}) error {
 	errObj := gjson.Get(string(respBody), "error.data")
 	if errObj.String() == "Session terminated, re-login, please." {
 		if err = z.Login(); err != nil {
-			log.Println("Failed to re-login to zabbix server")
+			logutils.Get().Println("Failed to re-login to zabbix server")
 			return err
 		}
 		response, err = http.Post(z.url, "application/json", bytes.NewBuffer(reqBody))

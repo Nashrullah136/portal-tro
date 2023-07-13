@@ -7,8 +7,8 @@ import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
-	"log"
 	"nashrul-be/crm/entities"
+	"nashrul-be/crm/utils/logutils"
 	"os"
 	"strings"
 	"sync"
@@ -77,7 +77,7 @@ func (m Manager) Get(c *gin.Context) (*Session, error) {
 func (m Manager) Delete(c *gin.Context) (string, error) {
 	cookie, err := c.Cookie(Name)
 	if err != nil {
-		log.Println("cookie doesn't exist")
+		logutils.Get().Println("cookie doesn't exist")
 		return "", nil
 	}
 	result := m.redisConn.Del(context.Background(), cookie)

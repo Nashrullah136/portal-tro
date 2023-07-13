@@ -4,6 +4,7 @@ import (
 	migrate "github.com/rubenv/sql-migrate"
 	"gorm.io/gorm"
 	"log"
+	"nashrul-be/crm/utils/logutils"
 	"os"
 	"path"
 	"strconv"
@@ -17,7 +18,7 @@ func Migrate(db *gorm.DB) {
 	}
 	isMigrate, err := strconv.ParseBool(os.Getenv("MIGRATE"))
 	if err != nil {
-		log.Printf("Invalid MIGRATE valua of enviroment variable")
+		logutils.Get().Printf("Invalid MIGRATE valua of enviroment variable")
 		return
 	}
 	if isMigrate {
@@ -29,6 +30,6 @@ func Migrate(db *gorm.DB) {
 		if err != nil {
 			log.Fatal("Can't do migration!\n", err.Error())
 		}
-		log.Printf("Success applied %d migrations", n)
+		logutils.Get().Printf("Success applied %d migrations", n)
 	}
 }

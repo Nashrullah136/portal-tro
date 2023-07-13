@@ -3,8 +3,8 @@ package export_csv
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"log"
 	"nashrul-be/crm/dto"
+	"nashrul-be/crm/utils/logutils"
 	"net/http"
 	"strconv"
 )
@@ -31,7 +31,7 @@ func (h requestHandler) GetAll(c *gin.Context) {
 	}
 	response, err := h.exportCsvController.GetAll(ctx, request)
 	if err != nil {
-		log.Println(err)
+		logutils.Get().Println(err)
 		c.JSON(http.StatusInternalServerError, dto.ErrorInternalServerError())
 		return
 	}

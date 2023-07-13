@@ -2,8 +2,8 @@ package rdn
 
 import (
 	"context"
-	"log"
 	"nashrul-be/crm/dto"
+	"nashrul-be/crm/utils/logutils"
 )
 
 type ControllerInterface interface {
@@ -24,7 +24,7 @@ type controller struct {
 func (c controller) GetRdnNew(ctx context.Context) (dto.BaseResponse, error) {
 	result, err := c.rdnUseCase.GetRdnNew(ctx)
 	if err != nil {
-		log.Println(err)
+		logutils.Get().Println(err)
 		return dto.ErrorNotFound("RDN not found"), nil
 	}
 	return dto.Success("Success retrieve RDN", result), nil
@@ -33,7 +33,7 @@ func (c controller) GetRdnNew(ctx context.Context) (dto.BaseResponse, error) {
 func (c controller) GetRdnExisting(ctx context.Context) (dto.BaseResponse, error) {
 	result, err := c.rdnUseCase.GetRdnExisting(ctx)
 	if err != nil {
-		log.Println(err)
+		logutils.Get().Println(err)
 		return dto.ErrorNotFound("RDN not found"), nil
 	}
 	return dto.Success("Success retrieve RDN", result), nil
@@ -42,7 +42,7 @@ func (c controller) GetRdnExisting(ctx context.Context) (dto.BaseResponse, error
 func (c controller) UpdateRdnExisting(ctx context.Context) (dto.BaseResponse, error) {
 	err := c.rdnUseCase.UpdateRdnExisting(ctx)
 	if err != nil {
-		log.Println(err)
+		logutils.Get().Println(err)
 		return dto.ErrorNotFound("Error when update RDN"), nil
 	}
 	return dto.Success("Success update RDN", nil), nil
@@ -51,7 +51,7 @@ func (c controller) UpdateRdnExisting(ctx context.Context) (dto.BaseResponse, er
 func (c controller) UpdateRdnNew(ctx context.Context) (dto.BaseResponse, error) {
 	err := c.rdnUseCase.UpdateRdnNew(ctx)
 	if err != nil {
-		log.Println(err)
+		logutils.Get().Println(err)
 		return dto.ErrorNotFound("Error when update RDN"), nil
 	}
 	return dto.Success("Success update RDN", nil), nil

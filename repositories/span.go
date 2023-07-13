@@ -4,12 +4,12 @@ import (
 	"context"
 	"errors"
 	"gorm.io/gorm"
-	"log"
 	"nashrul-be/crm/entities"
 	"nashrul-be/crm/utils"
 	"nashrul-be/crm/utils/auditUtils"
 	"nashrul-be/crm/utils/db"
 	"nashrul-be/crm/utils/localtime"
+	"nashrul-be/crm/utils/logutils"
 )
 
 type SpanRepositoryInterface interface {
@@ -57,7 +57,7 @@ func (r spanRepository) Update(ctx context.Context, span entities.SPAN) error {
 func (r spanRepository) MakeAuditUpdate(ctx context.Context, span entities.SPAN) (entities.Audit, error) {
 	actor, err := utils.GetUserFromContext(ctx)
 	if err != nil {
-		log.Println(err)
+		logutils.Get().Println(err)
 		return entities.Audit{}, err
 	}
 	result, err := auditUtils.Update(r.db, &actor, &span)
@@ -70,7 +70,7 @@ func (r spanRepository) MakeAuditUpdate(ctx context.Context, span entities.SPAN)
 func (r spanRepository) MakeAuditUpdateWithOldData(ctx context.Context, oldSpan entities.SPAN, newSpan entities.SPAN) (entities.Audit, error) {
 	actor, err := utils.GetUserFromContext(ctx)
 	if err != nil {
-		log.Println(err)
+		logutils.Get().Println(err)
 		return entities.Audit{}, err
 	}
 	result, err := auditUtils.UpdateWithOldData(&actor, &newSpan, &oldSpan)

@@ -2,8 +2,8 @@ package span
 
 import (
 	"context"
-	"log"
 	"nashrul-be/crm/dto"
+	"nashrul-be/crm/utils/logutils"
 )
 
 type ControllerInterface interface {
@@ -22,7 +22,7 @@ type controller struct {
 func (c controller) GetByDocumentNumber(ctx context.Context, documentNumber string) (dto.BaseResponse, error) {
 	span, err := c.spanUseCase.GetByDocumentNumberPatchBankRiau(ctx, documentNumber)
 	if err != nil {
-		log.Println(err)
+		logutils.Get().Println(err)
 		return dto.ErrorNotFound("Document Number"), nil
 	}
 	result := mapSpanToPresentation(span)

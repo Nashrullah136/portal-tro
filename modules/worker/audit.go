@@ -3,9 +3,9 @@ package worker
 import (
 	"encoding/json"
 	"github.com/adjust/rmq/v5"
-	"log"
 	"nashrul-be/crm/entities"
 	"nashrul-be/crm/repositories"
+	"nashrul-be/crm/utils/logutils"
 )
 
 type Audit struct {
@@ -23,15 +23,15 @@ func (e *Audit) Consume(delivery rmq.Delivery) {
 	payloadJson := delivery.Payload()
 	if err := json.Unmarshal([]byte(payloadJson), &payload); err != nil {
 		Reject(&delivery)
-		log.Printf("Failed to unmarshall payload export csv. error: %s\n", err)
+		logutils.Get().Printf("Failed to unmarshall payload export csv. error: %s\n", err)
 		return
 	}
 	if err := e.auditRepo.Create(payload); err != nil {
 		Reject(&delivery)
-		log.Printf("Failed to insert new audit to database. error: %s\n", err)
+		logutils.Get().Printf("Failed to insert new audit to database. error: %s\n", err)
 		return
 	}
 	if err := delivery.Ack(); err != nil {
-		log.Printf("Failed to write to csv file. error: %s\n", err)
+		logutils.Get().Printf("Failed to write to csv file. error: %s\n", err)
 	}
 }

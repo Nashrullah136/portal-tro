@@ -5,8 +5,8 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/sqlserver"
 	"gorm.io/gorm"
-	"log"
 	"nashrul-be/crm/utils/localtime"
+	"nashrul-be/crm/utils/logutils"
 	"os"
 	"time"
 )
@@ -23,7 +23,7 @@ func GormConfig() *gorm.Config {
 }
 
 func Connect(prefix string) (connDb *gorm.DB, err error) {
-	log.Printf("Connecting to DB %s...\n", prefix)
+	logutils.Get().Printf("Connecting to DB %s...\n", prefix)
 	prefixResult := prefixRule(prefix)
 	switch os.Getenv(prefixResult + "DB_DRIVER") {
 	case "mysql":

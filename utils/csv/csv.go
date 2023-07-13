@@ -3,8 +3,8 @@ package csv
 import (
 	"encoding/csv"
 	"github.com/google/uuid"
-	"log"
 	"nashrul-be/crm/utils/filesystem"
+	"nashrul-be/crm/utils/logutils"
 )
 
 type FileCsv struct {
@@ -36,6 +36,6 @@ func (c *FileCsv) Write(data []string) error {
 func (c *FileCsv) Finish() {
 	c.writer.Flush()
 	if err := c.File.Close(); err != nil {
-		log.Printf("err when closing file. err: %s\n", err)
+		logutils.Get().Printf("err when closing file. err: %s\n", err)
 	}
 }

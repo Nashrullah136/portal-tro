@@ -3,11 +3,11 @@ package repositories
 import (
 	"context"
 	"gorm.io/gorm"
-	"log"
 	"nashrul-be/crm/entities"
 	"nashrul-be/crm/utils"
 	"nashrul-be/crm/utils/auditUtils"
 	"nashrul-be/crm/utils/db"
+	"nashrul-be/crm/utils/logutils"
 )
 
 type BrivaRepositoryInterface interface {
@@ -50,7 +50,7 @@ func (r brivaRepository) Update(ctx context.Context, briva entities.Briva) error
 func (r brivaRepository) MakeAuditUpdate(ctx context.Context, briva entities.Briva) (entities.Audit, error) {
 	actor, err := utils.GetUserFromContext(ctx)
 	if err != nil {
-		log.Println(err)
+		logutils.Get().Println(err)
 		return entities.Audit{}, err
 	}
 	result, err := auditUtils.Update(r.db, &actor, &briva)

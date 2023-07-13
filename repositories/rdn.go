@@ -3,11 +3,11 @@ package repositories
 import (
 	"context"
 	"gorm.io/gorm"
-	"log"
 	"nashrul-be/crm/entities"
 	"nashrul-be/crm/utils"
 	"nashrul-be/crm/utils/auditUtils"
 	"nashrul-be/crm/utils/db"
+	"nashrul-be/crm/utils/logutils"
 )
 
 type RdnRepositoryInterface interface {
@@ -43,7 +43,7 @@ func (r rdnRepository) UpdateWithWhereCond(ctx context.Context, rdn entities.RDN
 func (r rdnRepository) MakeAuditUpdate(ctx context.Context, rdn entities.RDN) (entities.Audit, error) {
 	actor, err := utils.GetUserFromContext(ctx)
 	if err != nil {
-		log.Println(err)
+		logutils.Get().Println(err)
 		return entities.Audit{}, err
 	}
 	result, err := auditUtils.Update(r.db, &actor, &rdn)

@@ -3,10 +3,10 @@ package export_csv
 import (
 	"context"
 	"errors"
-	"log"
 	"nashrul-be/crm/entities"
 	"nashrul-be/crm/repositories"
 	"nashrul-be/crm/utils/filesystem"
+	"nashrul-be/crm/utils/logutils"
 )
 
 type UseCaseInterface interface {
@@ -64,7 +64,7 @@ func (uc useCase) Delete(ctx context.Context, id uint) error {
 		return err
 	}
 	if err = csvFile.Remove(); err != nil {
-		log.Println(err)
+		logutils.Get().Println(err)
 		return err
 	}
 	return uc.exportCsvRepo.Delete(ctx, id)

@@ -2,9 +2,9 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
-	"log"
 	"nashrul-be/crm/dto"
 	"nashrul-be/crm/utils"
+	"nashrul-be/crm/utils/logutils"
 	"net/http"
 )
 
@@ -15,7 +15,7 @@ func CheckNewUser() gin.HandlerFunc {
 			c.AbortWithStatus(http.StatusInternalServerError)
 		}
 		if actor.IsNewUser() {
-			log.Println(actor, actor.IsNewUser())
+			logutils.Get().Println(actor, actor.IsNewUser())
 			c.AbortWithStatusJSON(http.StatusForbidden, dto.NeedChangePassword())
 		}
 	}

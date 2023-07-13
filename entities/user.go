@@ -3,8 +3,8 @@ package entities
 import (
 	"github.com/mitchellh/mapstructure"
 	"gorm.io/gorm"
-	"log"
 	"nashrul-be/crm/utils/auditUtils"
+	"nashrul-be/crm/utils/logutils"
 	"time"
 )
 
@@ -62,7 +62,7 @@ func (u *User) PrimaryFields() map[string]any {
 func (u *User) BeforeCreate(tx *gorm.DB) error {
 	actor, err := getUserFromContext(tx.Statement.Context)
 	if err != nil {
-		log.Println(err)
+		logutils.Get().Println(err)
 		return err
 	}
 	u.CreatedBy = actor.Identity()
@@ -73,7 +73,7 @@ func (u *User) BeforeCreate(tx *gorm.DB) error {
 func (u *User) AfterCreate(tx *gorm.DB) error {
 	actor, err := getUserFromContext(tx.Statement.Context)
 	if err != nil {
-		log.Println(err)
+		logutils.Get().Println(err)
 		return err
 	}
 	auditResult, err := auditUtils.Create(&actor, u)
@@ -87,7 +87,7 @@ func (u *User) AfterCreate(tx *gorm.DB) error {
 func (u *User) BeforeUpdate(tx *gorm.DB) error {
 	actor, err := getUserFromContext(tx.Statement.Context)
 	if err != nil {
-		log.Println(err)
+		logutils.Get().Println(err)
 		return err
 	}
 	auditResult, err := auditUtils.Update(tx, &actor, u)
@@ -105,7 +105,7 @@ func (u *User) BeforeUpdate(tx *gorm.DB) error {
 func (u *User) BeforeDelete(tx *gorm.DB) error {
 	actor, err := getUserFromContext(tx.Statement.Context)
 	if err != nil {
-		log.Println(err)
+		logutils.Get().Println(err)
 		return err
 	}
 	auditResult, err := auditUtils.Delete(tx, &actor, u)
