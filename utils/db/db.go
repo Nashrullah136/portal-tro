@@ -5,6 +5,7 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/sqlserver"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	"nashrul-be/crm/utils/localtime"
 	"nashrul-be/crm/utils/logutils"
 	"os"
@@ -19,6 +20,7 @@ func GormConfig() *gorm.Config {
 			result := localtime.Now
 			return *result()
 		},
+		Logger: logger.New(logutils.Get(), logger.Config{Colorful: false}),
 	}
 }
 
