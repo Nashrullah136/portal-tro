@@ -4,10 +4,10 @@ import (
 	"nashrul-be/crm/end2end/testutil"
 	"nashrul-be/crm/entities"
 	"testing"
+	"time"
 )
 
 func Test_update_profile(t *testing.T) {
-	db, _ := testutil.GetConn()
 	testData, err := testutil.ReadYamlFile("update_profile.yaml")
 	if err != nil {
 		t.Fatal(err)
@@ -15,11 +15,15 @@ func Test_update_profile(t *testing.T) {
 	for _, data := range testData {
 		t.Run(data.Name, func(t *testing.T) {
 			e, err := testutil.InitTest(t)
+			db, _ := testutil.GetConn()
 			if err != nil {
 				t.Fatal(err)
 			}
 			if req, exist := data.Control["create"]; exist {
 				testutil.CreateUser(e, req)
+				if err := testutil.Activate(req.(map[string]any)["username"].(string)); err != nil {
+					t.Fatalf("failed to activate use. error : %s", err)
+				}
 			}
 			var auth map[string]string
 			if loginCredential, exist := data.Control["login"]; exist {
@@ -29,6 +33,7 @@ func Test_update_profile(t *testing.T) {
 			if err := db.Where("username = ?", data.Control["create"].(map[string]any)["username"]).Find(&createdUser).Error; err != nil {
 				t.Fatal(err)
 			}
+			time.Sleep(2 * time.Second)
 			responseBody := e.PATCH("/me").WithHeaders(auth).
 				WithJSON(data.Data["update"]).Expect().Status(data.Expect["code"].(int)).JSON().Object()
 			responseBody.Value("code").IsNumber().IsEqual(data.Expect["code"])
