@@ -19,6 +19,7 @@ Installation Front End:
   pada file .env
 - Buka command prompt (cmd)
 - Jalankan command `cd <directory-ke-tempat-kode>`
+- Jalankan command `npm install`
 - Jalankan command `npm run build` 
 - Command sebelumnya akan menghasilkan folder baru bernama build di dalam
   directory source code
