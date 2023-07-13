@@ -41,7 +41,7 @@ func (c controller) GetByUsername(ctx context.Context, username string) (dto.Bas
 		return actorNotFound(), err
 	}
 	actorRepresentation := mapActorToResponse(actor)
-	return dto.Success("Success retrieve data", actorRepresentation), nil
+	return dto.Success("Success retrieve user", actorRepresentation), nil
 }
 
 func (c controller) GetAll(ctx context.Context, req PaginationRequest) (dto.BaseResponse, error) {

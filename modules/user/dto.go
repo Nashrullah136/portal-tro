@@ -6,7 +6,7 @@ import (
 )
 
 func actorNotFound() dto.BaseResponse {
-	return dto.ErrorNotFound("Actor")
+	return dto.ErrorNotFound("User")
 }
 
 type CreateRequest struct {
