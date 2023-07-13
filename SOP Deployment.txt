@@ -19,6 +19,7 @@ Installation Front End:
 Installation Back End:
 - Download source code dari https://gitlab.com/oneside-tro-finpro/be-tro
 - Ekstrak source code ke dalam sebuah folder
+- Ubah nama .env.example menjadi .env
 - Sesuaikan variable yang ada pada file .env sesuai dengan enviroment deployment
 - Buka command prompt (cmd)
 - Jalankan command `cd <directory-ke-tempat-kode>`
@@ -33,6 +34,8 @@ Configuration DB:
   folder migrations pada langkah installation back end pada database TRO
 
 Configuration XAMPP:
+- Ubah bari ke 60 pada file "C:\xampp\apache\conf\httpd.conf" menjadi kode di bawah
+       Listen <ip-server>:80
 - Tambahkan kode di bawah ke dalam file "C:\xampp\apache\conf\httpd.conf"
        LoadModule proxy_http_module modules/mod_proxy_http.so
 - Tambahkan kode dibawah ke dalam file "C:\xampp\apache\conf\extra\httpd-vhosts.conf"
