@@ -4,6 +4,14 @@ Software requirement
 - Redis (https://github.com/zkteco-home/redis-windows/releases/tag/7.0.11) v7.0.11+
 - Xampp (https://www.apachefriends.org/download.html) v8.2.4+
 
+Installation Redis:
+- Download redis from https://github.com/zkteco-home/redis-windows/releases/tag/7.0.11
+- Ekstrak hasil download ke dalam sebuah sebuah folder
+- Buka command prompt (cmd)
+- Jalankan command `cd <directory-folder-redis>`
+- Jalankan command `redis-server --service-install redis.conf --loglevel verbose`
+- Jalankan command `redis-server --service-start`
+
 Installation Front End:
 - Download source code dari https://gitlab.com/oneside-tro-finpro/fe-tro
 - Ekstrak source code ke dalam sebuah folder
