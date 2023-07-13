@@ -18,6 +18,6 @@ func mapSpanToPresentation(span entities.SPAN) Presentation {
 		BeneficiaryAccount:  span.BeneficiaryAccount,
 		Amount:              span.Amount,
 		BeneficiaryBank:     span.BeneficiaryBank,
-		IsPatched:           eligibleForPatchBankRiau(span),
+		IsPatched:           !eligibleForPatchBankRiau(span),
 	}
 }
