@@ -8,6 +8,7 @@ import (
 	"gorm.io/gorm"
 	"log"
 	"nashrul-be/crm/app"
+	"nashrul-be/crm/utils/filesystem"
 	"nashrul-be/crm/utils/session"
 	"nashrul-be/crm/utils/zabbix"
 	"os"
@@ -39,7 +40,7 @@ func SetUpGin(db *gorm.DB, redisConn *redis.Client) (*gin.Engine, error) {
 	go logErrors(errChan)
 	engine := gin.New()
 	sessionManager := session.NewManager(redisConn)
-
+	reportFolder := filesystem.NewFolder(os.Getenv("EXPORT_CSV_FOLDER"))
 	messageQueue, err := rmq.OpenConnectionWithRedisClient("default-client", redisConn, errChan)
 	if err != nil {
 		return nil, err
@@ -59,7 +60,7 @@ func SetUpGin(db *gorm.DB, redisConn *redis.Client) (*gin.Engine, error) {
 
 	wib, _ := time.LoadLocation("Asia/Jakarta")
 	scheduler := gocron.NewScheduler(wib)
-	if err = app.Handle(db, db, db, db, engine, sessionManager, messageQueue, zabbixApi, zabbixCache, scheduler); err != nil {
+	if err = app.Handle(db, db, db, db, engine, sessionManager, messageQueue, zabbixApi, zabbixCache, scheduler, reportFolder); err != nil {
 		return nil, err
 	}
 	return engine, nil
