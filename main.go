@@ -57,7 +57,7 @@ func main() {
 		log.Fatalf("failed to determine if we are running in service: %v", err)
 	}
 	if inService {
-		app.RunService(svcName)
+		app.RunService(svcName, envPath)
 		return
 	}
 	cmd := strings.ToLower(os.Args[len(os.Args)-1])

@@ -11,14 +11,24 @@ import (
 	"golang.org/x/sys/windows/svc/eventlog"
 )
 
-var elog debug.Log
+var envPath string
+
+func openElog(name string) debug.Log {
+	elog, err := eventlog.Open(name)
+	if err != nil {
+		return nil
+	}
+	return elog
+}
 
 type myservice struct{}
 
-func (m *myservice) Execute(args []string, r <-chan svc.ChangeRequest, changes chan<- svc.Status) (ssec bool, errno uint32) {
+func (m *myservice) Execute(_ []string, r <-chan svc.ChangeRequest, changes chan<- svc.Status) (ssec bool, errno uint32) {
 	const cmdsAccepted = svc.AcceptStop | svc.AcceptShutdown
+	elog := openElog("be-portal-tro")
+	defer elog.Close()
 	changes <- svc.Status{State: svc.StartPending}
-	srv := Init(args[1])
+	srv := Init(envPath)
 	changes <- svc.Status{State: svc.Running, Accepts: cmdsAccepted}
 loop:
 	for {
@@ -31,14 +41,14 @@ loop:
 				time.Sleep(100 * time.Millisecond)
 				changes <- c.CurrentStatus
 			case svc.Stop, svc.Shutdown:
-				ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+				ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 				defer cancel()
 				if err := srv.Shutdown(ctx); err != nil {
 					logutils.Get().Printf("Server shutdown: %v\n", err)
 				}
 				select {
 				case <-ctx.Done():
-					logutils.Get().Println("timeout of 5 seconds.")
+					logutils.Get().Println("timeout of 1 second.")
 				}
 				logutils.Get().Println("Server exiting")
 				break loop
@@ -51,9 +61,9 @@ loop:
 	return
 }
 
-func RunService(name string) {
-	var err error
-	elog, err = eventlog.Open(name)
+func RunService(name, env string) {
+	envPath = env
+	elog, err := eventlog.Open(name)
 	if err != nil {
 		return
 	}

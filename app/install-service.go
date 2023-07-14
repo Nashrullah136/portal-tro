@@ -50,7 +50,7 @@ func InstallService(name, desc, envPath string) error {
 		s.Close()
 		return fmt.Errorf("service %s already exists", name)
 	}
-	s, err = m.CreateService(name, exePath, mgr.Config{DisplayName: desc}, envPath)
+	s, err = m.CreateService(name, exePath, mgr.Config{DisplayName: desc}, "--env", envPath, "start")
 	if err != nil {
 		return err
 	}
