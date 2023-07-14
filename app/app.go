@@ -27,23 +27,18 @@ import (
 	"nashrul-be/crm/utils/session"
 	"nashrul-be/crm/utils/translate"
 	"nashrul-be/crm/utils/zabbix"
+	"net/http"
 	"os"
 	"time"
 )
 
-func Init(envPath string) {
+func Init(envPath string) *http.Server {
 	errChan := make(chan error, 10)
 	go logErrors(errChan)
 
 	if err := godotenv.Load(envPath); err != nil {
-		logutils.Get().Panicf("can't load envPath.\nenv path : %s.\nerror: %s", envPath, err)
+		log.Panicf("can't load envPath.\nenv path : %s.\nerror: %s", envPath, err)
 	}
-
-	fmt.Println(os.Getenv("EXPORT_CSV_FOLDER"))
-	if !isDir(os.Getenv("EXPORT_CSV_FOLDER")) {
-		log.Panicln("report path is not directory/folder.")
-	}
-	reportFolder := filesystem.NewFolder(os.Getenv("EXPORT_CSV_FOLDER"))
 
 	fmt.Println(os.Getenv("LOG_FOLDER"))
 	if !isDir(os.Getenv("LOG_FOLDER")) {
@@ -52,6 +47,12 @@ func Init(envPath string) {
 	if err := logutils.Init(os.Getenv("LOG_FOLDER")); err != nil {
 		log.Panicf("Can't init log. error: %s", err)
 	}
+
+	fmt.Println(os.Getenv("EXPORT_CSV_FOLDER"))
+	if !isDir(os.Getenv("EXPORT_CSV_FOLDER")) {
+		log.Panicln("report path is not directory/folder.")
+	}
+	reportFolder := filesystem.NewFolder(os.Getenv("EXPORT_CSV_FOLDER"))
 
 	if err := translate.RegisterTranslator(); err != nil {
 		logutils.Get().Panicf("can't register translator. error: %s\n", err)
@@ -110,9 +111,17 @@ func Init(envPath string) {
 
 	urlServe := fmt.Sprintf("%s:%s", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT"))
 	logutils.Get().Printf("Serve on %s\n", urlServe)
-	if err = engine.Run(urlServe); err != nil {
-		logutils.Get().Panicf("Can't serve. error: %s\n", err)
+	srv := &http.Server{
+		Addr:    urlServe,
+		Handler: engine,
 	}
+	go func() {
+		if err = srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			logutils.Get().Panicf("Can't serve. error: %s\n", err)
+		}
+	}()
+
+	return srv
 }
 
 func Handle(dbMain *gorm.DB, dbBriva *gorm.DB, dbRdn *gorm.DB, dbSpan *gorm.DB,
