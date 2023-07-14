@@ -24,6 +24,10 @@ Installation Front End:
   directory source code
 - Pindahkan folder build tersebut ke dalam folder "C:\xampp\htdocs"
 
+Configuration DB:
+- Jalankan sql script sql server yang bernama scripts.sql yang terdapat pada
+  folder migrations pada langkah installation back end pada database TRO
+
 Installation Back End:
 - Download source code dari https://gitlab.com/oneside-tro-finpro/be-tro/-/tree/develop
 - Ekstrak source code ke dalam sebuah folder
@@ -32,15 +36,11 @@ Installation Back End:
 - Buka command prompt (cmd)
 - Jalankan command `cd <directory-ke-tempat-kode>`
 - Jalankan command `go mod tidy`
-- Jalankan command `go build` 
+- Jalankan command `go build`
 - Command sebelumnya akan menghasilkan file baru bernama crm.exe di dalam
   directory source code
 - Jalankan command `sc.exe create <new_service_name> binPath="<path_to_the_service_executable>"`
 - Jalankan command `sc.exe start <new_service_name>`
-
-Configuration DB:
-- Jalankan sql script sql server yang bernama scripts.sql yang terdapat pada 
-  folder migrations pada langkah installation back end pada database TRO
 
 Configuration XAMPP:
 - Ubah bari ke 60 pada file "C:\xampp\apache\conf\httpd.conf" menjadi kode di bawah
