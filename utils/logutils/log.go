@@ -7,12 +7,13 @@ import (
 	"log"
 	"nashrul-be/crm/utils/localtime"
 	"os"
+	"path/filepath"
 )
 
 var logger *log.Logger
 
-func Init() error {
-	writer, err := GetWriter()
+func Init(logPath string) error {
+	writer, err := GetWriter(logPath)
 	if err != nil {
 		return err
 	}
@@ -21,9 +22,9 @@ func Init() error {
 	return nil
 }
 
-func GetWriter() (io.Writer, error) {
+func GetWriter(logPath string) (io.Writer, error) {
 	logFile := fmt.Sprintf("logs-%s.logs", localtime.Now().Format("2006-01-02"))
-	file, err := os.OpenFile(logFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	file, err := os.OpenFile(filepath.Join(logPath, logFile), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		return nil, err
 	}
