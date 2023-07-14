@@ -40,7 +40,6 @@ func Init(envPath string) *http.Server {
 		log.Panicf("can't load envPath.\nenv path : %s.\nerror: %s", envPath, err)
 	}
 
-	fmt.Println(os.Getenv("LOG_FOLDER"))
 	if !isDir(os.Getenv("LOG_FOLDER")) {
 		log.Panicln("log path is not directory/folder.")
 	}
@@ -48,7 +47,6 @@ func Init(envPath string) *http.Server {
 		log.Panicf("Can't init log. error: %s", err)
 	}
 
-	fmt.Println(os.Getenv("EXPORT_CSV_FOLDER"))
 	if !isDir(os.Getenv("EXPORT_CSV_FOLDER")) {
 		log.Panicln("report path is not directory/folder.")
 	}

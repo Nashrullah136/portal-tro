@@ -3,7 +3,6 @@ package app
 import (
 	"context"
 	"fmt"
-	"log"
 	"nashrul-be/crm/utils/logutils"
 	"time"
 
@@ -20,14 +19,10 @@ func (m *myservice) Execute(args []string, r <-chan svc.ChangeRequest, changes c
 	const cmdsAccepted = svc.AcceptStop | svc.AcceptShutdown
 	changes <- svc.Status{State: svc.StartPending}
 	srv := Init(args[1])
-	//fasttick := time.Tick(2000 * time.Millisecond)
-	//tick := fasttick
 	changes <- svc.Status{State: svc.Running, Accepts: cmdsAccepted}
 loop:
 	for {
 		select {
-		//case <-tick:
-		//	elog.Info(1, "beep")
 		case c := <-r:
 			switch c.Cmd {
 			case svc.Interrogate:
@@ -43,7 +38,7 @@ loop:
 				}
 				select {
 				case <-ctx.Done():
-					log.Println("timeout of 5 seconds.")
+					logutils.Get().Println("timeout of 5 seconds.")
 				}
 				logutils.Get().Println("Server exiting")
 				break loop
@@ -57,25 +52,14 @@ loop:
 }
 
 func RunService(name string) {
-	var (
-		err     error
-		isDebug = false
-	)
-	if isDebug {
-		elog = debug.New(name)
-	} else {
-		elog, err = eventlog.Open(name)
-		if err != nil {
-			return
-		}
+	var err error
+	elog, err = eventlog.Open(name)
+	if err != nil {
+		return
 	}
 	defer elog.Close()
-
 	elog.Info(1, fmt.Sprintf("starting %s service", name))
 	run := svc.Run
-	if isDebug {
-		run = debug.Run
-	}
 	err = run(name, &myservice{})
 	if err != nil {
 		elog.Error(1, fmt.Sprintf("%s service failed: %v", name, err))

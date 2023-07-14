@@ -7,6 +7,7 @@ import (
 	"golang.org/x/sys/windows/svc"
 	"log"
 	"nashrul-be/crm/app"
+	"nashrul-be/crm/utils/logutils"
 	"os"
 	"os/signal"
 	"path/filepath"
@@ -16,8 +17,9 @@ import (
 )
 
 var (
-	envPath string
-	svcName = "be-portal-tro"
+	envPath  string
+	svcName  = "be-portal-tro"
+	descSrvc = "Back End Portal TRO"
 )
 
 func usage(errmsg string) {
@@ -61,23 +63,24 @@ func main() {
 	cmd := strings.ToLower(os.Args[len(os.Args)-1])
 	switch cmd {
 	case "debug":
+		os.Setenv("LOG", "cli")
 		srv := app.Init(envPath)
 		quit := make(chan os.Signal)
 		signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 		<-quit
-		log.Println("Shutdown Server ...")
+		logutils.Get().Println("Shutdown Server ...")
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 		if err := srv.Shutdown(ctx); err != nil {
-			log.Fatal("Server Shutdown:", err)
+			logutils.Get().Fatal("Server Shutdown:", err)
 		}
 		select {
 		case <-ctx.Done():
-			log.Println("timeout of 5 seconds.")
+			logutils.Get().Println("timeout of 5 seconds.")
 		}
-		log.Println("Server exiting")
+		logutils.Get().Println("Server exiting")
 	case "install":
-		err = app.InstallService(svcName, "example service", envPath)
+		err = app.InstallService(svcName, descSrvc, envPath)
 	case "remove":
 		err = app.RemoveService(svcName)
 	case "start":
