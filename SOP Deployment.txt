@@ -39,8 +39,8 @@ Installation Back End:
 - Jalankan command `go build`
 - Command sebelumnya akan menghasilkan file baru bernama crm.exe di dalam
   directory source code
-- Jalankan command `sc.exe create <new_service_name> binPath="<path_to_the_service_executable>"`
-- Jalankan command `sc.exe start <new_service_name>`
+- Jalankan command `crm install`
+- Jalankan command `crm start`
 
 Configuration XAMPP:
 - Ubah bari ke 60 pada file "C:\xampp\apache\conf\httpd.conf" menjadi kode di bawah
