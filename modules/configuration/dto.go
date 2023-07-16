@@ -1,5 +1,5 @@
 package configuration
 
 type SessionDurationRequest struct {
-	Duration string `json:"duration" binding:"required,numeric,gt=60"`
+	Duration int `json:"duration" binding:"required,gt=60"`
 }
