@@ -2,7 +2,7 @@
 
 ## API Contract
 
-You can find api contract doc. in [here](https://gitlab.com/oneside-tro-finpro/be-tro/-/tree/develop/app)
+You can find api contract doc. in [here](https://github.com/Nashrullah136/portal-tro/tree/main/app)
 
 ## Run
 - Compile the applicaation first
