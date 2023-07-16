@@ -690,6 +690,38 @@ Update server monitoring list
 
 # Configuration
 
+**GET /config/session-duration**
+----
+Change session duration IDLE
+* **Headers**
+    - Content-Type: application/json
+    - Cookies: `Session_ID=<session-code>`
+* **URL Params**  
+  None
+* **Data Params**\
+  None
+* **Success Response:**
+    * **Code:** 200
+      **Content**
+      ```
+      {
+        code: 200
+        message: "Success update configuration"
+        data: {
+            "session_duration": string
+        }
+      }
+      ```
+* **Error Response:**
+    * **Code:** 401  
+      **Content:**
+      ```json
+      {
+        "code": 401,
+        "message": "Unauthorized"
+      }
+      ```
+
 **POST /config/session-duration**
 ----
 Change session duration IDLE

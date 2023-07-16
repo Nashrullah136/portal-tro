@@ -9,6 +9,7 @@ import (
 
 type RequestHandlerInterface interface {
 	UpdateSessionDuration(c *gin.Context)
+	GetSessionDuration(c *gin.Context)
 }
 
 func NewRequestHandler() RequestHandlerInterface {
@@ -29,4 +30,8 @@ func (h requestHandler) UpdateSessionDuration(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, dto.Success("Success update configuration", nil))
+}
+
+func (h requestHandler) GetSessionDuration(c *gin.Context) {
+	c.JSON(http.StatusOK, dto.Success("Success get configuration", map[string]string{"session_duration": os.Getenv("SESSION_DURATION")}))
 }
