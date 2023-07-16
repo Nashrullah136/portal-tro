@@ -181,10 +181,10 @@ func Handle(dbMain *gorm.DB, dbBriva *gorm.DB, dbRdn *gorm.DB, dbSpan *gorm.DB,
 	//rdnRoute := rdn.NewRoute(rdnRepo, auditRepo, queueAudit)
 	//rdnRoute.Handle(engine, sessionManager)
 
-	if os.Getenv("SERVER_UTIL") != "off" {
-		spanRoute := span.NewRoute(spanRepo, auditRepo, queueAudit)
-		spanRoute.Handle(engine, sessionManager)
+	spanRoute := span.NewRoute(spanRepo, auditRepo, queueAudit)
+	spanRoute.Handle(engine, sessionManager)
 
+	if os.Getenv("SERVER_UTIL") != "off" {
 		serverUtilController := serverUtilization.NewController(cache, zabbixApi)
 		if err = serverUtilController.RefreshHostList(); err != nil {
 			return err
